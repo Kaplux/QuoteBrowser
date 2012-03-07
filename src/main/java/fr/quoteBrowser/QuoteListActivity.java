@@ -1,7 +1,13 @@
 package fr.quoteBrowser;
 
+import java.io.IOException;
+
 import android.app.ListActivity;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.text.SpannableStringBuilder;
+import android.text.style.ForegroundColorSpan;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -21,8 +27,11 @@ public class QuoteListActivity extends ListActivity {
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
 
-    	QuoteProvider qp=new MockQuoteProvider();
-    	Quote[] quotes =qp.getRecentQuotes();
+    	QuoteProvider qp=new BashDotOrgQuoteProvider();
+    	Quote[] quotes;
+		try {
+			quotes = qp.getRecentQuotes();
+		
     	
     	setListAdapter(new ArrayAdapter<Quote>(this, R.layout.quote_list_item_layout, quotes){
 
@@ -32,6 +41,9 @@ public class QuoteListActivity extends ListActivity {
 				v.setText(getItem(position).getQuoteText());
 				return v;
 			}});
+		} catch (IOException e) {
+			Log.e(TAG, e.getMessage());
+		}
   	
     }
     

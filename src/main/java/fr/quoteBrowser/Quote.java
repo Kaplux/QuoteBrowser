@@ -5,13 +5,13 @@ import android.os.Parcelable;
 
 public class Quote implements Parcelable {
 
-	private String quoteText;
+	private CharSequence quoteText;
 	
-	public String getQuoteText() {
+	public CharSequence getQuoteText() {
 		return quoteText;
 	}
 
-	public void setQuoteText(String quoteText) {
+	public void setQuoteText(CharSequence quoteText) {
 		this.quoteText = quoteText;
 	}
 
@@ -20,7 +20,7 @@ public class Quote implements Parcelable {
 	}
 
 	public void writeToParcel(Parcel out, int flags) {
-		out.writeString(quoteText);
+		out.writeValue(quoteText);
 	}
 
 	public static final Parcelable.Creator<Quote> CREATOR = new Parcelable.Creator<Quote>() {
@@ -37,7 +37,7 @@ public class Quote implements Parcelable {
 		quoteText = in.readString();
 	}
 	
-	public Quote(String quoteText) {
+	public Quote(CharSequence quoteText) {
 		super();
 		this.quoteText = quoteText;
 	}
