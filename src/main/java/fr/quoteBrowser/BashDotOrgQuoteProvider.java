@@ -2,6 +2,9 @@ package fr.quoteBrowser;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -31,17 +34,35 @@ public class BashDotOrgQuoteProvider implements QuoteProvider {
 	private CharSequence colorizeUsernames(CharSequence quoteText) {
 		SpannableStringBuilder ssb = new SpannableStringBuilder(quoteText);
 		
+		for (Map.Entry<String, List<Integer>> usernameIndexesByUsername:getUsernamesIndexesFromQuote(quoteText.toString()).entrySet()){
+			for (int indexBaliseOuvrante:usernameIndexesByUsername.getValue()){
+				int indexBaliseFermante=quoteText.toString().indexOf(">",indexBaliseOuvrante);
+				ssb.setSpan(new ForegroundColorSpan(Color.BLUE), indexBaliseOuvrante, indexBaliseFermante+1, 0);
+				
+			}
+		}
+	
+		return ssb;
+	}
+	
+	private Map<String,List<Integer>> getUsernamesIndexesFromQuote(String quoteText){
+		 Map<String,List<Integer>>  usernamesIndexesByUsernames=new HashMap<String,List<Integer>>();
 		int currentIndex=0;
 		while(currentIndex<quoteText.length()){
 			int indexBaliseOuvrante=quoteText.toString().indexOf("<",currentIndex);
 			int indexBaliseFermante=quoteText.toString().indexOf(">",indexBaliseOuvrante);
 			if (indexBaliseOuvrante>-1 && indexBaliseFermante>-1){
-				ssb.setSpan(new ForegroundColorSpan(Color.BLUE), indexBaliseOuvrante, indexBaliseFermante+1, 0);
+				String username=quoteText.substring(indexBaliseOuvrante, indexBaliseFermante);
+				if(!usernamesIndexesByUsernames.containsKey(username)){
+					usernamesIndexesByUsernames.put(username,new ArrayList<Integer>());	
+				}
+				usernamesIndexesByUsernames.get(username).add(indexBaliseOuvrante);
 				currentIndex=indexBaliseFermante+1;
 			}else currentIndex=quoteText.length()+1;
 			
 		}
-		return ssb;
+		
+		return usernamesIndexesByUsernames;
 	}
 
 }
