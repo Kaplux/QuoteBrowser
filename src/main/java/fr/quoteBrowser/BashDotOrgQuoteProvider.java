@@ -48,9 +48,9 @@ public class BashDotOrgQuoteProvider implements QuoteProvider {
 	private List<Quote> getQuotesFromURL(String url) throws IOException {
 		ArrayList<Quote> quotes = new ArrayList<Quote>();
 		Document doc = Jsoup.connect(url).get();
-		Elements quotesElts = doc.select("p.qt");
+		Elements quotesElts = doc.select("p.quote");
 		for (Element quotesElt : quotesElts) {
-			CharSequence quoteText = Html.fromHtml(new TextNode(quotesElt
+			CharSequence quoteText = Html.fromHtml(new TextNode(quotesElt.select("p.qt")
 					.html(), "").getWholeText());
 			quotes.add(new Quote(colorizeUsernames(quoteText)));
 		}
