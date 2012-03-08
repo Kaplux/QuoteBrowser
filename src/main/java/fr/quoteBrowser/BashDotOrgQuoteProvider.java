@@ -22,8 +22,8 @@ import android.text.style.ForegroundColorSpan;
 
 public class BashDotOrgQuoteProvider implements QuoteProvider {
 
-	final Integer[] colors = new Integer[] { Color.BLUE, Color.RED, Color.GREEN,
-			Color.MAGENTA, Color.CYAN, Color.YELLOW, Color.GRAY };
+	final Integer[] colors = new Integer[] { Color.BLUE, Color.RED,
+			Color.GREEN, Color.MAGENTA, Color.CYAN, Color.YELLOW, Color.GRAY };
 
 	@Override
 	public List<Quote> getLatestQuotes() throws IOException {
@@ -47,11 +47,13 @@ public class BashDotOrgQuoteProvider implements QuoteProvider {
 
 	private List<Quote> getQuotesFromURL(String url) throws IOException {
 		ArrayList<Quote> quotes = new ArrayList<Quote>();
-		Document doc = Jsoup.connect(url).get();
+		Document doc = Jsoup
+				.parse("<p class=\"quote\"><a href=\"?949959\" title=\"Permanent link to this quote.\"><b>#949959</b></a> <a href=\"./?le=232502a3822ac47973c7f647edf9eff3&amp;rox=949959\" class=\"qa\">+</a>(690)<a href=\"./?le=232502a3822ac47973c7f647edf9eff3&amp;sox=949959\" class=\"qa\">-</a> <a href=\"./?le=232502a3822ac47973c7f647edf9eff3&amp;sux=949959\" onClick=\"return confirm('Flag quote for review?');\" class=\"qa\">[X]</a></p><p class=\"qt\">&lt;DevXen&gt; Today I was at the store and saw a Darth Vader action figure that said &quot;Choking Hazard.&quot; It was great.</p><p class=\"quote\"><a href=\"?949802\" title=\"Permanent link to this quote.\"><b>#949802</b></a> <a href=\"./?le=232502a3822ac47973c7f647edf9eff3&amp;rox=949802\" class=\"qa\">+</a>(34)<a href=\"./?le=232502a3822ac47973c7f647edf9eff3&amp;sox=949802\" class=\"qa\">-</a> <a href=\"./?le=232502a3822ac47973c7f647edf9eff3&amp;sux=949802\" onClick=\"return confirm('Flag quote for review?');\" class=\"qa\">[X]</a></p><p class=\"qt\">&lt;hq1&gt; i promised myself not to touch java EVER in my life again, i'd rather drive a taxi</p>");
+		// Document doc = Jsoup.connect(url).get();
 		Elements quotesElts = doc.select("p.quote");
 		for (Element quotesElt : quotesElts) {
-			CharSequence quoteText = Html.fromHtml(new TextNode(quotesElt.select("p.qt")
-					.html(), "").getWholeText());
+			CharSequence quoteText = Html.fromHtml(new TextNode(quotesElt
+					.nextElementSibling().html(), "").getWholeText());
 			quotes.add(new Quote(colorizeUsernames(quoteText)));
 		}
 		return quotes;
