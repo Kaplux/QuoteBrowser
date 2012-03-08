@@ -5,12 +5,17 @@
     <uses-permission android:name="android.permission.INTERNET"/>
 
   <application android:icon="@drawable/icon" android:label="@string/app_name">
-    <activity android:name=".QuoteListActivity">
-      <intent-filter>
+    <activity android:name=".activity.RecentQuotesActivity">
+     
+    </activity>
+    <activity android:name=".activity.HomeActivity">
+       <intent-filter>
         <action android:name="android.intent.action.MAIN" />
         <category android:name="android.intent.category.LAUNCHER" />
-      </intent-filter>
+      </intent-filter> 
     </activity>
+    <activity android:name=".activity.RandomQuotesActivity"></activity>
+    <activity android:name=".activity.BrowseQuotesActivity"></activity>
   </application>
 
 </manifest>

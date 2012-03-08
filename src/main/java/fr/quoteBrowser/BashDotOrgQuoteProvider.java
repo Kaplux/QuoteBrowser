@@ -21,8 +21,22 @@ public class BashDotOrgQuoteProvider implements QuoteProvider {
 
 	@Override
 	public Quote[] getRecentQuotes() throws IOException {
+		return getQuotesFromURL("http://bash.org/?latest");
+	}
+	
+	@Override
+	public Quote[] getRandomQuotes() throws IOException {
+		return getQuotesFromURL("http://bash.org/?random");
+	}
+
+	@Override
+	public Quote[] getQuotesFromPage(int pageNumber) throws IOException {
+		return getQuotesFromURL("http://bash.org/?browse&p="+pageNumber);
+	}
+
+	private Quote[] getQuotesFromURL(String url) throws IOException {
 		ArrayList<Quote> quotes=new ArrayList<Quote>();
-		Document doc = Jsoup.connect("http://bash.org/?latest").get();
+		Document doc = Jsoup.connect(url).get();
 		Elements quotesElts = doc.select("p.qt");
 		for (Element quotesElt : quotesElts) {
 			  CharSequence quoteText = Html.fromHtml(new TextNode(quotesElt.html(),"").getWholeText());
@@ -64,5 +78,7 @@ public class BashDotOrgQuoteProvider implements QuoteProvider {
 		
 		return usernamesIndexesByUsernames;
 	}
+
+	
 
 }

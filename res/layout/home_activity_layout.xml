@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <TableRow
+        android:id="@+id/tableRow1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" >
+
+        <Button
+            android:id="@+id/recentQuotesButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="recent" />
+
+        <Button
+            android:id="@+id/browseQuotesButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="browse" />
+
+    </TableRow>
+
+    <TableRow
+        android:id="@+id/tableRow2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" >
+
+        <Button
+            android:id="@+id/randomQuotesButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="random" />
+
+    </TableRow>
+
+</TableLayout>
