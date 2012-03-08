@@ -20,7 +20,7 @@ import android.text.style.ForegroundColorSpan;
 public class BashDotOrgQuoteProvider implements QuoteProvider {
 
 	@Override
-	public Quote[] getRecentQuotes() throws IOException {
+	public Quote[] getLatestQuotes() throws IOException {
 		return getQuotesFromURL("http://bash.org/?latest");
 	}
 	
@@ -32,6 +32,11 @@ public class BashDotOrgQuoteProvider implements QuoteProvider {
 	@Override
 	public Quote[] getQuotesFromPage(int pageNumber) throws IOException {
 		return getQuotesFromURL("http://bash.org/?browse&p="+pageNumber);
+	}
+	
+	@Override
+	public Quote[] getTopQuotes() throws IOException {
+		return getQuotesFromURL("http://bash.org/?top2");
 	}
 
 	private Quote[] getQuotesFromURL(String url) throws IOException {
@@ -78,6 +83,8 @@ public class BashDotOrgQuoteProvider implements QuoteProvider {
 		
 		return usernamesIndexesByUsernames;
 	}
+
+
 
 	
 

@@ -29,13 +29,13 @@ public class HomeActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		Log.i(TAG, "onCreate");
 		setContentView(R.layout.home_activity_layout);
-		((Button) findViewById(R.id.recentQuotesButton))
+		((Button) findViewById(R.id.latestQuotesButton))
 				.setOnClickListener(new OnClickListener() {
 
 					@Override
 					public void onClick(View v) {
 						Intent intent = new Intent(getApplicationContext(),
-								RecentQuotesActivity.class);
+								LatestQuotesActivity.class);
 						startActivity(intent);
 					}
 				});
@@ -59,6 +59,16 @@ public class HomeActivity extends Activity {
 						startActivity(intent);
 					}
 				});
+		((Button) findViewById(R.id.topQuotesButton))
+		.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent(getApplicationContext(),
+						TopQuotesActivity.class);
+				startActivity(intent);
+			}
+		});
 
 	}
 

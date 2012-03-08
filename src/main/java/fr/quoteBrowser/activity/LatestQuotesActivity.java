@@ -6,13 +6,13 @@ import fr.quoteBrowser.BashDotOrgQuoteProvider;
 import fr.quoteBrowser.Quote;
 import fr.quoteBrowser.QuoteProvider;
 
-public class RecentQuotesActivity extends AbstractQuoteListActivity {
+public class LatestQuotesActivity extends AbstractQuoteListActivity {
 
 	@Override
 	protected Quote[] getQuotes() throws IOException {
 		QuoteProvider qp=new BashDotOrgQuoteProvider();
 		Quote[] quotes;
-		quotes = qp.getRecentQuotes();
+		quotes = qp.getLatestQuotes();
 		return quotes;
 	}
 

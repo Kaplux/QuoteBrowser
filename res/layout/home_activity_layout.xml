@@ -2,7 +2,7 @@
 <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:orientation="vertical" >
+    android:orientation="vertical"  >
 
     <TableRow
         android:id="@+id/tableRow1"
@@ -10,16 +10,16 @@
         android:layout_height="wrap_content" >
 
         <Button
-            android:id="@+id/recentQuotesButton"
+            android:id="@+id/latestQuotesButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="recent" />
+            android:text="Latest" />
 
         <Button
             android:id="@+id/browseQuotesButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="browse" />
+            android:text="Browse" />
 
     </TableRow>
 
@@ -32,7 +32,12 @@
             android:id="@+id/randomQuotesButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="random" />
+            android:text="Random" />
+         <Button
+            android:id="@+id/topQuotesButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Top" />
 
     </TableRow>
 

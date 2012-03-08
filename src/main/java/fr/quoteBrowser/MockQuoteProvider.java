@@ -9,7 +9,7 @@ import android.text.style.ForegroundColorSpan;
 public class MockQuoteProvider implements QuoteProvider {
 
 	@Override
-	public Quote[] getRecentQuotes() {
+	public Quote[] getLatestQuotes() {
 		SpannableStringBuilder ssb = new SpannableStringBuilder("premiere quote");
 		ssb.setSpan(new ForegroundColorSpan(Color.RED), 0, 5, 0);
 		
@@ -24,6 +24,12 @@ public class MockQuoteProvider implements QuoteProvider {
 
 	@Override
 	public Quote[] getQuotesFromPage(int pageNumber) throws IOException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Quote[] getTopQuotes() throws IOException {
 		// TODO Auto-generated method stub
 		return null;
 	}
