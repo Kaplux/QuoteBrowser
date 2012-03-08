@@ -1,6 +1,7 @@
 package fr.quoteBrowser.activity;
 
 import java.io.IOException;
+import java.util.List;
 
 import fr.quoteBrowser.BashDotOrgQuoteProvider;
 import fr.quoteBrowser.Quote;
@@ -9,11 +10,9 @@ import fr.quoteBrowser.QuoteProvider;
 public class TopQuotesActivity extends AbstractQuoteListActivity {
 
 	@Override
-	protected Quote[] getQuotes() throws IOException {
+	protected List<Quote> getQuotes() throws IOException {
 		QuoteProvider qp=new BashDotOrgQuoteProvider();
-		Quote[] quotes;
-		quotes = qp.getTopQuotes();
-		return quotes;
+		return qp.getTopQuotes();
 	}
 
 }

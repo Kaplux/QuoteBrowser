@@ -6,14 +6,10 @@ import android.os.Parcelable;
 public class Quote implements Parcelable {
 
 	private CharSequence quoteText;
+	private CharSequence quoteTitle;
+	private int quoteScore;
 	
-	public CharSequence getQuoteText() {
-		return quoteText;
-	}
 
-	public void setQuoteText(CharSequence quoteText) {
-		this.quoteText = quoteText;
-	}
 
 	public int describeContents() {
 		return 0;
@@ -44,5 +40,29 @@ public class Quote implements Parcelable {
 
 	public Quote() {
 		super();
+	}
+
+	public CharSequence getQuoteText() {
+		return quoteText;
+	}
+
+	public void setQuoteText(CharSequence quoteText) {
+		this.quoteText = quoteText;
+	}
+
+	public CharSequence getQuoteTitle() {
+		return quoteTitle;
+	}
+
+	public void setQuoteTitle(CharSequence quoteTitle) {
+		this.quoteTitle = quoteTitle;
+	}
+
+	public int getQuoteScore() {
+		return quoteScore;
+	}
+
+	public void setQuoteScore(int quoteScore) {
+		this.quoteScore = quoteScore;
 	}
 }

@@ -8,15 +8,18 @@
       android:theme="@android:style/Theme.Light">
   
     <activity android:name=".activity.HomeActivity">
-       <intent-filter>
-        <action android:name="android.intent.action.MAIN" />
-        <category android:name="android.intent.category.LAUNCHER" />
-      </intent-filter> 
+      
     </activity>
     <activity android:name=".activity.RandomQuotesActivity"></activity>
     <activity android:name=".activity.BrowseQuotesActivity"></activity>
     <activity android:name=".activity.LatestQuotesActivity"></activity>
-    <activity android:name=".activity.TopQuotesActivity"></activity>
+    <activity android:name=".activity.TopQuotesActivity">
+         <intent-filter>
+        <action android:name="android.intent.action.MAIN" />
+        <category android:name="android.intent.category.LAUNCHER" />
+      </intent-filter> 
+        
+    </activity>
      
   </application>
 

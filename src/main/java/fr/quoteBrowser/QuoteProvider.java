@@ -1,11 +1,12 @@
 package fr.quoteBrowser;
 
 import java.io.IOException;
+import java.util.List;
 
 public interface QuoteProvider {
 	
-	Quote[]getLatestQuotes() throws IOException;
-	Quote[]getRandomQuotes() throws IOException;
-	Quote[]getQuotesFromPage(int pageNumber) throws IOException;
-	Quote[]getTopQuotes() throws IOException;
+	List<Quote> getLatestQuotes() throws IOException;
+	List<Quote> getRandomQuotes() throws IOException;
+	List<Quote> getQuotesFromPage(int pageNumber) throws IOException;
+	List<Quote> getTopQuotes() throws IOException;
 }

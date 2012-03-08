@@ -26,26 +26,26 @@ public class BashDotOrgQuoteProvider implements QuoteProvider {
 			Color.MAGENTA, Color.CYAN, Color.YELLOW, Color.GRAY };
 
 	@Override
-	public Quote[] getLatestQuotes() throws IOException {
+	public List<Quote> getLatestQuotes() throws IOException {
 		return getQuotesFromURL("http://bash.org/?latest");
 	}
 
 	@Override
-	public Quote[] getRandomQuotes() throws IOException {
+	public List<Quote> getRandomQuotes() throws IOException {
 		return getQuotesFromURL("http://bash.org/?random");
 	}
 
 	@Override
-	public Quote[] getQuotesFromPage(int pageNumber) throws IOException {
+	public List<Quote> getQuotesFromPage(int pageNumber) throws IOException {
 		return getQuotesFromURL("http://bash.org/?browse&p=" + pageNumber);
 	}
 
 	@Override
-	public Quote[] getTopQuotes() throws IOException {
+	public List<Quote> getTopQuotes() throws IOException {
 		return getQuotesFromURL("http://bash.org/?top2");
 	}
 
-	private Quote[] getQuotesFromURL(String url) throws IOException {
+	private List<Quote> getQuotesFromURL(String url) throws IOException {
 		ArrayList<Quote> quotes = new ArrayList<Quote>();
 		Document doc = Jsoup.connect(url).get();
 		Elements quotesElts = doc.select("p.qt");
@@ -54,7 +54,7 @@ public class BashDotOrgQuoteProvider implements QuoteProvider {
 					.html(), "").getWholeText());
 			quotes.add(new Quote(colorizeUsernames(quoteText)));
 		}
-		return quotes.toArray(new Quote[quotes.size()]);
+		return quotes;
 	}
 
 	private CharSequence colorizeUsernames(CharSequence quoteText) {
