@@ -71,6 +71,7 @@ public abstract class AbstractQuoteListActivity extends Activity {
 						LayoutInflater layoutInflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 					    View  view = layoutInflater.inflate(R.layout.quote_list_item_layout, null);
 						((TextView)view.findViewById(R.id.quoteItemTextView)).setText(getItem(position).getQuoteText());
+						((TextView)view.findViewById(R.id.quoteItemTitleView)).setText(getItem(position).getQuoteTitle());
 						return view;
 					}
 				});

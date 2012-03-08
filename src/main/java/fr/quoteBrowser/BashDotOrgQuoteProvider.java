@@ -52,9 +52,13 @@ public class BashDotOrgQuoteProvider implements QuoteProvider {
 		// Document doc = Jsoup.connect(url).get();
 		Elements quotesElts = doc.select("p.quote");
 		for (Element quotesElt : quotesElts) {
+			CharSequence quoteTitle = Html.fromHtml(new TextNode(quotesElt
+					.select("b").html(), "").getWholeText());
 			CharSequence quoteText = Html.fromHtml(new TextNode(quotesElt
 					.nextElementSibling().html(), "").getWholeText());
-			quotes.add(new Quote(colorizeUsernames(quoteText)));
+			Quote quote=new Quote(colorizeUsernames(quoteText));
+			quote.setQuoteTitle(quoteTitle);
+			quotes.add(quote);
 		}
 		return quotes;
 	}
