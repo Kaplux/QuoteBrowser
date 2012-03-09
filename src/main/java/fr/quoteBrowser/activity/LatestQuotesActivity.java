@@ -3,7 +3,7 @@ package fr.quoteBrowser.activity;
 import java.io.IOException;
 import java.util.List;
 
-import fr.quoteBrowser.BashDotOrgQuoteProvider;
+import fr.quoteBrowser.FuckMyLifeDotComQuoteProvider;
 import fr.quoteBrowser.Quote;
 import fr.quoteBrowser.QuoteProvider;
 
@@ -11,7 +11,7 @@ public class LatestQuotesActivity extends AbstractQuoteListActivity {
 
 	@Override
 	protected List<Quote> getQuotes() throws IOException {
-		QuoteProvider qp=new BashDotOrgQuoteProvider();
+		QuoteProvider qp=new FuckMyLifeDotComQuoteProvider();
 		return qp.getLatestQuotes();
 	}
 
