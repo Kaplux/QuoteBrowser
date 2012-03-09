@@ -2,13 +2,36 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="wrap_content" 
     >
+<LinearLayout android:orientation="horizontal" 
+	android:layout_width="fill_parent" android:layout_height="wrap_content">    
+<TextView
+    android:id="@+id/quoteItemSourceView"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginRight="10dp"
+    android:textColor="@android:color/secondary_text_light_nodisable"
+ />
+    
 <TextView
     android:id="@+id/quoteItemTitleView"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:text="" />
+    android:gravity="center_horizontal"
+    android:layout_marginRight="10dp"    
+    android:textColor="@android:color/secondary_text_light_nodisable"
+    />
+
+<TextView
+    android:id="@+id/quoteItemScoreView"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+   	android:gravity="right"
+   	android:textColor="@android:color/secondary_text_light_nodisable"
+   />
+    
+   </LinearLayout>
 <TextView
     android:id="@+id/quoteItemTextView"
     android:layout_width="wrap_content"

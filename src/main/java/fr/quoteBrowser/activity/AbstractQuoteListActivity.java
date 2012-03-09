@@ -74,8 +74,13 @@ public abstract class AbstractQuoteListActivity extends Activity {
 							ViewGroup parent) {
 						LayoutInflater layoutInflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 					    View  view = layoutInflater.inflate(R.layout.quote_list_item_layout, null);
-						((TextView)view.findViewById(R.id.quoteItemTextView)).setText(getItem(position).getQuoteText());
-						((TextView)view.findViewById(R.id.quoteItemTitleView)).setText(getItem(position).getQuoteTitle());
+					    Quote quote=getItem(position);
+						((TextView)view.findViewById(R.id.quoteItemTextView)).setText(quote.getQuoteText());
+						((TextView)view.findViewById(R.id.quoteItemSourceView)).setText("source: " + quote.getQuoteSource());
+						((TextView)view.findViewById(R.id.quoteItemTitleView)).setText("id: "+quote.getQuoteTitle());
+						if (quote.getQuoteScore()!=null){
+							((TextView)view.findViewById(R.id.quoteItemScoreView)).setText("score: "+quote.getQuoteScore());
+						}
 						return view;
 					}
 				});

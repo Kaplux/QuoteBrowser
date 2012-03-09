@@ -7,9 +7,8 @@ public class Quote implements Parcelable {
 
 	private CharSequence quoteText;
 	private CharSequence quoteTitle;
-	private int quoteScore;
-	
-
+	private CharSequence quoteSource;
+	private CharSequence quoteScore;
 
 	public int describeContents() {
 		return 0;
@@ -32,7 +31,7 @@ public class Quote implements Parcelable {
 	private Quote(Parcel in) {
 		quoteText = in.readString();
 	}
-	
+
 	public Quote(CharSequence quoteText) {
 		super();
 		this.quoteText = quoteText;
@@ -58,11 +57,21 @@ public class Quote implements Parcelable {
 		this.quoteTitle = quoteTitle;
 	}
 
-	public int getQuoteScore() {
+	public CharSequence getQuoteSource() {
+		return quoteSource;
+	}
+
+	public CharSequence getQuoteScore() {
 		return quoteScore;
 	}
 
-	public void setQuoteScore(int quoteScore) {
+	public void setQuoteScore(CharSequence quoteScore) {
 		this.quoteScore = quoteScore;
 	}
+
+	public void setQuoteSource(CharSequence quoteSource) {
+		this.quoteSource = quoteSource;
+	}
+
+	
 }
