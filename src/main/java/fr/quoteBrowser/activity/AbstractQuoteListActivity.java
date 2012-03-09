@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -42,6 +43,9 @@ public abstract class AbstractQuoteListActivity extends Activity {
 		final Activity currentActivity = this;
 		final ProgressDialog progressDialog = ProgressDialog.show(this,
 				"Loading", "please wait", true);
+		WebView bannerAdView = (WebView) findViewById(R.id.bannerAdView);
+		bannerAdView.getSettings().setJavaScriptEnabled(true);
+		bannerAdView.loadData("<script type=\"text/javascript\" src=\"http://ad.leadboltads.net/show_app_ad.js?section_id=593079000\"></script>","text/html",null);
 		new AsyncTask<Void, Void, List<Quote>>() {
 
 			@Override
