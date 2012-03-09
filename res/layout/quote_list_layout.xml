@@ -8,7 +8,11 @@
         android:id="@+id/quoteListView"
         android:layout_width="fill_parent"
         android:layout_height="0dp"
-        android:layout_weight="0.90" >
+        android:layout_weight="0.90"
+        android:divider="@drawable/quote_list_divider"
+        android:dividerHeight="2dp"
+         >
+
     </ListView>
 
     <android.webkit.WebView
