@@ -9,6 +9,7 @@ import fr.quoteBrowser.BashDotOrgQuoteProvider;
 import fr.quoteBrowser.FuckMyLifeDotComQuoteProvider;
 import fr.quoteBrowser.Quote;
 import fr.quoteBrowser.QuoteProvider;
+import fr.quoteBrowser.XKCDBQuoteProvider;
 
 public class LatestQuotesActivity extends AbstractQuoteListActivity {
 
@@ -17,7 +18,9 @@ public class LatestQuotesActivity extends AbstractQuoteListActivity {
 		ArrayList<Quote> result=new ArrayList<Quote>();
 		QuoteProvider fmylifeQP=new FuckMyLifeDotComQuoteProvider();
 		QuoteProvider bashQP=new BashDotOrgQuoteProvider();
+		QuoteProvider xkcdbQP=new XKCDBQuoteProvider();
 		
+		result.addAll(xkcdbQP.getLatestQuotes());
 		result.addAll(fmylifeQP.getLatestQuotes());
 		result.addAll(bashQP.getLatestQuotes());
 		Collections.shuffle(result);
