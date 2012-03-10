@@ -1,8 +1,5 @@
 package fr.quoteBrowser.activity;
 
-import fr.quoteBrowser.R;
-import fr.quoteBrowser.R.id;
-import fr.quoteBrowser.R.layout;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,6 +7,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import fr.quoteBrowser.R;
 
 public class HomeActivity extends Activity {
 
