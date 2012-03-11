@@ -22,7 +22,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import fr.quoteBrowser.Quote;
-import fr.quoteBrowser.QuotePreferencesActivity;
 import fr.quoteBrowser.R;
 
 public abstract class AbstractQuoteListActivity extends Activity {

@@ -32,19 +32,19 @@
             android:title="Quotes Providers">
 
         <CheckBoxPreference
-                android:key="checkbox_bashdotorg"
+                android:key="bashdotorg_preference"
                 android:title="bash.org"
                 android:summary="Enable bash.org provider"
                 android:defaultValue="true" />
         
           <CheckBoxPreference
-                android:key="checkbox_fmylife"
+                android:key="fmylifedotcom_preference"
                 android:title="fmylife.com"
                 android:summary="Enable fmylife.com provider"
                 android:defaultValue="true" />
         
           <CheckBoxPreference
-                android:key="checkbox_xkcdb"
+                android:key="xkcdbdotcom_preference"
                 android:title="xkcdb.com"
                 android:summary="Enable xkcdb.com provider"
                 android:defaultValue="true" />

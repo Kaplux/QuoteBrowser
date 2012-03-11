@@ -1,7 +1,8 @@
-package fr.quoteBrowser;
+package fr.quoteBrowser.activity;
 
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
+import fr.quoteBrowser.R;
 
 public class QuotePreferencesActivity extends PreferenceActivity {
 

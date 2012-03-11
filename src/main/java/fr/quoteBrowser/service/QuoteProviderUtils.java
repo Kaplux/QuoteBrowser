@@ -1,4 +1,4 @@
-package fr.quoteBrowser;
+package fr.quoteBrowser.service;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,7 +12,7 @@ import android.graphics.Color;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
 
-public class QuoteProviderUtils {
+class QuoteProviderUtils {
 	
 	final private static Integer[] colors = new Integer[] { Color.BLUE, Color.RED,
 			Color.GREEN, Color.MAGENTA, Color.CYAN, Color.YELLOW, Color.GRAY };

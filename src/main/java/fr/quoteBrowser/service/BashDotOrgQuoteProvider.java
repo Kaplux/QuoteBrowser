@@ -1,4 +1,4 @@
-package fr.quoteBrowser;
+package fr.quoteBrowser.service;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -10,9 +10,11 @@ import org.jsoup.nodes.Element;
 import org.jsoup.nodes.TextNode;
 import org.jsoup.select.Elements;
 
+import fr.quoteBrowser.Quote;
+
 import android.text.Html;
 
-public class BashDotOrgQuoteProvider implements QuoteProvider {
+class BashDotOrgQuoteProvider implements QuoteProvider {
 
 	
 
@@ -55,6 +57,21 @@ public class BashDotOrgQuoteProvider implements QuoteProvider {
 			quotes.add(quote);
 		}
 		return quotes;
+	}
+
+	@Override
+	public String getPreferenceId() {
+		return "bashdotorg_preference";
+	}
+
+	@Override
+	public String getPreferenceTitle() {
+		return "bash.org";
+	}
+
+	@Override
+	public String getPreferenceSummary() {
+		return "Enable bash.org provider";
 	}
 
 	

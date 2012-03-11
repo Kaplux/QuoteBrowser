@@ -1,4 +1,4 @@
-package fr.quoteBrowser;
+package fr.quoteBrowser.service;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -9,9 +9,11 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import fr.quoteBrowser.Quote;
+
 import android.text.Html;
 
-public class XKCDBQuoteProvider implements QuoteProvider {
+class XKCDBQuoteProvider implements QuoteProvider {
 
 	@Override
 	public List<Quote> getLatestQuotes() throws IOException {
@@ -58,5 +60,20 @@ public class XKCDBQuoteProvider implements QuoteProvider {
 		return quotes;
 	}
 
+	
+	@Override
+	public String getPreferenceId() {
+		return "xkcdbdotcom_preference";
+	}
+
+	@Override
+	public String getPreferenceTitle() {
+		return "xkcdb.com";
+	}
+
+	@Override
+	public String getPreferenceSummary() {
+		return "Enable xkcdb.com provider";
+	}
 
 }

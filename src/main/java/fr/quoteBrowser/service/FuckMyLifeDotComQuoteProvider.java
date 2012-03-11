@@ -1,4 +1,4 @@
-package fr.quoteBrowser;
+package fr.quoteBrowser.service;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -9,9 +9,11 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import fr.quoteBrowser.Quote;
+
 import android.text.Html;
 
-public class FuckMyLifeDotComQuoteProvider implements QuoteProvider {
+class FuckMyLifeDotComQuoteProvider implements QuoteProvider {
 
 	@Override
 	public List<Quote> getLatestQuotes() throws IOException {
@@ -57,6 +59,21 @@ public class FuckMyLifeDotComQuoteProvider implements QuoteProvider {
 			quotes.add(quote);
 		}
 		return quotes;
+	}
+	
+	@Override
+	public String getPreferenceId() {
+		return "fmylifedotcom_preference";
+	}
+
+	@Override
+	public String getPreferenceTitle() {
+		return "fmylife.com";
+	}
+
+	@Override
+	public String getPreferenceSummary() {
+		return "Enable fmylife.com provider";
 	}
 
 }
