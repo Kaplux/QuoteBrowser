@@ -47,8 +47,8 @@ public class XKCDBQuoteProvider implements QuoteProvider {
 		Elements quotesElts = doc.select("p.quoteblock");
 		for (Element quotesElt : quotesElts) {
 			CharSequence quoteTitle = Html.fromHtml(quotesElt.select("a.idlink").text());
-			CharSequence quoteScore= Html.fromHtml(quotesElt.select("a.uplink").text());
-			CharSequence quoteText = Html.fromHtml(quotesElt.select("span.quote").first().html());
+			CharSequence quoteScore= Html.fromHtml(quotesElt.select("span.quotehead").first().ownText());
+			CharSequence quoteText = QuoteProviderUtils.colorizeUsernames(Html.fromHtml(quotesElt.select("span.quote").first().html()));
 			Quote quote = new Quote(quoteText);
 			quote.setQuoteTitle(quoteTitle);
 			quote.setQuoteSource("xkcdb.com");
