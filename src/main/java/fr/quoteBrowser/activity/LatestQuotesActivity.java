@@ -59,7 +59,7 @@ public class LatestQuotesActivity extends AbstractQuoteListActivity {
 		})};
 		
 		for(Thread t:threads){
-				t.start();
+			//	t.start();
 		}
 		
 		for(Thread t:threads){

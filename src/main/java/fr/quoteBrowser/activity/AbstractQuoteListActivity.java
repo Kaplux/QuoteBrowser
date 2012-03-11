@@ -7,10 +7,14 @@ import java.util.List;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
@@ -18,6 +22,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import fr.quoteBrowser.Quote;
+import fr.quoteBrowser.QuotePreferencesActivity;
 import fr.quoteBrowser.R;
 
 public abstract class AbstractQuoteListActivity extends Activity {
@@ -103,6 +108,28 @@ public abstract class AbstractQuoteListActivity extends Activity {
 
 		}.execute();
 
+	}
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+	    MenuInflater inflater = getMenuInflater();
+	    inflater.inflate(R.menu.quote_list_option_menu, menu);
+	    return true;
+	}
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+	    // Handle item selection
+	    switch (item.getItemId()) {
+	        case R.id.refreshMenuOption:
+	            return true;
+	        case R.id.preferencesMenuOption:
+	        	Intent intent = new Intent(getApplicationContext(),
+					QuotePreferencesActivity.class);
+				startActivity(intent);
+	            return true;
+	        default:
+	            return super.onOptionsItemSelected(item);
+	    }
 	}
 
 	protected abstract List<Quote> getQuotes() throws IOException;
