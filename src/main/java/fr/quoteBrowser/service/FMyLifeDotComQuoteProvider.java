@@ -13,11 +13,11 @@ import fr.quoteBrowser.Quote;
 
 import android.text.Html;
 
-class FuckMyLifeDotComQuoteProvider implements QuoteProvider {
+class FMyLifeDotComQuoteProvider implements QuoteProvider {
 
 	@Override
 	public List<Quote> getLatestQuotes() throws IOException {
-		return getQuotesFromURL("http://www.fmylife.com/tops");
+		return getQuotesFromURL("http://www.fmylife.com/");
 	}
 
 	@Override

@@ -15,7 +15,7 @@ public class QuoteProviderService {
 	private static String TAG = "quoteBrowser";
 	private static final QuoteProvider[] providers = new QuoteProvider[] {
 			new BashDotOrgQuoteProvider(), new XKCDBQuoteProvider(),
-			new FuckMyLifeDotComQuoteProvider() };
+			new FMyLifeDotComQuoteProvider() };
 	private Context context;
 	private static QuoteProviderService instance = null;
 
