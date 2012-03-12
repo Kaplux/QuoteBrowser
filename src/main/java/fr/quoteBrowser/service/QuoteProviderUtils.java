@@ -17,7 +17,7 @@ import android.text.style.ForegroundColorSpan;
 class QuoteProviderUtils {
 	
 	final private static Integer[] colors = new Integer[] { Color.BLUE, Color.RED,
-			Color.MAGENTA, Color.CYAN, Color.DKGRAY, Color.GRAY };
+			Color.rgb(218,112,214), Color.rgb(135,206,250),Color.rgb(34,139,34),Color.rgb(255,140,0),Color.rgb(160,82,45)};
 	
 	
 	public static CharSequence colorizeUsernames(CharSequence quoteText) {
