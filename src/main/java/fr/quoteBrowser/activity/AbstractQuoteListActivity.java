@@ -24,7 +24,10 @@ import fr.quoteBrowser.R;
 public abstract class AbstractQuoteListActivity extends Activity implements
 		OnSharedPreferenceChangeListener {
 
+	private static final String QUOTES = "quotes";
 	private static String TAG = "quoteBrowser";
+
+	private ArrayList<Quote> quotes = null;
 
 	/**
 	 * Called when the activity is first created.
@@ -41,10 +44,23 @@ public abstract class AbstractQuoteListActivity extends Activity implements
 		Log.i(TAG, "onCreate");
 		setContentView(R.layout.quote_list_layout);
 		PreferenceManager.getDefaultSharedPreferences(this)
-		.registerOnSharedPreferenceChangeListener(this);
-		
+				.registerOnSharedPreferenceChangeListener(this);
+
+		if (savedInstanceState != null) {
+			quotes = savedInstanceState.getParcelableArrayList(QUOTES);
+		}
+		if (quotes == null) {
+			quotes = new ArrayList<Quote>();
+		}
+
 		initAdBannerView();
-		loadQuoteList();
+
+		ListView quoteListView = (ListView) findViewById(R.id.quoteListView);
+		quoteListView.setAdapter(new QuoteAdapter(this,
+				R.layout.quote_list_item_layout, quotes));
+		if (quotes.isEmpty()) {
+			loadQuoteList();
+		}
 
 	}
 
@@ -58,17 +74,16 @@ public abstract class AbstractQuoteListActivity extends Activity implements
 	}
 
 	protected void loadQuoteList() {
-		final ListView quoteListView = (ListView) findViewById(R.id.quoteListView);
-		final Activity currentActivity = this;
+
 		final ProgressDialog progressDialog = ProgressDialog.show(this,
 				"Loading", "please wait", true);
 		new AsyncTask<Void, Void, List<Quote>>() {
 
 			@Override
 			protected List<Quote> doInBackground(Void... params) {
-				List<Quote> quotes = new ArrayList<Quote>();
 				try {
-					quotes = getQuotes();
+					quotes.clear();
+					quotes.addAll(getQuotes());
 				} catch (IOException e) {
 					Log.e(TAG, e.getMessage());
 				}
@@ -80,11 +95,10 @@ public abstract class AbstractQuoteListActivity extends Activity implements
 			}
 
 			protected void onPostExecute(List<Quote> quotes) {
+				ListView quoteListView = (ListView) findViewById(R.id.quoteListView);
+				((QuoteAdapter) quoteListView.getAdapter())
+						.notifyDataSetChanged();
 				progressDialog.dismiss();
-				quoteListView.setAdapter(new QuoteAdapter(
-						currentActivity, R.layout.quote_list_item_layout,
-						quotes));
-
 			}
 
 		}.execute();
@@ -115,8 +129,6 @@ public abstract class AbstractQuoteListActivity extends Activity implements
 
 	protected abstract List<Quote> getQuotes() throws IOException;
 
-	
-
 	@Override
 	protected void onDestroy() {
 		super.onPause();
@@ -128,6 +140,12 @@ public abstract class AbstractQuoteListActivity extends Activity implements
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
 			String key) {
 		loadQuoteList();
+	}
+
+	@Override
+	public void onSaveInstanceState(Bundle savedInstanceState) {
+		savedInstanceState.putParcelableArrayList(QUOTES, quotes);
+		super.onSaveInstanceState(savedInstanceState);
 	}
 
 }
