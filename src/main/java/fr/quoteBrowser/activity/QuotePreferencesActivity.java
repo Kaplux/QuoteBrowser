@@ -21,6 +21,7 @@ public class QuotePreferencesActivity extends PreferenceActivity {
         checkBoxPreference.setKey(qpd.getKey());
         checkBoxPreference.setTitle(qpd.getTitle());
         checkBoxPreference.setSummary(qpd.getSummary());
+        checkBoxPreference.setDefaultValue(true);
         targetCategory.addPreference(checkBoxPreference);
     }
     
