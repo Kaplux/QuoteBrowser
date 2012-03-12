@@ -66,5 +66,10 @@ class FMyLifeDotComQuoteProvider implements QuoteProvider {
 		return new QuoteProviderPreferencesDescription("fmylifedotcom_preference",
 				"fmylife.com", "Enable fmylife.com provider");
 	}
+	
+	@Override
+	public boolean supportsUsernameColorization() {
+		return false;
+	}
 
 }

@@ -43,5 +43,10 @@ class MockQuoteProvider implements QuoteProvider {
 		return new QuoteProviderPreferencesDescription("mock_preference",
 				"mock.com", "Enable mock provider");
 	}
+	
+	@Override
+	public boolean supportsUsernameColorization() {
+		return true;
+	}
 
 }

@@ -37,20 +37,21 @@ class XKCDBQuoteProvider implements QuoteProvider {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
+
 	private List<Quote> getQuotesFromURL(String url) throws IOException {
 		ArrayList<Quote> quotes = new ArrayList<Quote>();
-		Document doc = Jsoup.connect(url) .data("query", "Java")
-				  .userAgent("Mozilla")
-				  .cookie("auth", "token")
-				  .timeout(3000)
-				  .post();
-		
+		Document doc = Jsoup.connect(url).data("query", "Java")
+				.userAgent("Mozilla").cookie("auth", "token").timeout(3000)
+				.post();
+
 		Elements quotesElts = doc.select("p.quoteblock");
 		for (Element quotesElt : quotesElts) {
-			CharSequence quoteTitle = Html.fromHtml(quotesElt.select("a.idlink").text());
-			CharSequence quoteScore= Html.fromHtml(quotesElt.select("span.quotehead").first().ownText());
-			CharSequence quoteText = QuoteProviderUtils.colorizeUsernames(Html.fromHtml(quotesElt.select("span.quote").first().html()));
+			CharSequence quoteTitle = Html.fromHtml(quotesElt
+					.select("a.idlink").text());
+			CharSequence quoteScore = Html.fromHtml(quotesElt
+					.select("span.quotehead").first().ownText());
+			CharSequence quoteText = Html.fromHtml(quotesElt
+					.select("span.quote").first().html());
 			Quote quote = new Quote(quoteText);
 			quote.setQuoteTitle(quoteTitle);
 			quote.setQuoteSource("xkcdb.com");
@@ -59,11 +60,17 @@ class XKCDBQuoteProvider implements QuoteProvider {
 		}
 		return quotes;
 	}
-	
+
 	@Override
 	public QuoteProviderPreferencesDescription getPreferencesDescription() {
-		return new QuoteProviderPreferencesDescription("xkcdbdotcom_preference",
-				"xkcdb.com", "Enable xkcdb.com provider");
+		return new QuoteProviderPreferencesDescription(
+				"xkcdbdotcom_preference", "xkcdb.com",
+				"Enable xkcdb.com provider");
+	}
+
+	@Override
+	public boolean supportsUsernameColorization() {
+		return true;
 	}
 
 }

@@ -23,7 +23,7 @@
             android:title="Color">
 
         <CheckBoxPreference
-                android:key="checkbox_colorize_usernames"
+                android:key="colorize_usernames_preference"
                 android:title="Colorize usernames"
                 android:summary="toggle usernames colorization" 
                 android:defaultValue="true"/>

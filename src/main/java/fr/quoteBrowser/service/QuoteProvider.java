@@ -16,4 +16,6 @@ interface QuoteProvider {
 	List<Quote> getTopQuotes() throws IOException;
 
 	QuoteProviderPreferencesDescription getPreferencesDescription();
+
+	boolean supportsUsernameColorization();
 }

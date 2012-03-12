@@ -48,8 +48,7 @@ class BashDotOrgQuoteProvider implements QuoteProvider {
 			CharSequence quoteScore = quotesElt.childNode(3).toString();
 			CharSequence quoteText = Html.fromHtml(new TextNode(quotesElt
 					.nextElementSibling().html(), "").getWholeText());
-			Quote quote = new Quote(
-					QuoteProviderUtils.colorizeUsernames(quoteText));
+			Quote quote = new Quote(quoteText);
 			quote.setQuoteTitle(quoteTitle);
 			quote.setQuoteSource("bash.org");
 			quote.setQuoteScore(quoteScore);
@@ -62,6 +61,11 @@ class BashDotOrgQuoteProvider implements QuoteProvider {
 	public QuoteProviderPreferencesDescription getPreferencesDescription() {
 		return new QuoteProviderPreferencesDescription("bashdotorg_preference",
 				"bash.org", "Enable bash.org provider");
+	}
+
+	@Override
+	public boolean supportsUsernameColorization() {
+		return true;
 	}
 
 }

@@ -32,7 +32,7 @@ public class QuoteProviderService {
 	}
 
 	public List<Quote> getLatestQuotes() throws IOException {
-		final List<Quote> result = Collections
+		final List<Quote> quotes = Collections
 				.synchronizedList(new ArrayList<Quote>());
 
 		ArrayList<Thread> threads = new ArrayList<Thread>();
@@ -40,15 +40,19 @@ public class QuoteProviderService {
 				.getDefaultSharedPreferences(context);
 		for (final QuoteProvider provider : providers) {
 
-			Boolean providerEnabled = prefs.getBoolean(
+			boolean providerEnabled = prefs.getBoolean(
 					provider.getPreferencesDescription().getKey(), true);
-			if (providerEnabled.booleanValue()) {
+			final boolean colorizeUsernames = prefs.getBoolean("colorize_usernames_preference", true);
+			if (providerEnabled) {
 				threads.add(new Thread(new Runnable() {
 
 					@Override
 					public void run() {
 						try {
-							result.addAll(provider.getLatestQuotes());
+							quotes.addAll(provider.getLatestQuotes());
+							if (colorizeUsernames && provider.supportsUsernameColorization()){
+								QuoteProviderUtils.colorizeUsernames(quotes);
+							}
 						} catch (IOException e) {
 							Log.e(TAG, e.getMessage());
 						}
@@ -70,8 +74,8 @@ public class QuoteProviderService {
 			}
 		}
 
-		Collections.shuffle(result);
-		return result;
+		Collections.shuffle(quotes);
+		return quotes;
 
 	}
 	

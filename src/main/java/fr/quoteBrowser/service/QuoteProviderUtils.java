@@ -8,6 +8,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import fr.quoteBrowser.Quote;
+
 import android.graphics.Color;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
@@ -15,7 +17,7 @@ import android.text.style.ForegroundColorSpan;
 class QuoteProviderUtils {
 	
 	final private static Integer[] colors = new Integer[] { Color.BLUE, Color.RED,
-			Color.GREEN, Color.MAGENTA, Color.CYAN, Color.YELLOW, Color.GRAY };
+			Color.MAGENTA, Color.CYAN, Color.DKGRAY, Color.GRAY };
 	
 	
 	public static CharSequence colorizeUsernames(CharSequence quoteText) {
@@ -67,6 +69,14 @@ class QuoteProviderUtils {
 		}
 
 		return usernamesIndexesByUsernames;
+	}
+
+
+	public static void colorizeUsernames(List<Quote> quotes) {
+		for (Quote quote:quotes){
+			quote.setQuoteText(colorizeUsernames(quote.getQuoteText()));
+		}
+		
 	}
 
 }
