@@ -8,8 +8,11 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -24,7 +27,8 @@ import android.widget.TextView;
 import fr.quoteBrowser.Quote;
 import fr.quoteBrowser.R;
 
-public abstract class AbstractQuoteListActivity extends Activity {
+public abstract class AbstractQuoteListActivity extends Activity implements
+		OnSharedPreferenceChangeListener {
 
 	private static String TAG = "quoteBrowser";
 
@@ -42,16 +46,25 @@ public abstract class AbstractQuoteListActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		Log.i(TAG, "onCreate");
 		setContentView(R.layout.quote_list_layout);
-		final ListView quoteListView = (ListView) findViewById(R.id.quoteListView);
-		final Activity currentActivity = this;
-		final ProgressDialog progressDialog = ProgressDialog.show(this,
-				"Loading", "please wait", true);
+		PreferenceManager.getDefaultSharedPreferences(this)
+		.registerOnSharedPreferenceChangeListener(this);
+		
 		WebView bannerAdView = (WebView) findViewById(R.id.bannerAdView);
 		bannerAdView.getSettings().setJavaScriptEnabled(true);
 		bannerAdView
 				.loadData(
 						"<script type=\"text/javascript\" src=\"http://ad.leadboltads.net/show_app_ad.js?section_id=593079000\"></script>",
 						"text/html", null);
+
+		loadQuoteList();
+
+	}
+
+	protected void loadQuoteList() {
+		final ListView quoteListView = (ListView) findViewById(R.id.quoteListView);
+		final Activity currentActivity = this;
+		final ProgressDialog progressDialog = ProgressDialog.show(this,
+				"Loading", "please wait", true);
 		new AsyncTask<Void, Void, List<Quote>>() {
 
 			@Override
@@ -97,6 +110,7 @@ public abstract class AbstractQuoteListActivity extends Activity {
 						}
 						return view;
 					}
+
 					@Override
 					public boolean isEnabled(int position) {
 						return false;
@@ -106,31 +120,46 @@ public abstract class AbstractQuoteListActivity extends Activity {
 			}
 
 		}.execute();
-
 	}
-	
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-	    MenuInflater inflater = getMenuInflater();
-	    inflater.inflate(R.menu.quote_list_option_menu, menu);
-	    return true;
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.quote_list_option_menu, menu);
+		return true;
 	}
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-	    // Handle item selection
-	    switch (item.getItemId()) {
-	        case R.id.refreshMenuOption:
-	            return true;
-	        case R.id.preferencesMenuOption:
-	        	Intent intent = new Intent(getApplicationContext(),
+		switch (item.getItemId()) {
+		case R.id.refreshMenuOption:
+			loadQuoteList();
+			return true;
+		case R.id.preferencesMenuOption:
+			Intent intent = new Intent(getApplicationContext(),
 					QuotePreferencesActivity.class);
-				startActivity(intent);
-	            return true;
-	        default:
-	            return super.onOptionsItemSelected(item);
-	    }
+			startActivity(intent);
+			return true;
+		default:
+			return super.onOptionsItemSelected(item);
+		}
 	}
 
 	protected abstract List<Quote> getQuotes() throws IOException;
+
+	
+
+	@Override
+	protected void onDestroy() {
+		super.onPause();
+		PreferenceManager.getDefaultSharedPreferences(this)
+				.unregisterOnSharedPreferenceChangeListener(this);
+	}
+
+	@Override
+	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
+			String key) {
+		loadQuoteList();
+	}
 
 }
