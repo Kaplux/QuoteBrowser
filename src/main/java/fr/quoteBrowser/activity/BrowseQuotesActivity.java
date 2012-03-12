@@ -20,12 +20,17 @@ import android.webkit.WebView;
 import android.widget.ListView;
 import fr.quoteBrowser.Quote;
 import fr.quoteBrowser.R;
+import fr.quoteBrowser.service.QuotePager;
 
-public abstract class AbstractQuoteListActivity extends Activity implements
+public class BrowseQuotesActivity extends Activity implements
 		OnSharedPreferenceChangeListener {
 
 	private static final String QUOTES = "quotes";
 	private static String TAG = "quoteBrowser";
+
+	private enum LoadListAction {
+		RELOAD_PAGE, NEXT_PAGE, PREVIOUS_PAGE
+	};
 
 	private ArrayList<Quote> quotes = null;
 
@@ -59,9 +64,10 @@ public abstract class AbstractQuoteListActivity extends Activity implements
 		quoteListView.setAdapter(new QuoteAdapter(this,
 				R.layout.quote_list_item_layout, quotes));
 		if (quotes.isEmpty()) {
-			loadQuoteList();
+			loadQuoteList(LoadListAction.NEXT_PAGE);
 		}
 
+	
 	}
 
 	protected void initAdBannerView() {
@@ -73,7 +79,7 @@ public abstract class AbstractQuoteListActivity extends Activity implements
 						"text/html", null);
 	}
 
-	protected void loadQuoteList() {
+	protected void loadQuoteList(final LoadListAction action) {
 
 		final ProgressDialog progressDialog = ProgressDialog.show(this,
 				"Loading", "please wait", true);
@@ -82,8 +88,25 @@ public abstract class AbstractQuoteListActivity extends Activity implements
 			@Override
 			protected List<Quote> doInBackground(Void... params) {
 				try {
+
 					quotes.clear();
-					quotes.addAll(getQuotes());
+					switch (action) {
+					case RELOAD_PAGE:
+						quotes.addAll(QuotePager.getInstance(
+								getApplicationContext()).reloadQuotePage());
+						break;
+					case NEXT_PAGE:
+						quotes.addAll(QuotePager.getInstance(
+								getApplicationContext()).getNextQuotePage());
+						break;
+					case PREVIOUS_PAGE:
+						quotes.addAll(QuotePager.getInstance(
+								getApplicationContext()).getPreviousQuotePage());
+						break;
+					default:
+						break;
+					}
+
 				} catch (IOException e) {
 					Log.e(TAG, e.getMessage());
 				}
@@ -110,12 +133,18 @@ public abstract class AbstractQuoteListActivity extends Activity implements
 		inflater.inflate(R.menu.quote_list_option_menu, menu);
 		return true;
 	}
-
+	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
+		case R.id.nextQuotePageMenuOption:
+			loadQuoteList(LoadListAction.NEXT_PAGE);
+			return true;
+		case R.id.previousQuotePageMenuOption:
+			loadQuoteList(LoadListAction.PREVIOUS_PAGE);
+			return true;
 		case R.id.refreshMenuOption:
-			loadQuoteList();
+			loadQuoteList(LoadListAction.RELOAD_PAGE);
 			return true;
 		case R.id.preferencesMenuOption:
 			Intent intent = new Intent(getApplicationContext(),
@@ -127,8 +156,6 @@ public abstract class AbstractQuoteListActivity extends Activity implements
 		}
 	}
 
-	protected abstract List<Quote> getQuotes() throws IOException;
-
 	@Override
 	protected void onDestroy() {
 		super.onPause();
@@ -139,13 +166,23 @@ public abstract class AbstractQuoteListActivity extends Activity implements
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
 			String key) {
-		loadQuoteList();
+		loadQuoteList(LoadListAction.RELOAD_PAGE);
 	}
 
 	@Override
 	public void onSaveInstanceState(Bundle savedInstanceState) {
 		savedInstanceState.putParcelableArrayList(QUOTES, quotes);
 		super.onSaveInstanceState(savedInstanceState);
+	}
+
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		if (QuotePager.getInstance(getApplicationContext()).getCurrentPage()>0){
+			menu.findItem(R.id.previousQuotePageMenuOption).setEnabled(true);
+		}else{
+			menu.findItem(R.id.previousQuotePageMenuOption).setEnabled(false);
+		}
+		return super.onPrepareOptionsMenu(menu);
 	}
 
 }

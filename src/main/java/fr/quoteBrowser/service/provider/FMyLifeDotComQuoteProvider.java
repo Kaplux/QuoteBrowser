@@ -1,4 +1,4 @@
-package fr.quoteBrowser.service;
+package fr.quoteBrowser.service.provider;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -13,30 +13,13 @@ import fr.quoteBrowser.Quote;
 
 import android.text.Html;
 
-class FMyLifeDotComQuoteProvider implements QuoteProvider {
-
-	@Override
-	public List<Quote> getLatestQuotes() throws IOException {
-		return getQuotesFromURL("http://www.fmylife.com/");
-	}
-
-	@Override
-	public List<Quote> getRandomQuotes() throws IOException {
-		// TODO Auto-generated method stub
-		return null;
-	}
+public class FMyLifeDotComQuoteProvider implements QuoteProvider {
 
 	@Override
 	public List<Quote> getQuotesFromPage(int pageNumber) throws IOException {
-		// TODO Auto-generated method stub
-		return null;
+		return getQuotesFromURL("http://www.fmylife.com/?page="+pageNumber);
 	}
 
-	@Override
-	public List<Quote> getTopQuotes() throws IOException {
-		// TODO Auto-generated method stub
-		return null;
-	}
 	
 	private List<Quote> getQuotesFromURL(String url) throws IOException {
 		ArrayList<Quote> quotes = new ArrayList<Quote>();

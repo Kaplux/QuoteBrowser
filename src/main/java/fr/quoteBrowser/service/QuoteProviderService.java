@@ -10,6 +10,11 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import fr.quoteBrowser.Quote;
+import fr.quoteBrowser.service.provider.BashDotOrgQuoteProvider;
+import fr.quoteBrowser.service.provider.FMyLifeDotComQuoteProvider;
+import fr.quoteBrowser.service.provider.QuoteProvider;
+import fr.quoteBrowser.service.provider.QuoteProviderPreferencesDescription;
+import fr.quoteBrowser.service.provider.XKCDBQuoteProvider;
 
 public class QuoteProviderService {
 	private static String TAG = "quoteBrowser";
@@ -31,7 +36,7 @@ public class QuoteProviderService {
 		return instance;
 	}
 
-	public List<Quote> getLatestQuotes() throws IOException {
+	public List<Quote> getQuotesFromPage(final int pageNumber) throws IOException {
 		final List<Quote> quotes = Collections
 				.synchronizedList(new ArrayList<Quote>());
 
@@ -49,7 +54,7 @@ public class QuoteProviderService {
 					@Override
 					public void run() {
 						try {
-							quotes.addAll(provider.getLatestQuotes());
+							quotes.addAll(provider.getQuotesFromPage(pageNumber));
 							if (colorizeUsernames && provider.supportsUsernameColorization()){
 								QuoteProviderUtils.colorizeUsernames(quotes);
 							}

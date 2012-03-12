@@ -1,4 +1,4 @@
-package fr.quoteBrowser.service;
+package fr.quoteBrowser.service.provider;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -13,29 +13,12 @@ import fr.quoteBrowser.Quote;
 
 import android.text.Html;
 
-class XKCDBQuoteProvider implements QuoteProvider {
+public class XKCDBQuoteProvider implements QuoteProvider {
 
-	@Override
-	public List<Quote> getLatestQuotes() throws IOException {
-		return getQuotesFromURL("http://www.xkcdb.com/?recent");
-	}
-
-	@Override
-	public List<Quote> getRandomQuotes() throws IOException {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	@Override
 	public List<Quote> getQuotesFromPage(int pageNumber) throws IOException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<Quote> getTopQuotes() throws IOException {
-		// TODO Auto-generated method stub
-		return null;
+		return getQuotesFromURL("http://www.xkcdb.com/?&page="+pageNumber);
 	}
 
 	private List<Quote> getQuotesFromURL(String url) throws IOException {
@@ -72,5 +55,6 @@ class XKCDBQuoteProvider implements QuoteProvider {
 	public boolean supportsUsernameColorization() {
 		return true;
 	}
+
 
 }

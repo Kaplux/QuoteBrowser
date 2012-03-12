@@ -1,8 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/previousQuotePageMenuOption"
+        android:title="Newer"
+        android:icon="@drawable/ic_menu_back" />
+    
+    <item android:id="@+id/nextQuotePageMenuOption"
+        android:title="Older"
+        android:icon="@drawable/ic_menu_forward" />
+    
     <item android:id="@+id/refreshMenuOption"
         android:title="Refresh"
         android:icon="@drawable/ic_menu_refresh" />
+    
     <item android:id="@+id/preferencesMenuOption"
         android:title="Preferences"
         android:icon="@drawable/ic_menu_preferences" />

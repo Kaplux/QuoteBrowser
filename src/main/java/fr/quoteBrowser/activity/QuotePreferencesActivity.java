@@ -5,8 +5,8 @@ import android.preference.CheckBoxPreference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceCategory;
 import fr.quoteBrowser.R;
-import fr.quoteBrowser.service.QuoteProviderPreferencesDescription;
 import fr.quoteBrowser.service.QuoteProviderService;
+import fr.quoteBrowser.service.provider.QuoteProviderPreferencesDescription;
 
 public class QuotePreferencesActivity extends PreferenceActivity {
 

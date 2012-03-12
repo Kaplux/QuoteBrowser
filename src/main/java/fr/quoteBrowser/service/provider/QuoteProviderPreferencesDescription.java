@@ -1,4 +1,4 @@
-package fr.quoteBrowser.service;
+package fr.quoteBrowser.service.provider;
 
 public class QuoteProviderPreferencesDescription {
 	private String key;
