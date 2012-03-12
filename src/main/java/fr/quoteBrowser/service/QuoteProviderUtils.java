@@ -7,12 +7,14 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-
-import fr.quoteBrowser.Quote;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import android.graphics.Color;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
+import android.util.Pair;
+import fr.quoteBrowser.Quote;
 
 class QuoteProviderUtils {
 	
@@ -25,16 +27,14 @@ class QuoteProviderUtils {
 		LinkedList<Integer> availableColors = new LinkedList<Integer>();
 		availableColors.addAll(Arrays.asList(colors));
 		Collections.shuffle(availableColors);
-		for (Map.Entry<String, List<Integer>> usernameIndexesByUsername : getUsernamesIndexesFromQuote(
+		for (Map.Entry<String, List<Pair<Integer, Integer>>> usernameIndexesByUsername : getUsernamesIndexesFromQuote2(
 				quoteText.toString()).entrySet()) {
 			Integer usernameColor = availableColors.poll();
 			if (usernameColor != null) {
-				for (int indexBaliseOuvrante : usernameIndexesByUsername
+				for (Pair<Integer,Integer> usernameIndexes : usernameIndexesByUsername
 						.getValue()) {
-					int indexBaliseFermante = quoteText.toString().indexOf(">",
-							indexBaliseOuvrante);
 					ssb.setSpan(new ForegroundColorSpan(usernameColor),
-							indexBaliseOuvrante, indexBaliseFermante + 1, 0);
+							usernameIndexes.first, usernameIndexes.second + 1, 0);
 
 				}
 			}
@@ -44,9 +44,9 @@ class QuoteProviderUtils {
 	}
 	
 
-	private static Map<String, List<Integer>> getUsernamesIndexesFromQuote(
+	private static Map<String, List<Pair<Integer,Integer>>> getUsernamesIndexesFromQuote(
 			String quoteText) {
-		Map<String, List<Integer>> usernamesIndexesByUsernames = new LinkedHashMap<String, List<Integer>>();
+		Map<String, List<Pair<Integer,Integer>>> usernamesIndexesByUsernames = new LinkedHashMap<String, List<Pair<Integer,Integer>>>();
 		int currentIndex = 0;
 		while (currentIndex < quoteText.length()) {
 			int indexBaliseOuvrante = quoteText.toString().indexOf("<",
@@ -58,15 +58,40 @@ class QuoteProviderUtils {
 						indexBaliseFermante);
 				if (!usernamesIndexesByUsernames.containsKey(username)) {
 					usernamesIndexesByUsernames.put(username,
-							new ArrayList<Integer>());
+							new ArrayList<Pair<Integer,Integer>>());
 				}
-				usernamesIndexesByUsernames.get(username).add(
-						indexBaliseOuvrante);
+				usernamesIndexesByUsernames.get(username).add(new Pair<Integer,Integer>(
+						indexBaliseOuvrante,indexBaliseFermante));
 				currentIndex = indexBaliseFermante + 1;
 			} else
 				currentIndex = quoteText.length() + 1;
 
 		}
+
+		return usernamesIndexesByUsernames;
+	}
+	
+	private static Map<String, List<Pair<Integer,Integer>>> getUsernamesIndexesFromQuote2(
+			String quoteText) {
+		Map<String, List<Pair<Integer,Integer>>> usernamesIndexesByUsernames = new LinkedHashMap<String, List<Pair<Integer,Integer>>>();
+		String[] lines=quoteText.split("\\n");
+		//usernames are either <...> or ...:
+		Pattern usernamePattern = Pattern.compile("(<[^>]*>)|([^:]*:)");
+		int previousCharNumber=0;
+		for (String line:lines){
+			Matcher m = usernamePattern.matcher(line);
+			if (m.lookingAt()){
+				String username = line.substring(m.start(), m.end());
+				if (!usernamesIndexesByUsernames.containsKey(username)) {
+					usernamesIndexesByUsernames.put(username,
+							new ArrayList<Pair<Integer,Integer>>());
+				}
+				usernamesIndexesByUsernames.get(username).add(new Pair<Integer,Integer>(
+						m.start()+previousCharNumber,m.end()+previousCharNumber));
+			}
+			previousCharNumber+=line.length();
+		}
+		
 
 		return usernamesIndexesByUsernames;
 	}

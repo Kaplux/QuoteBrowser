@@ -67,7 +67,6 @@ public class BrowseQuotesActivity extends Activity implements
 			loadQuoteList(LoadListAction.NEXT_PAGE);
 		}
 
-	
 	}
 
 	protected void initAdBannerView() {
@@ -75,7 +74,7 @@ public class BrowseQuotesActivity extends Activity implements
 		bannerAdView.getSettings().setJavaScriptEnabled(true);
 		bannerAdView
 				.loadData(
-						"<script type=\"text/javascript\" src=\"http://ad.leadboltads.net/show_app_ad.js?section_id=593079000\"></script>",
+						"<html><body style=\"margin:0;padding:0;\"><script type=\"text/javascript\" src=\"http://ad.leadboltads.net/show_app_ad.js?section_id=593079000\"></script></body></html>",
 						"text/html", null);
 	}
 
@@ -133,7 +132,7 @@ public class BrowseQuotesActivity extends Activity implements
 		inflater.inflate(R.menu.quote_list_option_menu, menu);
 		return true;
 	}
-	
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
@@ -177,9 +176,9 @@ public class BrowseQuotesActivity extends Activity implements
 
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
-		if (QuotePager.getInstance(getApplicationContext()).getCurrentPage()>0){
+		if (QuotePager.getInstance(getApplicationContext()).getCurrentPage() > 0) {
 			menu.findItem(R.id.previousQuotePageMenuOption).setEnabled(true);
-		}else{
+		} else {
 			menu.findItem(R.id.previousQuotePageMenuOption).setEnabled(false);
 		}
 		return super.onPrepareOptionsMenu(menu);
