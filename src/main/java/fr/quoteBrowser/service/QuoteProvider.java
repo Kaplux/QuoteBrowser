@@ -15,9 +15,5 @@ interface QuoteProvider {
 
 	List<Quote> getTopQuotes() throws IOException;
 
-	String getPreferenceId();
-
-	String getPreferenceTitle();
-
-	String getPreferenceSummary();
+	QuoteProviderPreferencesDescription getPreferencesDescription();
 }

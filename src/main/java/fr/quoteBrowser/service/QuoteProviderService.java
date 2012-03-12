@@ -41,7 +41,7 @@ public class QuoteProviderService {
 		for (final QuoteProvider provider : providers) {
 
 			Boolean providerEnabled = prefs.getBoolean(
-					provider.getPreferenceId(), true);
+					provider.getPreferencesDescription().getKey(), true);
 			if (providerEnabled.booleanValue()) {
 				threads.add(new Thread(new Runnable() {
 
@@ -73,6 +73,14 @@ public class QuoteProviderService {
 		Collections.shuffle(result);
 		return result;
 
+	}
+	
+	public List<QuoteProviderPreferencesDescription >getQuoteProvidersPreferences(){
+		List<QuoteProviderPreferencesDescription> result=new ArrayList<QuoteProviderPreferencesDescription>();
+		for (QuoteProvider qp : providers){
+			result.add(qp.getPreferencesDescription());
+		}
+		return result;
 	}
 
 }

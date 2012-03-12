@@ -62,18 +62,9 @@ class FMyLifeDotComQuoteProvider implements QuoteProvider {
 	}
 	
 	@Override
-	public String getPreferenceId() {
-		return "fmylifedotcom_preference";
-	}
-
-	@Override
-	public String getPreferenceTitle() {
-		return "fmylife.com";
-	}
-
-	@Override
-	public String getPreferenceSummary() {
-		return "Enable fmylife.com provider";
+	public QuoteProviderPreferencesDescription getPreferencesDescription() {
+		return new QuoteProviderPreferencesDescription("fmylifedotcom_preference",
+				"fmylife.com", "Enable fmylife.com provider");
 	}
 
 }

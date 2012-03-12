@@ -59,21 +59,11 @@ class XKCDBQuoteProvider implements QuoteProvider {
 		}
 		return quotes;
 	}
-
 	
 	@Override
-	public String getPreferenceId() {
-		return "xkcdbdotcom_preference";
-	}
-
-	@Override
-	public String getPreferenceTitle() {
-		return "xkcdb.com";
-	}
-
-	@Override
-	public String getPreferenceSummary() {
-		return "Enable xkcdb.com provider";
+	public QuoteProviderPreferencesDescription getPreferencesDescription() {
+		return new QuoteProviderPreferencesDescription("xkcdbdotcom_preference",
+				"xkcdb.com", "Enable xkcdb.com provider");
 	}
 
 }

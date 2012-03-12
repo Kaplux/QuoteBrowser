@@ -39,21 +39,9 @@ class MockQuoteProvider implements QuoteProvider {
 	}
 
 	@Override
-	public String getPreferenceId() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String getPreferenceTitle() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String getPreferenceSummary() {
-		// TODO Auto-generated method stub
-		return null;
+	public QuoteProviderPreferencesDescription getPreferencesDescription() {
+		return new QuoteProviderPreferencesDescription("mock_preference",
+				"mock.com", "Enable mock provider");
 	}
 
 }
