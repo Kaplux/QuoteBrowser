@@ -89,7 +89,7 @@ class QuoteProviderUtils {
 				usernamesIndexesByUsernames.get(username).add(new Pair<Integer,Integer>(
 						m.start()+previousCharNumber,m.end()+previousCharNumber));
 			}
-			previousCharNumber+=line.length();
+			previousCharNumber+=(line+"\n").length();
 		}
 		
 
