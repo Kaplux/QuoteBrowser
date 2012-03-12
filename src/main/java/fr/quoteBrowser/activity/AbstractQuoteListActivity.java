@@ -49,15 +49,18 @@ public abstract class AbstractQuoteListActivity extends Activity implements
 		PreferenceManager.getDefaultSharedPreferences(this)
 		.registerOnSharedPreferenceChangeListener(this);
 		
+		initAdBannerView();
+		loadQuoteList();
+
+	}
+
+	protected void initAdBannerView() {
 		WebView bannerAdView = (WebView) findViewById(R.id.bannerAdView);
 		bannerAdView.getSettings().setJavaScriptEnabled(true);
 		bannerAdView
 				.loadData(
 						"<script type=\"text/javascript\" src=\"http://ad.leadboltads.net/show_app_ad.js?section_id=593079000\"></script>",
 						"text/html", null);
-
-		loadQuoteList();
-
 	}
 
 	protected void loadQuoteList() {
@@ -84,38 +87,9 @@ public abstract class AbstractQuoteListActivity extends Activity implements
 
 			protected void onPostExecute(List<Quote> quotes) {
 				progressDialog.dismiss();
-				quoteListView.setAdapter(new ArrayAdapter<Quote>(
+				quoteListView.setAdapter(new QuoteAdapter(
 						currentActivity, R.layout.quote_list_item_layout,
-						quotes) {
-
-					@Override
-					public View getView(int position, View convertView,
-							ViewGroup parent) {
-						LayoutInflater layoutInflater = (LayoutInflater) getContext()
-								.getSystemService(
-										Context.LAYOUT_INFLATER_SERVICE);
-						View view = layoutInflater.inflate(
-								R.layout.quote_list_item_layout, null);
-						Quote quote = getItem(position);
-						((TextView) view.findViewById(R.id.quoteItemTextView))
-								.setText(quote.getQuoteText());
-						((TextView) view.findViewById(R.id.quoteItemSourceView))
-								.setText("source: " + quote.getQuoteSource());
-						((TextView) view.findViewById(R.id.quoteItemTitleView))
-								.setText("id: " + quote.getQuoteTitle());
-						if (quote.getQuoteScore() != null) {
-							((TextView) view
-									.findViewById(R.id.quoteItemScoreView))
-									.setText("score: " + quote.getQuoteScore());
-						}
-						return view;
-					}
-
-					@Override
-					public boolean isEnabled(int position) {
-						return false;
-					}
-				});
+						quotes));
 
 			}
 
