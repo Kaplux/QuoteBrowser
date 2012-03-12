@@ -72,10 +72,16 @@ class QuoteProviderUtils {
 	}
 
 
-	public static void colorizeUsernames(List<Quote> quotes) {
+	public static synchronized List<Quote> colorizeUsernames(List<Quote> quotes) {
+		ArrayList<Quote> result=new ArrayList<Quote>();
 		for (Quote quote:quotes){
-			quote.setQuoteText(colorizeUsernames(quote.getQuoteText()));
+			Quote newQuote=new Quote(colorizeUsernames(quote.getQuoteText()));
+			newQuote.setQuoteScore(quote.getQuoteScore());
+			newQuote.setQuoteSource(quote.getQuoteSource());
+			newQuote.setQuoteTitle(quote.getQuoteTitle());
+			result.add(newQuote);
 		}
+		return result;
 		
 	}
 

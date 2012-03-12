@@ -54,9 +54,11 @@ public class QuoteProviderService {
 					@Override
 					public void run() {
 						try {
-							quotes.addAll(provider.getQuotesFromPage(pageNumber));
+							List<Quote> newQuotes=provider.getQuotesFromPage(pageNumber);
 							if (colorizeUsernames && provider.supportsUsernameColorization()){
-								QuoteProviderUtils.colorizeUsernames(quotes);
+								quotes.addAll(QuoteProviderUtils.colorizeUsernames(newQuotes));
+							}else{
+								quotes.addAll(newQuotes);
 							}
 						} catch (IOException e) {
 							Log.e(TAG, e.getMessage());
