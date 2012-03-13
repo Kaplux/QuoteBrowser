@@ -37,6 +37,7 @@ public class QuoteProviderService {
 	}
 
 	public List<Quote> getQuotesFromPage(final int pageNumber) throws IOException {
+		Log.d(TAG,"loading page " +pageNumber);
 		final List<Quote> quotes = Collections
 				.synchronizedList(new ArrayList<Quote>());
 
@@ -60,8 +61,9 @@ public class QuoteProviderService {
 							}else{
 								quotes.addAll(newQuotes);
 							}
+							Log.d(TAG,"provider "+provider.getPreferencesDescription().getTitle()+ " done loading page "+ pageNumber);
 						} catch (IOException e) {
-							Log.e(TAG, e.getMessage());
+							Log.e(TAG, e.getMessage(),e);
 						}
 
 					}
@@ -77,11 +79,12 @@ public class QuoteProviderService {
 			try {
 				t.join();
 			} catch (InterruptedException e) {
-				Log.e(TAG, e.getMessage());
+				Log.e(TAG, e.getMessage(),e);
 			}
 		}
 
 		Collections.shuffle(quotes);
+		Log.d(TAG,"loaded page " +pageNumber);
 		return quotes;
 
 	}

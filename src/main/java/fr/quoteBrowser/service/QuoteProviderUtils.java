@@ -43,34 +43,6 @@ class QuoteProviderUtils {
 		return ssb;
 	}
 	
-
-	private static Map<String, List<Pair<Integer,Integer>>> getUsernamesIndexesFromQuote(
-			String quoteText) {
-		Map<String, List<Pair<Integer,Integer>>> usernamesIndexesByUsernames = new LinkedHashMap<String, List<Pair<Integer,Integer>>>();
-		int currentIndex = 0;
-		while (currentIndex < quoteText.length()) {
-			int indexBaliseOuvrante = quoteText.toString().indexOf("<",
-					currentIndex);
-			int indexBaliseFermante = quoteText.toString().indexOf(">",
-					indexBaliseOuvrante);
-			if (indexBaliseOuvrante > -1 && indexBaliseFermante > -1) {
-				String username = quoteText.substring(indexBaliseOuvrante,
-						indexBaliseFermante);
-				if (!usernamesIndexesByUsernames.containsKey(username)) {
-					usernamesIndexesByUsernames.put(username,
-							new ArrayList<Pair<Integer,Integer>>());
-				}
-				usernamesIndexesByUsernames.get(username).add(new Pair<Integer,Integer>(
-						indexBaliseOuvrante,indexBaliseFermante));
-				currentIndex = indexBaliseFermante + 1;
-			} else
-				currentIndex = quoteText.length() + 1;
-
-		}
-
-		return usernamesIndexesByUsernames;
-	}
-	
 	private static Map<String, List<Pair<Integer,Integer>>> getUsernamesIndexesFromQuote2(
 			String quoteText) {
 		Map<String, List<Pair<Integer,Integer>>> usernamesIndexesByUsernames = new LinkedHashMap<String, List<Pair<Integer,Integer>>>();
