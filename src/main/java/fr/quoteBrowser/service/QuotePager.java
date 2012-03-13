@@ -84,10 +84,16 @@ public class QuotePager {
 		try {
 			return pageCache.get(pageNumber).get();
 		} catch (InterruptedException e) {
+			pageCache.put(pageNumber, null);
 			throw new IOException(e);
 		} catch (ExecutionException e) {
+			pageCache.put(pageNumber, null);
 			throw new IOException(e);
 		}
+	}
+	
+	public void invalidateCache(){
+		pageCache.clear();
 	}
 
 	private void cachePage(final int pageNumber) {
