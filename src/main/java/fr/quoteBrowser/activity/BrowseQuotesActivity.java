@@ -120,6 +120,7 @@ public class BrowseQuotesActivity extends Activity implements
 				ListView quoteListView = (ListView) findViewById(R.id.quoteListView);
 				((QuoteAdapter) quoteListView.getAdapter())
 						.notifyDataSetChanged();
+				quoteListView.setSelectionAfterHeaderView();
 				progressDialog.dismiss();
 			}
 

@@ -15,10 +15,11 @@ import android.text.Html;
 
 public class XKCDBQuoteProvider implements QuoteProvider {
 
-
+	private static final int START_PAGE=1;
+	
 	@Override
 	public List<Quote> getQuotesFromPage(int pageNumber) throws IOException {
-		return getQuotesFromURL("http://www.xkcdb.com/?&page="+pageNumber);
+		return getQuotesFromURL("http://www.xkcdb.com/?&page="+pageNumber+START_PAGE);
 	}
 
 	private List<Quote> getQuotesFromURL(String url) throws IOException {
