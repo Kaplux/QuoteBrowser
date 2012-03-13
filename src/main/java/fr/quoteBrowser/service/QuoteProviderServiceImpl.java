@@ -17,13 +17,14 @@ import fr.quoteBrowser.service.provider.BashDotOrgQuoteProvider;
 import fr.quoteBrowser.service.provider.FMyLifeDotComQuoteProvider;
 import fr.quoteBrowser.service.provider.QuoteProvider;
 import fr.quoteBrowser.service.provider.QuoteProviderPreferencesDescription;
+import fr.quoteBrowser.service.provider.SeenOnSlashDotComQuoteProvider;
 import fr.quoteBrowser.service.provider.XKCDBQuoteProvider;
 
 public class QuoteProviderServiceImpl implements QuoteProviderService {
 	private static String TAG = "quoteBrowser";
 	private static final QuoteProvider[] providers = new QuoteProvider[] {
 			new BashDotOrgQuoteProvider(), new XKCDBQuoteProvider(),
-			new FMyLifeDotComQuoteProvider() };
+			new FMyLifeDotComQuoteProvider(),new SeenOnSlashDotComQuoteProvider() };
 	private Context context;
 	private static QuoteProviderService instance = null;
 	private ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(

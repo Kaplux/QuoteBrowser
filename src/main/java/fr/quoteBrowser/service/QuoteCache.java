@@ -11,8 +11,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
-import org.apache.commons.collections.map.LRUMap;
-
 import android.content.Context;
 import android.util.Log;
 import fr.quoteBrowser.Quote;

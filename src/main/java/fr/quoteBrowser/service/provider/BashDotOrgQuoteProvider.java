@@ -10,9 +10,8 @@ import org.jsoup.nodes.Element;
 import org.jsoup.nodes.TextNode;
 import org.jsoup.select.Elements;
 
-import fr.quoteBrowser.Quote;
-
 import android.text.Html;
+import fr.quoteBrowser.Quote;
 
 public class BashDotOrgQuoteProvider implements QuoteProvider {
 

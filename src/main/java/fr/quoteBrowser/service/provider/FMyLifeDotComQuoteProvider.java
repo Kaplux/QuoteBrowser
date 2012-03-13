@@ -9,9 +9,8 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import fr.quoteBrowser.Quote;
-
 import android.text.Html;
+import fr.quoteBrowser.Quote;
 
 public class FMyLifeDotComQuoteProvider implements QuoteProvider {
 
