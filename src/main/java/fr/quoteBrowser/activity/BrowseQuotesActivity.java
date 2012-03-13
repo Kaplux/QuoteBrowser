@@ -16,8 +16,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.webkit.WebView;
 import android.widget.ListView;
+
+import com.Leadbolt.AdController;
+
 import fr.quoteBrowser.Quote;
 import fr.quoteBrowser.R;
 import fr.quoteBrowser.service.QuotePager;
@@ -27,6 +29,8 @@ public class BrowseQuotesActivity extends Activity implements
 
 	private static final String QUOTES = "quotes";
 	private static String TAG = "quoteBrowser";
+
+	private AdController adController;
 
 	private enum LoadListAction {
 		RELOAD_PAGE, NEXT_PAGE, PREVIOUS_PAGE
@@ -58,24 +62,25 @@ public class BrowseQuotesActivity extends Activity implements
 			quotes = new ArrayList<Quote>();
 		}
 
-		initAdBannerView();
-
 		ListView quoteListView = (ListView) findViewById(R.id.quoteListView);
 		quoteListView.setAdapter(new QuoteAdapter(this,
 				R.layout.quote_list_item_layout, quotes));
 		if (quotes.isEmpty()) {
 			loadQuoteList(LoadListAction.NEXT_PAGE);
 		}
+		initAdBannerView();
 
 	}
 
 	protected void initAdBannerView() {
-		WebView bannerAdView = (WebView) findViewById(R.id.bannerAdView);
-		bannerAdView.getSettings().setJavaScriptEnabled(true);
-		bannerAdView
-				.loadData(
-						"<html><body style=\"margin:0;padding:0;\"><script type=\"text/javascript\" src=\"http://ad.leadboltads.net/show_app_ad.js?section_id=593079000\"></script></body></html>",
-						"text/html", null);
+		final Activity currentActivity = this;
+		findViewById(R.id.quoteListLayout).post(new Runnable() {
+			public void run() {
+				adController = new AdController(currentActivity, "332579652");
+				adController.loadAd();
+			}
+		});
+
 	}
 
 	protected void loadQuoteList(final LoadListAction action) {
@@ -107,7 +112,7 @@ public class BrowseQuotesActivity extends Activity implements
 					}
 
 				} catch (IOException e) {
-					Log.e(TAG, e.getMessage(),e);
+					Log.e(TAG, e.getMessage(), e);
 				}
 				return quotes;
 			}
@@ -161,6 +166,7 @@ public class BrowseQuotesActivity extends Activity implements
 		super.onPause();
 		PreferenceManager.getDefaultSharedPreferences(this)
 				.unregisterOnSharedPreferenceChangeListener(this);
+		adController.destroyAd();
 	}
 
 	@Override
