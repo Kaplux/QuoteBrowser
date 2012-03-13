@@ -5,7 +5,7 @@ import android.preference.CheckBoxPreference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceCategory;
 import fr.quoteBrowser.R;
-import fr.quoteBrowser.service.QuoteProviderService;
+import fr.quoteBrowser.service.QuoteProviderServiceImpl;
 import fr.quoteBrowser.service.provider.QuoteProviderPreferencesDescription;
 
 public class QuotePreferencesActivity extends PreferenceActivity {
@@ -16,7 +16,7 @@ public class QuotePreferencesActivity extends PreferenceActivity {
 	 
 	addPreferencesFromResource(R.xml.preferences);
     PreferenceCategory targetCategory = (PreferenceCategory)findPreference("quotes_providers_preference_category");
-    for (QuoteProviderPreferencesDescription qpd:QuoteProviderService.getInstance(this).getQuoteProvidersPreferences()){
+    for (QuoteProviderPreferencesDescription qpd:QuoteProviderServiceImpl.getInstance(this).getQuoteProvidersPreferences()){
     	CheckBoxPreference checkBoxPreference = new CheckBoxPreference(this);
         checkBoxPreference.setKey(qpd.getKey());
         checkBoxPreference.setTitle(qpd.getTitle());

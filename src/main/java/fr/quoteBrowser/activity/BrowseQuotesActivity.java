@@ -166,7 +166,7 @@ public class BrowseQuotesActivity extends Activity implements
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
 			String key) {
-		QuotePager.getInstance(this).invalidateCache();
+		QuotePager.getInstance(this).reset();
 		loadQuoteList(LoadListAction.RELOAD_PAGE);
 	}
 

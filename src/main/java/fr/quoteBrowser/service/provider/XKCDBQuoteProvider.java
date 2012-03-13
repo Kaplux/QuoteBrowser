@@ -19,7 +19,7 @@ public class XKCDBQuoteProvider implements QuoteProvider {
 	
 	@Override
 	public List<Quote> getQuotesFromPage(int pageNumber) throws IOException {
-		return getQuotesFromURL("http://www.xkcdb.com/?&page="+pageNumber+START_PAGE);
+		return getQuotesFromURL("http://www.xkcdb.com/?&page="+(pageNumber+START_PAGE));
 	}
 
 	private List<Quote> getQuotesFromURL(String url) throws IOException {
