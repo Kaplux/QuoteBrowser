@@ -12,10 +12,14 @@ import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import com.Leadbolt.AdController;
@@ -74,9 +78,26 @@ public class BrowseQuotesActivity extends Activity implements
 
 	protected void initAdBannerView() {
 		final Activity currentActivity = this;
-		findViewById(R.id.quoteListLayout).post(new Runnable() {
+		final ViewGroup quoteLayout = (ViewGroup) findViewById(R.id.quoteListLayout);
+		DisplayMetrics dm = new DisplayMetrics();
+		currentActivity.getWindowManager().getDefaultDisplay().getMetrics(dm);
+		final int screenWidth = dm.widthPixels;
+		LinearLayout adLayout = new LinearLayout(this);
+		if (screenWidth >= 468) {
+			adLayout.setMinimumHeight(60);
+		} else {
+			adLayout.setMinimumHeight(50);
+		}
+		quoteLayout.addView(adLayout);
+		quoteLayout.post(new Runnable() {
 			public void run() {
-				adController = new AdController(currentActivity, "332579652");
+				String myAdId = "";
+				if (screenWidth >= 468) {
+					myAdId = "332579652";
+				} else {
+					myAdId = "595643384";
+				}
+				adController = new AdController(currentActivity, myAdId);
 				adController.loadAd();
 			}
 		});
