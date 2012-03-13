@@ -4,6 +4,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -23,6 +27,8 @@ public class QuoteProviderService {
 			new FMyLifeDotComQuoteProvider() };
 	private Context context;
 	private static QuoteProviderService instance = null;
+	private ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(
+			30);
 
 	private QuoteProviderService(Context context) {
 		super();
@@ -36,62 +42,62 @@ public class QuoteProviderService {
 		return instance;
 	}
 
-	public List<Quote> getQuotesFromPage(final int pageNumber) throws IOException {
-		Log.d(TAG,"loading page " +pageNumber);
+	public List<Quote> getQuotesFromPage(final int pageNumber)
+			throws IOException {
+		Log.d(TAG, "loading page " + pageNumber);
 		final List<Quote> quotes = Collections
 				.synchronizedList(new ArrayList<Quote>());
 
-		ArrayList<Thread> threads = new ArrayList<Thread>();
+		ArrayList<Future<Void>> futures = new ArrayList<Future<Void>>();
 		SharedPreferences prefs = PreferenceManager
 				.getDefaultSharedPreferences(context);
 		for (final QuoteProvider provider : providers) {
 
-			boolean providerEnabled = prefs.getBoolean(
-					provider.getPreferencesDescription().getKey(), true);
-			final boolean colorizeUsernames = prefs.getBoolean("colorize_usernames_preference", true);
+			boolean providerEnabled = prefs.getBoolean(provider
+					.getPreferencesDescription().getKey(), true);
+			final boolean colorizeUsernames = prefs.getBoolean(
+					"colorize_usernames_preference", true);
 			if (providerEnabled) {
-				threads.add(new Thread(new Runnable() {
-
+				futures.add(executor.submit(new Callable<Void>() {
 					@Override
-					public void run() {
-						try {
-							List<Quote> newQuotes=provider.getQuotesFromPage(pageNumber);
-							if (colorizeUsernames && provider.supportsUsernameColorization()){
-								quotes.addAll(QuoteProviderUtils.colorizeUsernames(newQuotes));
-							}else{
-								quotes.addAll(newQuotes);
-							}
-							Log.d(TAG,"provider "+provider.getPreferencesDescription().getTitle()+ " done loading page "+ pageNumber);
-						} catch (IOException e) {
-							Log.e(TAG, e.getMessage(),e);
+					public Void call() throws Exception {
+						List<Quote> newQuotes = provider
+								.getQuotesFromPage(pageNumber);
+						if (colorizeUsernames
+								&& provider.supportsUsernameColorization()) {
+							quotes.addAll(QuoteProviderUtils
+									.colorizeUsernames(newQuotes));
+						} else {
+							quotes.addAll(newQuotes);
 						}
-
+						Log.d(TAG, "provider "
+								+ provider.getPreferencesDescription()
+										.getTitle() + " done loading page "
+								+ pageNumber);
+						return null;
 					}
 				}));
 			}
 		}
 
-		for (Thread t : threads) {
-			t.start();
-		}
-
-		for (Thread t : threads) {
+		for (Future<Void> f : futures) {
 			try {
-				t.join();
+				f.get();
 			} catch (InterruptedException e) {
-				Log.e(TAG, e.getMessage(),e);
+				throw new IOException(e);
+			} catch (ExecutionException e) {
+				throw new IOException(e);
 			}
 		}
-
-		Collections.shuffle(quotes);
-		Log.d(TAG,"loaded page " +pageNumber);
+		
+		Log.d(TAG, "loaded page " + pageNumber);
 		return quotes;
 
 	}
-	
-	public List<QuoteProviderPreferencesDescription >getQuoteProvidersPreferences(){
-		List<QuoteProviderPreferencesDescription> result=new ArrayList<QuoteProviderPreferencesDescription>();
-		for (QuoteProvider qp : providers){
+
+	public List<QuoteProviderPreferencesDescription> getQuoteProvidersPreferences() {
+		List<QuoteProviderPreferencesDescription> result = new ArrayList<QuoteProviderPreferencesDescription>();
+		for (QuoteProvider qp : providers) {
 			result.add(qp.getPreferencesDescription());
 		}
 		return result;
