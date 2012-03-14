@@ -3,7 +3,6 @@
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:paddingTop="10dp"
     android:paddingBottom="10dp"
      >
 
@@ -13,6 +12,7 @@
         android:orientation="horizontal"
         android:layout_marginLeft="2dp"
         android:layout_marginRight="2dp"
+    	android:paddingBottom="10dp"
          >
 
         <TextView
