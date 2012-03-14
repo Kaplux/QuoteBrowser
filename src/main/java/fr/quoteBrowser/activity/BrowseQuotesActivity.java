@@ -40,6 +40,8 @@ public class BrowseQuotesActivity extends Activity implements
 	};
 
 	private ArrayList<Quote> quotes = null;
+	
+	private boolean preferencesChanged;
 
 	/**
 	 * Called when the activity is first created.
@@ -65,13 +67,13 @@ public class BrowseQuotesActivity extends Activity implements
 			quotes = new ArrayList<Quote>();
 		}
 
+		initAdBannerView();
 		ListView quoteListView = (ListView) findViewById(R.id.quoteListView);
 		quoteListView.setAdapter(new QuoteAdapter(this,
 				R.layout.quote_list_item_layout, quotes));
 		if (quotes.isEmpty()) {
 			loadQuoteList(LoadListAction.NEXT_PAGE);
 		}
-		initAdBannerView();
 
 	}
 
@@ -104,15 +106,12 @@ public class BrowseQuotesActivity extends Activity implements
 	}
 
 	protected void loadQuoteList(final LoadListAction action) {
-
 		final ProgressDialog progressDialog = ProgressDialog.show(this,
 				"Loading", "please wait", true);
 		new AsyncTask<Void, Void, List<Quote>>() {
-
 			@Override
 			protected List<Quote> doInBackground(Void... params) {
 				try {
-
 					quotes.clear();
 					switch (action) {
 					case RELOAD_PAGE:
@@ -163,12 +162,15 @@ public class BrowseQuotesActivity extends Activity implements
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.nextQuotePageMenuOption:
+			adController.loadAd();
 			loadQuoteList(LoadListAction.NEXT_PAGE);
 			return true;
 		case R.id.previousQuotePageMenuOption:
+			adController.loadAd();
 			loadQuoteList(LoadListAction.PREVIOUS_PAGE);
 			return true;
 		case R.id.refreshMenuOption:
+			adController.loadAd();
 			loadQuoteList(LoadListAction.RELOAD_PAGE);
 			return true;
 		case R.id.preferencesMenuOption:
@@ -192,8 +194,7 @@ public class BrowseQuotesActivity extends Activity implements
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
 			String key) {
-		QuotePager.getInstance(this).reset();
-		loadQuoteList(LoadListAction.RELOAD_PAGE);
+		preferencesChanged=true;
 	}
 
 	@Override
@@ -210,6 +211,16 @@ public class BrowseQuotesActivity extends Activity implements
 			menu.findItem(R.id.previousQuotePageMenuOption).setEnabled(false);
 		}
 		return super.onPrepareOptionsMenu(menu);
+	}
+
+	@Override
+	protected void onResume() {
+		if (preferencesChanged) {
+			QuotePager.getInstance(this).reset();
+			loadQuoteList(LoadListAction.RELOAD_PAGE);
+			preferencesChanged = false;
+		}
+		super.onResume();
 	}
 
 }
