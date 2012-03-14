@@ -4,11 +4,17 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.text.Html;
+import android.text.SpannableStringBuilder;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.StyleSpan;
 import fr.quoteBrowser.Quote;
 
 public class SeenOnSlashDotComQuoteProvider extends AbstractQuoteProvider {
@@ -35,9 +41,14 @@ public class SeenOnSlashDotComQuoteProvider extends AbstractQuoteProvider {
 	
 		Elements quotesElts = doc.select("div.node");
 		for (Element quotesElt : quotesElts) {
-			CharSequence quoteTitle = "";
+			String titleLink=quotesElt.select("h1.title>a").first().attr("href");
+			CharSequence quoteTitle = Html.fromHtml(titleLink.substring(titleLink.lastIndexOf("/")+1));
 			CharSequence quoteScore="";
-			CharSequence quoteText = Html.fromHtml(quotesElt.select("div.content").first().text());
+			SpannableStringBuilder quoteText = new SpannableStringBuilder();
+			quoteText.append(Html.fromHtml("<div>"+quotesElt.select("h1.title>a").html()+"</div>"));
+			quoteText.setSpan(new StyleSpan(Typeface.BOLD),
+					0, quoteText.length(), 0);
+			quoteText.append(Html.fromHtml(quotesElt.select("div.content").html()));
 			Quote quote = new Quote(quoteText);
 			quote.setQuoteTitle(quoteTitle);
 			quote.setQuoteSource("seenonslash.com");

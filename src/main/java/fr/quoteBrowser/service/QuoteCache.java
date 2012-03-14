@@ -1,7 +1,6 @@
 package fr.quoteBrowser.service;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -12,7 +11,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 import android.content.Context;
-import android.util.Log;
 import fr.quoteBrowser.Quote;
 
 public class QuoteCache {
@@ -23,7 +21,7 @@ public class QuoteCache {
 
 	// Number of pages to prefetch before and after current page while loading
 	// it
-	private static final int PAGE_PREFETCH_NUMBER = 4;
+	private static final int PAGE_PREFETCH_NUMBER = 3;
 
 	private static final int MAX_CONCURRENT_PAGE_FETCH = 3;
 

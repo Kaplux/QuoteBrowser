@@ -32,7 +32,7 @@ class QuoteAdapter extends ArrayAdapter<Quote> {
 					.setText("source: " + quote.getQuoteSource());
 			((TextView) view.findViewById(R.id.quoteItemTitleView))
 					.setText("id: " + quote.getQuoteTitle());
-			if (quote.getQuoteScore() != null) {
+			if (quote.getQuoteScore() != null && quote.getQuoteScore() !="") {
 				((TextView) view.findViewById(R.id.quoteItemScoreView))
 						.setText("score: " + quote.getQuoteScore());
 			}

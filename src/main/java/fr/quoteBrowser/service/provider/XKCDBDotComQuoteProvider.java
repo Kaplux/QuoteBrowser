@@ -11,7 +11,7 @@ import org.jsoup.select.Elements;
 import android.text.Html;
 import fr.quoteBrowser.Quote;
 
-public class XKCDBQuoteProvider extends AbstractQuoteProvider {
+public class XKCDBDotComQuoteProvider extends AbstractQuoteProvider {
 
 	private static final int START_PAGE = 1;
 

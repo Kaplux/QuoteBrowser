@@ -15,15 +15,16 @@ import android.util.Log;
 import fr.quoteBrowser.Quote;
 import fr.quoteBrowser.service.provider.BashDotOrgQuoteProvider;
 import fr.quoteBrowser.service.provider.FMyLifeDotComQuoteProvider;
+import fr.quoteBrowser.service.provider.QdbDotUsQuoteProvider;
 import fr.quoteBrowser.service.provider.QuoteProvider;
 import fr.quoteBrowser.service.provider.QuoteProviderPreferencesDescription;
 import fr.quoteBrowser.service.provider.SeenOnSlashDotComQuoteProvider;
-import fr.quoteBrowser.service.provider.XKCDBQuoteProvider;
+import fr.quoteBrowser.service.provider.XKCDBDotComQuoteProvider;
 
 public class QuoteProviderServiceImpl implements QuoteProviderService {
 	private static String TAG = "quoteBrowser";
 	private static final QuoteProvider[] providers = new QuoteProvider[] {
-			new BashDotOrgQuoteProvider(), new XKCDBQuoteProvider(),
+			new BashDotOrgQuoteProvider(),new QdbDotUsQuoteProvider(), new XKCDBDotComQuoteProvider(),
 			new FMyLifeDotComQuoteProvider(),new SeenOnSlashDotComQuoteProvider() };
 	private Context context;
 	private static QuoteProviderService instance = null;
