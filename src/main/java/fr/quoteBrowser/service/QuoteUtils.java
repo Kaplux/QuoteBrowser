@@ -16,7 +16,7 @@ import android.text.style.ForegroundColorSpan;
 import android.util.Pair;
 import fr.quoteBrowser.Quote;
 
-class QuoteProviderUtils {
+class QuoteUtils {
 	
 	final private static Integer[] colors = new Integer[] { Color.BLUE, Color.RED,
 			Color.rgb(218,112,214), Color.rgb(135,206,250),Color.rgb(34,139,34),Color.rgb(255,140,0),Color.rgb(160,82,45)};
@@ -34,7 +34,7 @@ class QuoteProviderUtils {
 				for (Pair<Integer,Integer> usernameIndexes : usernameIndexesByUsername
 						.getValue()) {
 					ssb.setSpan(new ForegroundColorSpan(usernameColor),
-							usernameIndexes.first, usernameIndexes.second + 1, 0);
+							usernameIndexes.first, usernameIndexes.second, 0);
 
 				}
 			}

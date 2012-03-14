@@ -69,7 +69,7 @@ public class QuoteProviderServiceImpl implements QuoteProviderService {
 								.getQuotesFromPage(pageNumber);
 						if (colorizeUsernames
 								&& provider.supportsUsernameColorization()) {
-							newQuotes = QuoteProviderUtils
+							newQuotes = QuoteUtils
 									.colorizeUsernames(newQuotes);
 						}
 						Log.d(TAG, "provider "
