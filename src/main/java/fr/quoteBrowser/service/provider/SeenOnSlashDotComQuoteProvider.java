@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -12,7 +11,7 @@ import org.jsoup.select.Elements;
 import android.text.Html;
 import fr.quoteBrowser.Quote;
 
-public class SeenOnSlashDotComQuoteProvider implements QuoteProvider {
+public class SeenOnSlashDotComQuoteProvider extends AbstractQuoteProvider {
 
 	@Override
 	public List<Quote> getQuotesFromPage(int pageNumber) throws IOException {
@@ -32,11 +31,7 @@ public class SeenOnSlashDotComQuoteProvider implements QuoteProvider {
 	
 	private List<Quote> getQuotesFromURL(String url) throws IOException {
 		ArrayList<Quote> quotes = new ArrayList<Quote>();
-		Document doc = Jsoup.connect(url) .data("query", "Java")
-				  .userAgent("Mozilla")
-				  .cookie("auth", "token")
-				  .timeout(3000)
-				  .post();
+		Document doc = getDocumentFromUrl(url);
 	
 		Elements quotesElts = doc.select("div.node");
 		for (Element quotesElt : quotesElts) {

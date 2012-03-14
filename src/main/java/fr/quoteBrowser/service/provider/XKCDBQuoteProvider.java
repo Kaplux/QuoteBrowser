@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -12,20 +11,19 @@ import org.jsoup.select.Elements;
 import android.text.Html;
 import fr.quoteBrowser.Quote;
 
-public class XKCDBQuoteProvider implements QuoteProvider {
+public class XKCDBQuoteProvider extends AbstractQuoteProvider {
 
-	private static final int START_PAGE=1;
-	
+	private static final int START_PAGE = 1;
+
 	@Override
 	public List<Quote> getQuotesFromPage(int pageNumber) throws IOException {
-		return getQuotesFromURL("http://www.xkcdb.com/?&page="+(pageNumber+START_PAGE));
+		return getQuotesFromURL("http://www.xkcdb.com/?&page="
+				+ (pageNumber + START_PAGE));
 	}
 
 	private List<Quote> getQuotesFromURL(String url) throws IOException {
 		ArrayList<Quote> quotes = new ArrayList<Quote>();
-		Document doc = Jsoup.connect(url).data("query", "Java")
-				.userAgent("Mozilla").cookie("auth", "token").timeout(3000)
-				.post();
+		Document doc = getDocumentFromUrl(url);
 
 		Elements quotesElts = doc.select("p.quoteblock");
 		for (Element quotesElt : quotesElts) {
@@ -55,6 +53,5 @@ public class XKCDBQuoteProvider implements QuoteProvider {
 	public boolean supportsUsernameColorization() {
 		return true;
 	}
-
 
 }
