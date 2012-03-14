@@ -5,10 +5,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -20,6 +25,7 @@ import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.Leadbolt.AdController;
 
@@ -40,7 +46,7 @@ public class BrowseQuotesActivity extends Activity implements
 	};
 
 	private ArrayList<Quote> quotes = null;
-	
+
 	private boolean preferencesChanged;
 
 	/**
@@ -105,50 +111,73 @@ public class BrowseQuotesActivity extends Activity implements
 
 	}
 
+	private boolean isNetworkAvailable() {
+		ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo activeNetworkInfo = connectivityManager
+				.getActiveNetworkInfo();
+		return activeNetworkInfo != null;
+	}
+
 	protected void loadQuoteList(final LoadListAction action) {
-		final ProgressDialog progressDialog = ProgressDialog.show(this,
-				"Loading", "please wait", true);
-		new AsyncTask<Void, Void, List<Quote>>() {
-			@Override
-			protected List<Quote> doInBackground(Void... params) {
-				try {
-					quotes.clear();
-					switch (action) {
-					case RELOAD_PAGE:
-						quotes.addAll(QuotePager.getInstance(
-								getApplicationContext()).reloadQuotePage());
-						break;
-					case NEXT_PAGE:
-						quotes.addAll(QuotePager.getInstance(
-								getApplicationContext()).getNextQuotePage());
-						break;
-					case PREVIOUS_PAGE:
-						quotes.addAll(QuotePager.getInstance(
-								getApplicationContext()).getPreviousQuotePage());
-						break;
-					default:
-						break;
+		if (!isNetworkAvailable()) {
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setMessage(
+					"Internet connection unavailable. Please check your network connection settings and refresh the page")
+					.setCancelable(false)
+					.setPositiveButton("Ok",
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int id) {
+									dialog.dismiss();
+								}
+							});
+			builder.create().show();
+		} else {
+			final ProgressDialog progressDialog = ProgressDialog.show(this,
+					"Loading", "please wait", true);
+			new AsyncTask<Void, Void, List<Quote>>() {
+				@Override
+				protected List<Quote> doInBackground(Void... params) {
+					try {
+						quotes.clear();
+						switch (action) {
+						case RELOAD_PAGE:
+							quotes.addAll(QuotePager.getInstance(
+									getApplicationContext()).reloadQuotePage());
+							break;
+						case NEXT_PAGE:
+							quotes.addAll(QuotePager.getInstance(
+									getApplicationContext()).getNextQuotePage());
+							break;
+						case PREVIOUS_PAGE:
+							quotes.addAll(QuotePager.getInstance(
+									getApplicationContext())
+									.getPreviousQuotePage());
+							break;
+						default:
+							break;
+						}
+
+					} catch (IOException e) {
+						Log.e(TAG, e.getMessage(), e);
 					}
-
-				} catch (IOException e) {
-					Log.e(TAG, e.getMessage(), e);
+					return quotes;
 				}
-				return quotes;
-			}
 
-			protected void onPreExecute() {
-				super.onPreExecute();
-			}
+				protected void onPreExecute() {
+					super.onPreExecute();
+				}
 
-			protected void onPostExecute(List<Quote> quotes) {
-				ListView quoteListView = (ListView) findViewById(R.id.quoteListView);
-				((QuoteAdapter) quoteListView.getAdapter())
-						.notifyDataSetChanged();
-				quoteListView.setSelectionAfterHeaderView();
-				progressDialog.dismiss();
-			}
+				protected void onPostExecute(List<Quote> quotes) {
+					ListView quoteListView = (ListView) findViewById(R.id.quoteListView);
+					((QuoteAdapter) quoteListView.getAdapter())
+							.notifyDataSetChanged();
+					quoteListView.setSelectionAfterHeaderView();
+					progressDialog.dismiss();
+				}
 
-		}.execute();
+			}.execute();
+		}
 	}
 
 	@Override
@@ -194,7 +223,7 @@ public class BrowseQuotesActivity extends Activity implements
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
 			String key) {
-		preferencesChanged=true;
+		preferencesChanged = true;
 	}
 
 	@Override
