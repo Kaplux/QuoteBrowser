@@ -87,13 +87,9 @@ public class QuoteProviderServiceImpl implements QuoteProviderService {
 			try {
 				quotes.addAll(f.get());
 			} catch (InterruptedException e) {
-				Log.e(TAG,
-						"error loading page " + pageNumber + " "
-								+ e.getMessage(), e);
+				throw new IOException(e);
 			} catch (ExecutionException e) {
-				Log.e(TAG,
-						"error loading page " + pageNumber + " "
-								+ e.getMessage(), e);
+				throw new IOException(e);
 			}
 		}
 

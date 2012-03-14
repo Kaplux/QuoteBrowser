@@ -120,18 +120,7 @@ public class BrowseQuotesActivity extends Activity implements
 
 	protected void loadQuoteList(final LoadListAction action) {
 		if (!isNetworkAvailable()) {
-			AlertDialog.Builder builder = new AlertDialog.Builder(this);
-			builder.setMessage(
-					"Internet connection unavailable. Please check your network connection settings and refresh the page")
-					.setCancelable(false)
-					.setPositiveButton("Ok",
-							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog,
-										int id) {
-									dialog.dismiss();
-								}
-							});
-			builder.create().show();
+			showInternetConnectionNotAvailableAlert();
 		} else {
 			final ProgressDialog progressDialog = ProgressDialog.show(this,
 					"Loading", "please wait", true);
@@ -169,15 +158,71 @@ public class BrowseQuotesActivity extends Activity implements
 				}
 
 				protected void onPostExecute(List<Quote> quotes) {
-					ListView quoteListView = (ListView) findViewById(R.id.quoteListView);
-					((QuoteAdapter) quoteListView.getAdapter())
-							.notifyDataSetChanged();
-					quoteListView.setSelectionAfterHeaderView();
 					progressDialog.dismiss();
+					if (!quotes.isEmpty()) {
+						ListView quoteListView = (ListView) findViewById(R.id.quoteListView);
+						((QuoteAdapter) quoteListView.getAdapter())
+								.notifyDataSetChanged();
+						quoteListView.setSelectionAfterHeaderView();
+					} else {
+						showQuoteListFailureAlert(action);
+					}
+					Toast.makeText(
+							getApplicationContext(),
+							"Page "
+									+ QuotePager.getInstance(
+											getApplicationContext())
+											.getCurrentPage(),
+							Toast.LENGTH_SHORT).show();
 				}
 
 			}.execute();
 		}
+	}
+
+	protected void showInternetConnectionNotAvailableAlert() {
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setMessage(
+				"Internet connection unavailable. Please check your network connection settings and refresh the page.")
+				.setCancelable(false)
+				.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int id) {
+						dialog.dismiss();
+					}
+				});
+		builder.create().show();
+	}
+
+	private void showQuoteListFailureAlert(final LoadListAction action) {
+		final Activity currentActivity = this;
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setMessage("Failed to load quote page")
+				.setCancelable(false)
+				.setPositiveButton("Retry",
+						new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog, int id) {
+								dialog.dismiss();
+								loadQuoteList(action);
+							}
+						});
+		if (QuotePager.getInstance(getApplicationContext()).getCurrentPage() >= 0) {
+			builder.setNegativeButton("Cancel",
+					new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int id) {
+							dialog.dismiss();
+						}
+					});
+		} else {
+			builder.setNegativeButton("Quit",
+					new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int id) {
+							dialog.dismiss();
+							currentActivity.finish();
+						}
+					});
+		}
+		builder.create().show();
+
 	}
 
 	@Override
@@ -217,7 +262,9 @@ public class BrowseQuotesActivity extends Activity implements
 		super.onPause();
 		PreferenceManager.getDefaultSharedPreferences(this)
 				.unregisterOnSharedPreferenceChangeListener(this);
-		adController.destroyAd();
+		if (adController != null) {
+			adController.destroyAd();
+		}
 	}
 
 	@Override

@@ -18,7 +18,7 @@ import fr.quoteBrowser.Quote;
 public class QuoteCache {
 
 	private static final String TAG = "quoteBrowser";
-	
+
 	private static final int PAGE_CACHE_SIZE = 10;
 
 	// Number of pages to prefetch before and after current page while loading
@@ -39,10 +39,9 @@ public class QuoteCache {
 		service = QuoteProviderServiceImpl.getInstance(context);
 	}
 
-	public List<Quote> getQuotePageFromCache(int pageNumber)
-			throws IOException {
+	public List<Quote> getQuotePageFromCache(int pageNumber) throws IOException {
 		cachePage(pageNumber);
-		for (int i = 0; i < PAGE_PREFETCH_NUMBER; i++) {
+		for (int i = 1; i <= PAGE_PREFETCH_NUMBER; i++) {
 			cachePage(pageNumber + i);
 			cachePage(pageNumber - i);
 		}
@@ -50,11 +49,10 @@ public class QuoteCache {
 		try {
 			return pageCache.get(pageNumber).get();
 		} catch (InterruptedException e) {
-			Log.e(TAG,e.getMessage(),e);
+			throw new IOException(e);
 		} catch (ExecutionException e) {
-			Log.e(TAG,e.getMessage(),e);
+			throw new IOException(e);
 		}
-		return new ArrayList<Quote>();
 	}
 
 	public void invalidateCache() {
@@ -62,24 +60,36 @@ public class QuoteCache {
 	}
 
 	private void cachePage(final int pageNumber) {
+		if (pageNumber >= 0) {
 
-		if (pageNumber >= 0 && !pageCache.containsKey(pageNumber)) {
-
-			Callable<List<Quote>> quotePageRequest = new Callable<List<Quote>>() {
-
-				@Override
-				public List<Quote> call() throws Exception {
-					return service.getQuotesFromPage(pageNumber);
+			boolean pageNeedToBeCached = false;
+			if (!pageCache.containsKey(pageNumber)) {
+				pageNeedToBeCached = true;
+			} else {
+				try {
+					pageCache.get(pageNumber).get();
+				} catch (Exception e) {
+					pageNeedToBeCached = true;
 				}
-			};
-			pageCache.put(pageNumber, executor.submit(quotePageRequest));
+			}
 
+			if (pageNeedToBeCached) {
+
+				Callable<List<Quote>> quotePageRequest = new Callable<List<Quote>>() {
+
+					@Override
+					public List<Quote> call() throws Exception {
+						return service.getQuotesFromPage(pageNumber);
+					}
+				};
+				pageCache.put(pageNumber, executor.submit(quotePageRequest));
+			}
 		}
 	}
 
 	public void remove(int pageNumber) {
 		pageCache.remove(pageNumber);
-		
+
 	}
 
 }
