@@ -53,7 +53,8 @@ public class QuoteCache {
 		} catch (ExecutionException e) {
 			throw new IOException(e);
 		} catch (TimeoutException e) {
-			throw new IOException(e);
+			Log.e(TAG, e.getMessage(),e);
+			throw new IOException(e.getMessage());
 		}
 	}
 
