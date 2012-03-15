@@ -9,11 +9,15 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import android.content.Context;
 import fr.quoteBrowser.Quote;
 
 public class QuoteCache {
+
+	private static final int CACHE_FETCH_TIMEOUT = 10;
 
 	private static final String TAG = "quoteBrowser";
 
@@ -45,10 +49,12 @@ public class QuoteCache {
 		}
 
 		try {
-			return pageCache.get(pageNumber).get();
+			return pageCache.get(pageNumber).get(CACHE_FETCH_TIMEOUT,TimeUnit.SECONDS);
 		} catch (InterruptedException e) {
 			throw new IOException(e);
 		} catch (ExecutionException e) {
+			throw new IOException(e);
+		} catch (TimeoutException e) {
 			throw new IOException(e);
 		}
 	}
