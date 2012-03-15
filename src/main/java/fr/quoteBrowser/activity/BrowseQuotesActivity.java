@@ -23,9 +23,9 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.Leadbolt.AdController;
 
@@ -62,7 +62,9 @@ public class BrowseQuotesActivity extends Activity implements
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		Log.i(TAG, "onCreate");
+		requestWindowFeature(Window.FEATURE_LEFT_ICON);
 		setContentView(R.layout.quote_list_layout);
+		setFeatureDrawableResource(Window.FEATURE_LEFT_ICON, R.drawable.icon);
 		PreferenceManager.getDefaultSharedPreferences(this)
 				.registerOnSharedPreferenceChangeListener(this);
 
@@ -122,6 +124,7 @@ public class BrowseQuotesActivity extends Activity implements
 		if (!isNetworkAvailable()) {
 			showInternetConnectionNotAvailableAlert();
 		} else {
+			final Activity currentActivity = this;
 			final ProgressDialog progressDialog = ProgressDialog.show(this,
 					"Loading", "please wait", true);
 			new AsyncTask<Void, Void, List<Quote>>() {
@@ -167,20 +170,21 @@ public class BrowseQuotesActivity extends Activity implements
 					} else {
 						showQuoteListFailureAlert(action);
 					}
-					Toast.makeText(
-							getApplicationContext(),
-							"Page "
-									+ QuotePager.getInstance(
-											getApplicationContext())
-											.getCurrentPage(),
-							Toast.LENGTH_SHORT).show();
+					setTitle(currentActivity);
 				}
+
 
 			}.execute();
 		}
 	}
 
-	protected void showInternetConnectionNotAvailableAlert() {
+	private void setTitle(final Activity currentActivity) {
+		currentActivity.setTitle(getString(R.string.app_name)
+				+ " (page "
+				+ QuotePager.getInstance(getApplicationContext()).getCurrentPage()+")");
+	}
+	
+	private void showInternetConnectionNotAvailableAlert() {
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setMessage(
 				"Internet connection unavailable. Please check your network connection settings and refresh the page.")
@@ -297,6 +301,7 @@ public class BrowseQuotesActivity extends Activity implements
 			preferencesChanged = false;
 		}
 		super.onResume();
+		setTitle(this);
 	}
 
 }
