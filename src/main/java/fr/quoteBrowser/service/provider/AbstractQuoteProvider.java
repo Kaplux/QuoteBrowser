@@ -9,7 +9,7 @@ import android.util.Log;
 
 public abstract class AbstractQuoteProvider implements QuoteProvider {
 
-	private static final int MAX_RETRY = 1;
+	private static final int MAX_RETRY = 2;
 	private static final String TAG = "quoteBrowser";
 	
 	protected Document getDocumentFromUrl(String url) throws IOException {

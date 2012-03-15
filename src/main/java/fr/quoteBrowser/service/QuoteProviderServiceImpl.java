@@ -5,8 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -28,8 +29,8 @@ public class QuoteProviderServiceImpl implements QuoteProviderService {
 			new FMyLifeDotComQuoteProvider(),new SeenOnSlashDotComQuoteProvider() };
 	private Context context;
 	private static QuoteProviderService instance = null;
-	private ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(
-			30);
+	private ExecutorService executor =Executors.newCachedThreadPool();
+
 
 	private QuoteProviderServiceImpl(Context context) {
 		super();

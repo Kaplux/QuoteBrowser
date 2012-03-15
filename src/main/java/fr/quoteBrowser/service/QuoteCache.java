@@ -7,33 +7,30 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import android.content.Context;
+import android.util.Log;
 import fr.quoteBrowser.Quote;
 
 public class QuoteCache {
 
-	private static final int CACHE_FETCH_TIMEOUT = 10;
+	private static String TAG = "quoteBrowser";
 
-	private static final String TAG = "quoteBrowser";
-
-	private static final int PAGE_CACHE_SIZE = 10;
+	private static final int CACHE_FETCH_TIMEOUT = 20;
 
 	// Number of pages to prefetch before and after current page while loading
 	// it
 	private static final int PAGE_PREFETCH_NUMBER = 3;
 
-	private static final int MAX_CONCURRENT_PAGE_FETCH = 10;
-
-	private ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(
-			MAX_CONCURRENT_PAGE_FETCH);
+	private ExecutorService executor = Executors.newCachedThreadPool();
 
 	private Map<Integer, Future<List<Quote>>> pageCache = Collections
-			.synchronizedMap(new HashMap());
+			.synchronizedMap(new HashMap<Integer, Future<List<Quote>>>());
 
 	private QuoteProviderService service;
 
@@ -49,7 +46,8 @@ public class QuoteCache {
 		}
 
 		try {
-			return pageCache.get(pageNumber).get(CACHE_FETCH_TIMEOUT,TimeUnit.SECONDS);
+			return pageCache.get(pageNumber).get(CACHE_FETCH_TIMEOUT,
+					TimeUnit.SECONDS);
 		} catch (InterruptedException e) {
 			throw new IOException(e);
 		} catch (ExecutionException e) {
@@ -69,7 +67,8 @@ public class QuoteCache {
 			boolean pageNeedToBeCached = false;
 			if (!pageCache.containsKey(pageNumber)) {
 				pageNeedToBeCached = true;
-			} else {
+			} else if (pageCache.get(pageNumber).isDone()
+					|| pageCache.get(pageNumber).isCancelled()) {
 				try {
 					pageCache.get(pageNumber).get();
 				} catch (Exception e) {
@@ -78,7 +77,7 @@ public class QuoteCache {
 			}
 
 			if (pageNeedToBeCached) {
-
+				Log.d(TAG, "caching page " + pageNumber);
 				Callable<List<Quote>> quotePageRequest = new Callable<List<Quote>>() {
 
 					@Override
