@@ -55,9 +55,8 @@ public class QuotePager {
 		return currentPage;
 	}
 
-	public void reset() {
+	public void invalidateCache() {
 		cache.invalidateCache();
-		currentPage=0;
 	}
 
 }

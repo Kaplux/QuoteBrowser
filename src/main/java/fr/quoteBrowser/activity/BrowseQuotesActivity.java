@@ -298,7 +298,7 @@ public class BrowseQuotesActivity extends Activity implements
 	@Override
 	protected void onResume() {
 		if (preferencesChanged) {
-			QuotePager.getInstance(this).reset();
+			QuotePager.getInstance(this).invalidateCache();
 			loadQuoteList(LoadListAction.RELOAD_PAGE);
 			preferencesChanged = false;
 		}
