@@ -179,9 +179,11 @@ public class BrowseQuotesActivity extends Activity implements
 	}
 
 	private void setTitle(final Activity currentActivity) {
+		int currentPage=QuotePager.getInstance(getApplicationContext()).getCurrentPage();
+		String currentPageIndicator=currentPage>=0?" (page "
+				+currentPage+")":"";
 		currentActivity.setTitle(getString(R.string.app_name)
-				+ " (page "
-				+ QuotePager.getInstance(getApplicationContext()).getCurrentPage()+")");
+				+ currentPageIndicator);
 	}
 	
 	private void showInternetConnectionNotAvailableAlert() {
