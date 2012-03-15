@@ -17,7 +17,7 @@ public class QdbDotUsQuoteProvider extends AbstractQuoteProvider{
 	@Override
 	public List<Quote> getQuotesFromPage(int pageNumber) throws IOException {
 		
-		return getQuotesFromURL("http://qdb.us/latest/" +pageNumber+START_PAGE);
+		return getQuotesFromURL("http://qdb.us/latest/" +(pageNumber+START_PAGE));
 	}
 
 	private List<Quote> getQuotesFromURL(String url) throws IOException {
