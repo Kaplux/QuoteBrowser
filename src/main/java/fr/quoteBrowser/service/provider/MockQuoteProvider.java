@@ -24,7 +24,7 @@ public class MockQuoteProvider implements QuoteProvider {
 	@Override
 	public QuoteProviderPreferencesDescription getPreferencesDescription() {
 		return new QuoteProviderPreferencesDescription("mock_preference",
-				"mock.com", "Enable mock provider");
+				"mock.com", "Enable mock provider",false);
 	}
 	
 	@Override

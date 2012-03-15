@@ -4,16 +4,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.text.Html;
 import android.text.SpannableStringBuilder;
-import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
 import fr.quoteBrowser.Quote;
 
@@ -27,7 +24,7 @@ public class SeenOnSlashDotComQuoteProvider extends AbstractQuoteProvider {
 	@Override
 	public QuoteProviderPreferencesDescription getPreferencesDescription() {
 		return new QuoteProviderPreferencesDescription("seenonslashdotcom_preference",
-				"seenonslash.com", "Enable seeonslash.com provider");
+				"seenonslash.com", "Enable seeonslash.com provider",false);
 	}
 
 	@Override

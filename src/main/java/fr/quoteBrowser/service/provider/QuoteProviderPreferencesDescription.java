@@ -4,13 +4,15 @@ public class QuoteProviderPreferencesDescription {
 	private String key;
 	private String title;
 	private String summary;
+	private boolean enabledByDefault;
 	
 	public QuoteProviderPreferencesDescription(String key, String title,
-			String summary) {
+			String summary,boolean enabledByDefault) {
 		super();
 		this.key = key;
 		this.title = title;
 		this.summary = summary;
+		this.enabledByDefault=enabledByDefault;
 	}
 	
 	
@@ -35,6 +37,16 @@ public class QuoteProviderPreferencesDescription {
 
 	public void setKey(String key) {
 		this.key = key;
+	}
+
+
+	public boolean isEnabledByDefault() {
+		return enabledByDefault;
+	}
+
+
+	public void setEnabledByDefault(boolean enabledByDefault) {
+		this.enabledByDefault = enabledByDefault;
 	}
 	
 }

@@ -59,7 +59,7 @@ public class QuoteProviderServiceImpl implements QuoteProviderService {
 		for (final QuoteProvider provider : providers) {
 
 			boolean providerEnabled = prefs.getBoolean(provider
-					.getPreferencesDescription().getKey(), true);
+					.getPreferencesDescription().getKey(), provider.getPreferencesDescription().isEnabledByDefault());
 			final boolean colorizeUsernames = prefs.getBoolean(
 					"colorize_usernames_preference", true);
 			if (providerEnabled) {

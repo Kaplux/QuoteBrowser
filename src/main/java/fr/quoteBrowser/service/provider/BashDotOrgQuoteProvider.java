@@ -53,7 +53,7 @@ public class BashDotOrgQuoteProvider extends AbstractQuoteProvider{
 	@Override
 	public QuoteProviderPreferencesDescription getPreferencesDescription() {
 		return new QuoteProviderPreferencesDescription("bashdotorg_preference",
-				"bash.org", "Enable bash.org provider");
+				"bash.org", "Enable bash.org provider",false);
 	}
 
 	@Override

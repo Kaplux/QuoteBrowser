@@ -39,7 +39,7 @@ public class FMyLifeDotComQuoteProvider extends AbstractQuoteProvider{
 	@Override
 	public QuoteProviderPreferencesDescription getPreferencesDescription() {
 		return new QuoteProviderPreferencesDescription("fmylifedotcom_preference",
-				"fmylife.com", "Enable fmylife.com provider");
+				"fmylife.com", "Enable fmylife.com provider",false);
 	}
 	
 	@Override

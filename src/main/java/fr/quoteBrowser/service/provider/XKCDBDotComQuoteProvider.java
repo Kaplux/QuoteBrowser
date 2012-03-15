@@ -46,7 +46,7 @@ public class XKCDBDotComQuoteProvider extends AbstractQuoteProvider {
 	public QuoteProviderPreferencesDescription getPreferencesDescription() {
 		return new QuoteProviderPreferencesDescription(
 				"xkcdbdotcom_preference", "xkcdb.com",
-				"Enable xkcdb.com provider");
+				"Enable xkcdb.com provider",true);
 	}
 
 	@Override
