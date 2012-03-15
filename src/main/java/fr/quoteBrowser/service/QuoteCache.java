@@ -27,7 +27,7 @@ public class QuoteCache {
 	// it
 	private static final int PAGE_PREFETCH_NUMBER = 3;
 
-	private static final int MAX_CONCURRENT_PAGE_FETCH = 3;
+	private static final int MAX_CONCURRENT_PAGE_FETCH = 10;
 
 	private ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(
 			MAX_CONCURRENT_PAGE_FETCH);
