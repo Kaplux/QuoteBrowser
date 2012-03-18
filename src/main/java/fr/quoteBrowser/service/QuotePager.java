@@ -11,16 +11,18 @@ import fr.quoteBrowser.Quote;
 public class QuotePager {
 
 	private static QuotePager instance = null;
+	
+	private QuoteProviderService service;
 
 	private static final String TAG = "quoteBrowser";
 
-	private int currentPage = -1;
+	private int currentPage = 0;
 	
-	private QuoteCache cache;
-
+	private static final int NUMBER_OF_QUOTES_PER_PAGE=25;
+	
 	private QuotePager(Context context) {
 		super();
-		cache=new QuoteCache(context);
+		service=QuoteProviderServiceImpl.getInstance(context);
 	}
 
 	public static QuotePager getInstance(Context context) {
@@ -32,31 +34,28 @@ public class QuotePager {
 
 	public List<Quote> getNextQuotePage() throws IOException {
 		Log.d(TAG,"trying to display page "+(currentPage+1));
-		List<Quote> quotes = cache.getQuotePageFromCache(currentPage + 1);
+		List<Quote> quotes=service.getQuotes((currentPage+1)*50,NUMBER_OF_QUOTES_PER_PAGE);
 		currentPage++;
 		return quotes;
 	}
 
 	public List<Quote> getPreviousQuotePage() throws IOException {
-		int previousPage = currentPage > 0 ? currentPage - 1 : 0;
+		int previousPage = currentPage > 1 ? currentPage - 1 : 1;
 		Log.d(TAG,"trying to display page "+previousPage);
-		List<Quote> quotes = cache.getQuotePageFromCache(previousPage);
-		currentPage = previousPage;
+		List<Quote> quotes=service.getQuotes((previousPage)*50,NUMBER_OF_QUOTES_PER_PAGE);
+		currentPage=previousPage;
 		return quotes;
 	}
 
 	public Collection<? extends Quote> reloadQuotePage() throws IOException {
 		Log.d(TAG,"trying to reload "+currentPage);
-		cache.remove(currentPage);
-		return cache.getQuotePageFromCache(currentPage);
+		return null;
+		
 	}
 
 	public int getCurrentPage() {
 		return currentPage;
 	}
 
-	public void invalidateCache() {
-		cache.invalidateCache();
-	}
 
 }

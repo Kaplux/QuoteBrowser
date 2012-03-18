@@ -30,11 +30,13 @@ public class QuoteProviderServiceImpl implements QuoteProviderService {
 	private Context context;
 	private static QuoteProviderService instance = null;
 	private ExecutorService executor =Executors.newCachedThreadPool();
+	private DatabaseHelper databaseHelper;
 
 
 	private QuoteProviderServiceImpl(Context context) {
 		super();
 		this.context = context;
+		databaseHelper=new DatabaseHelper(context, "QUOTES.db", null, 1);
 	}
 
 	public static QuoteProviderService getInstance(Context context) {
@@ -44,13 +46,7 @@ public class QuoteProviderServiceImpl implements QuoteProviderService {
 		return instance;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see fr.quoteBrowser.service.QuoteProviderService#getQuotesFromPage(int)
-	 */
-	@Override
-	public List<Quote> getQuotesFromPage(final int pageNumber)
+	private List<Quote> getQuotesFromPage(final int pageNumber)
 			throws IOException {
 		Log.d(TAG, "loading page " + pageNumber);
 
@@ -114,6 +110,17 @@ public class QuoteProviderServiceImpl implements QuoteProviderService {
 			result.add(qp.getPreferencesDescription());
 		}
 		return result;
+	}
+
+	@Override
+	public List<Quote> getQuotes(int quoteStartNumber, int quoteNumber) throws IOException {
+		List<Quote> quotes = databaseHelper.getQuotes(databaseHelper.getReadableDatabase());
+		if (quotes.isEmpty()){
+			quotes=getQuotesFromPage(0);
+			databaseHelper.putQuotes(databaseHelper.getWritableDatabase(), quotes);
+		}
+		return quotes;
+		
 	}
 
 }

@@ -8,9 +8,9 @@ import fr.quoteBrowser.service.provider.QuoteProviderPreferencesDescription;
 
 public interface QuoteProviderService {
 
-	public abstract List<Quote> getQuotesFromPage(final int pageNumber)
-			throws IOException;
 
 	public abstract List<QuoteProviderPreferencesDescription> getQuoteProvidersPreferences();
+
+	public abstract List<Quote> getQuotes(int i, int quotesPerPage) throws IOException;
 
 }
