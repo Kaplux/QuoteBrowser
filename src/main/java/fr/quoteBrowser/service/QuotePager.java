@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import fr.quoteBrowser.Quote;
 
@@ -12,7 +13,9 @@ public class QuotePager {
 
 	private static QuotePager instance = null;
 	
-	private QuoteProviderService service;
+	private DatabaseHelper databaseHelper;
+	
+	private List<Quote> quotes;
 
 	private static final String TAG = "quoteBrowser";
 
@@ -22,7 +25,11 @@ public class QuotePager {
 	
 	private QuotePager(Context context) {
 		super();
-		service=QuoteProviderServiceImpl.getInstance(context);
+		databaseHelper = new DatabaseHelper(context,
+				"QUOTES.db", null, 1);
+		Intent intent = new Intent(context, QuoteProviderService.class);
+		context.startService(intent);
+		
 	}
 
 	public static QuotePager getInstance(Context context) {
@@ -34,16 +41,14 @@ public class QuotePager {
 
 	public List<Quote> getNextQuotePage() throws IOException {
 		Log.d(TAG,"trying to display page "+(currentPage+1));
-		List<Quote> quotes=service.getQuotes((currentPage+1)*50,NUMBER_OF_QUOTES_PER_PAGE);
-		currentPage++;
+		quotes= DatabaseHelper.getQuotes(databaseHelper.getReadableDatabase());
 		return quotes;
 	}
 
 	public List<Quote> getPreviousQuotePage() throws IOException {
 		int previousPage = currentPage > 1 ? currentPage - 1 : 1;
 		Log.d(TAG,"trying to display page "+previousPage);
-		List<Quote> quotes=service.getQuotes((previousPage)*50,NUMBER_OF_QUOTES_PER_PAGE);
-		currentPage=previousPage;
+		quotes= DatabaseHelper.getQuotes(databaseHelper.getReadableDatabase());
 		return quotes;
 	}
 
