@@ -35,6 +35,7 @@ public class QdbDotUsQuoteProvider extends AbstractQuoteProvider{
 			quote.setQuoteTitle(quoteTitle);
 			quote.setQuoteSource("qdb.us");
 			quote.setQuoteScore(quoteScore);
+			quote.setQuoteTextMD5(Quote.computeMD5Sum(quote.getQuoteText()));
 			quotes.add(quote);
 		}
 		return quotes;

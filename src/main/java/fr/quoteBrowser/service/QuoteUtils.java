@@ -15,12 +15,25 @@ import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
 import android.util.Pair;
 import fr.quoteBrowser.Quote;
+import fr.quoteBrowser.service.provider.BashDotOrgQuoteProvider;
+import fr.quoteBrowser.service.provider.FMyLifeDotComQuoteProvider;
+import fr.quoteBrowser.service.provider.QdbDotUsQuoteProvider;
+import fr.quoteBrowser.service.provider.QuoteProvider;
+import fr.quoteBrowser.service.provider.QuoteProviderPreferencesDescription;
+import fr.quoteBrowser.service.provider.SeenOnSlashDotComQuoteProvider;
+import fr.quoteBrowser.service.provider.XKCDBDotComQuoteProvider;
 
-class QuoteUtils {
+public class QuoteUtils {
 	
 	final private static Integer[] colors = new Integer[] { Color.BLUE, Color.RED,
 			Color.rgb(218,112,214), Color.rgb(135,206,250),Color.rgb(34,139,34),Color.rgb(255,140,0),Color.rgb(160,82,45)};
 	
+//	public static final QuoteProvider[] PROVIDERS = new QuoteProvider[] {
+//		new BashDotOrgQuoteProvider(), new QdbDotUsQuoteProvider(),
+//		new XKCDBDotComQuoteProvider(), new FMyLifeDotComQuoteProvider(),
+//		new SeenOnSlashDotComQuoteProvider() };
+	public static final QuoteProvider[] PROVIDERS = new QuoteProvider[] {
+		new SeenOnSlashDotComQuoteProvider() };
 	
 	public static CharSequence colorizeUsernames(CharSequence quoteText) {
 		SpannableStringBuilder ssb = new SpannableStringBuilder(quoteText);
@@ -76,10 +89,19 @@ class QuoteUtils {
 			newQuote.setQuoteScore(quote.getQuoteScore());
 			newQuote.setQuoteSource(quote.getQuoteSource());
 			newQuote.setQuoteTitle(quote.getQuoteTitle());
+			newQuote.setQuoteTextMD5(Quote.computeMD5Sum(quote.getQuoteText()));
 			result.add(newQuote);
 		}
 		return result;
 		
+	}
+	
+	public static List<QuoteProviderPreferencesDescription> getQuoteProvidersPreferences() {
+		List<QuoteProviderPreferencesDescription> result = new ArrayList<QuoteProviderPreferencesDescription>();
+		for (QuoteProvider qp : PROVIDERS) {
+			result.add(qp.getPreferencesDescription());
+		}
+		return result;
 	}
 
 }

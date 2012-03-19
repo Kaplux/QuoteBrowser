@@ -5,7 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -32,6 +34,8 @@ import com.Leadbolt.AdController;
 import fr.quoteBrowser.Quote;
 import fr.quoteBrowser.R;
 import fr.quoteBrowser.service.QuotePager;
+import fr.quoteBrowser.service.QuoteIndexationService;
+import fr.quoteBrowser.service.PeriodicalQuoteUpdater;
 
 public class BrowseQuotesActivity extends Activity implements
 		OnSharedPreferenceChangeListener {
@@ -76,6 +80,11 @@ public class BrowseQuotesActivity extends Activity implements
 		}
 
 		initAdBannerView();
+		Intent intent = new Intent(getApplicationContext(), PeriodicalQuoteUpdater.class);
+		 PendingIntent sender = PendingIntent.getBroadcast(this,1, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+		 AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
+		 am.setRepeating(AlarmManager.ELAPSED_REALTIME, 0,AlarmManager.INTERVAL_HOUR, sender);
+
 		ListView quoteListView = (ListView) findViewById(R.id.quoteListView);
 		quoteListView.setAdapter(new QuoteAdapter(this,
 				R.layout.quote_list_item_layout, quotes));
@@ -287,7 +296,7 @@ public class BrowseQuotesActivity extends Activity implements
 
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
-		if (QuotePager.getInstance(getApplicationContext()).getCurrentPage() > 0) {
+		if (QuotePager.getInstance(getApplicationContext()).getCurrentPage() > QuotePager.FIRST_PAGE_INDEX) {
 			menu.findItem(R.id.previousQuotePageMenuOption).setEnabled(true);
 		} else {
 			menu.findItem(R.id.previousQuotePageMenuOption).setEnabled(false);

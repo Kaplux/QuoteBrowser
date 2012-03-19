@@ -50,6 +50,7 @@ public class SeenOnSlashDotComQuoteProvider extends AbstractQuoteProvider {
 			quote.setQuoteTitle(quoteTitle);
 			quote.setQuoteSource("seenonslash.com");
 			quote.setQuoteScore(quoteScore);
+			quote.setQuoteTextMD5(Quote.computeMD5Sum(quote.getQuoteText()));
 			quotes.add(quote);
 		}
 		return quotes;

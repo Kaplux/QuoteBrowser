@@ -45,6 +45,7 @@ public class BashDotOrgQuoteProvider extends AbstractQuoteProvider{
 			quote.setQuoteTitle(quoteTitle);
 			quote.setQuoteSource("bash.org");
 			quote.setQuoteScore(quoteScore);
+			quote.setQuoteTextMD5(Quote.computeMD5Sum(quote.getQuoteText()));
 			quotes.add(quote);
 		}
 		return quotes;

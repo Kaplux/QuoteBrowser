@@ -37,6 +37,7 @@ public class XKCDBDotComQuoteProvider extends AbstractQuoteProvider {
 			quote.setQuoteTitle(quoteTitle);
 			quote.setQuoteSource("xkcdb.com");
 			quote.setQuoteScore(quoteScore);
+			quote.setQuoteTextMD5(Quote.computeMD5Sum(quote.getQuoteText()));
 			quotes.add(quote);
 		}
 		return quotes;

@@ -21,7 +21,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".activity.QuotePreferencesActivity"></activity>
-        <service android:name=".service.QuoteProviderService"></service>
+        <service android:name=".service.QuoteIndexationService"></service>
+        <receiver android:name=".service.PeriodicalQuoteUpdater"></receiver>
     </application>
 
 </manifest>

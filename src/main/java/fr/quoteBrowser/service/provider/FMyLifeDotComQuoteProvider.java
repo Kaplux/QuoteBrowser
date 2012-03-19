@@ -31,6 +31,7 @@ public class FMyLifeDotComQuoteProvider extends AbstractQuoteProvider{
 			quote.setQuoteTitle(quoteTitle);
 			quote.setQuoteSource("fmylife.com");
 			quote.setQuoteScore(quoteScore);
+			quote.setQuoteTextMD5(Quote.computeMD5Sum(quote.getQuoteText()));
 			quotes.add(quote);
 		}
 		return quotes;
