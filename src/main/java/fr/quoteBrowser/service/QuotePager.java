@@ -28,7 +28,7 @@ public class QuotePager {
 	private QuotePager(Context context) {
 		super();
 		databaseHelper = new DatabaseHelper(context, "QUOTES.db", null, 1);
-		loadQuotes();
+		
 	}
 
 	public static QuotePager getInstance(Context context) {
@@ -39,6 +39,7 @@ public class QuotePager {
 	}
 
 	public List<Quote> getNextQuotePage() throws IOException {
+		loadQuotes();
 		int targetPage=currentPage+1;
 		List<Quote> result= getQuotePage(targetPage);
 		currentPage=targetPage;
@@ -46,6 +47,7 @@ public class QuotePager {
 	}
 	
 	public List<Quote> getPreviousQuotePage() throws IOException {
+		loadQuotes();
 		int targetPage = currentPage > FIRST_PAGE_INDEX ? currentPage - 1 : FIRST_PAGE_INDEX;
 		List<Quote> result= getQuotePage(targetPage);
 		currentPage=targetPage;
@@ -72,7 +74,7 @@ public class QuotePager {
 	private void loadQuotes(){
 		SQLiteDatabase db = databaseHelper.getReadableDatabase();
 		try {
-			quotes = DatabaseHelper.getQuotes(databaseHelper
+			quotes =DatabaseHelper.getQuotes(databaseHelper
 					.getReadableDatabase());
 		} finally {
 			db.close();

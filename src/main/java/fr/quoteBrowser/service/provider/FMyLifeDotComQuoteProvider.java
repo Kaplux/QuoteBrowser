@@ -13,6 +13,8 @@ import fr.quoteBrowser.Quote;
 
 public class FMyLifeDotComQuoteProvider extends AbstractQuoteProvider{
 
+	public static final String SOURCE = "fmylife.com";
+
 	@Override
 	public List<Quote> getQuotesFromPage(int pageNumber) throws IOException {
 		return getQuotesFromURL("http://www.fmylife.com/?page="+pageNumber);
@@ -29,7 +31,7 @@ public class FMyLifeDotComQuoteProvider extends AbstractQuoteProvider{
 			CharSequence quoteText = Html.fromHtml(quotesElt.select("p").first().text());
 			Quote quote = new Quote(quoteText);
 			quote.setQuoteTitle(quoteTitle);
-			quote.setQuoteSource("fmylife.com");
+			quote.setQuoteSource(SOURCE);
 			quote.setQuoteScore(quoteScore);
 			quote.setQuoteTextMD5(Quote.computeMD5Sum(quote.getQuoteText()));
 			quotes.add(quote);
@@ -40,7 +42,7 @@ public class FMyLifeDotComQuoteProvider extends AbstractQuoteProvider{
 	@Override
 	public QuoteProviderPreferencesDescription getPreferencesDescription() {
 		return new QuoteProviderPreferencesDescription("fmylifedotcom_preference",
-				"fmylife.com", "Enable fmylife.com provider",false);
+				SOURCE, "Enable fmylife.com provider",true);
 	}
 	
 	@Override
@@ -48,4 +50,8 @@ public class FMyLifeDotComQuoteProvider extends AbstractQuoteProvider{
 		return false;
 	}
 
+	@Override
+	public String getSource() {
+		return SOURCE;
+	}
 }

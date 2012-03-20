@@ -12,5 +12,7 @@ public interface QuoteProvider {
 	QuoteProviderPreferencesDescription getPreferencesDescription();
 
 	boolean supportsUsernameColorization();
+	
+	String getSource();
 
 }

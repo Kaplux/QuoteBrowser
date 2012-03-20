@@ -12,6 +12,7 @@ import android.text.Html;
 import fr.quoteBrowser.Quote;
 
 public class QdbDotUsQuoteProvider extends AbstractQuoteProvider{
+	public static final String SOURCE = "qdb.us";
 	private static final int START_PAGE = 1;
 
 	@Override
@@ -33,7 +34,7 @@ public class QdbDotUsQuoteProvider extends AbstractQuoteProvider{
 					.select("span.qt").first().html());
 			Quote quote = new Quote(quoteText);
 			quote.setQuoteTitle(quoteTitle);
-			quote.setQuoteSource("qdb.us");
+			quote.setQuoteSource(SOURCE);
 			quote.setQuoteScore(quoteScore);
 			quote.setQuoteTextMD5(Quote.computeMD5Sum(quote.getQuoteText()));
 			quotes.add(quote);
@@ -52,6 +53,10 @@ public class QdbDotUsQuoteProvider extends AbstractQuoteProvider{
 		return true;
 	}
 
+	@Override
+	public String getSource() {
+		return SOURCE;
+	}
 
 
 }

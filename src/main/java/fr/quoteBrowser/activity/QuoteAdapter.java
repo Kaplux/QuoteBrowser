@@ -27,7 +27,7 @@ class QuoteAdapter extends ArrayAdapter<Quote> {
 		if (!isEmpty()) {
 			Quote quote = getItem(position);
 			((TextView) view.findViewById(R.id.quoteItemTextView))
-					.setText(quote.getQuoteText());
+					.setText(quote.getFormattedQuoteText());
 			((TextView) view.findViewById(R.id.quoteItemSourceView))
 					.setText("source: " + quote.getQuoteSource());
 			((TextView) view.findViewById(R.id.quoteItemTitleView))

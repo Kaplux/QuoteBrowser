@@ -14,6 +14,7 @@ import fr.quoteBrowser.Quote;
 
 public class BashDotOrgQuoteProvider extends AbstractQuoteProvider{
 
+	public static final String SOURCE = "bash.org";
 	private Integer mostRecentQuotePage=null;
 	
 	@Override
@@ -39,11 +40,11 @@ public class BashDotOrgQuoteProvider extends AbstractQuoteProvider{
 			CharSequence quoteTitle = Html.fromHtml(new TextNode(quotesElt
 					.select("b").html(), "").getWholeText());
 			CharSequence quoteScore = quotesElt.childNode(3).toString();
-			CharSequence quoteText = Html.fromHtml(new TextNode(quotesElt
-					.nextElementSibling().html(), "").getWholeText());
+			CharSequence quoteText = new TextNode(quotesElt
+					.nextElementSibling().html(), "").getWholeText();
 			Quote quote = new Quote(quoteText);
 			quote.setQuoteTitle(quoteTitle);
-			quote.setQuoteSource("bash.org");
+			quote.setQuoteSource(SOURCE);
 			quote.setQuoteScore(quoteScore);
 			quote.setQuoteTextMD5(Quote.computeMD5Sum(quote.getQuoteText()));
 			quotes.add(quote);
@@ -54,7 +55,7 @@ public class BashDotOrgQuoteProvider extends AbstractQuoteProvider{
 	@Override
 	public QuoteProviderPreferencesDescription getPreferencesDescription() {
 		return new QuoteProviderPreferencesDescription("bashdotorg_preference",
-				"bash.org", "Enable bash.org provider",false);
+				SOURCE, "Enable bash.org provider",true);
 	}
 
 	@Override
@@ -62,6 +63,10 @@ public class BashDotOrgQuoteProvider extends AbstractQuoteProvider{
 		return true;
 	}
 
+	@Override
+	public String getSource() {
+		return SOURCE;
+	}
 
 
 }

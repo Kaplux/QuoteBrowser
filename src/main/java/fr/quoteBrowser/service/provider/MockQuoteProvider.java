@@ -11,6 +11,8 @@ import fr.quoteBrowser.Quote;
 
 public class MockQuoteProvider implements QuoteProvider {
 
+
+	public static final String SOURCE = "mock";
 	
 	@Override
 	public List<Quote> getQuotesFromPage(int pageNumber) throws IOException {
@@ -24,7 +26,7 @@ public class MockQuoteProvider implements QuoteProvider {
 	@Override
 	public QuoteProviderPreferencesDescription getPreferencesDescription() {
 		return new QuoteProviderPreferencesDescription("mock_preference",
-				"mock.com", "Enable mock provider",false);
+				"mock.com", "Enable mock provider",true);
 	}
 	
 	@Override
@@ -32,5 +34,9 @@ public class MockQuoteProvider implements QuoteProvider {
 		return true;
 	}
 
+	@Override
+	public String getSource() {
+		return SOURCE;
+	}
 
 }

@@ -3,17 +3,12 @@ package fr.quoteBrowser.service;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.codec.digest.DigestUtils;
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.text.SpannableString;
-import android.text.SpannableStringBuilder;
-import android.text.TextUtils;
 import android.util.Log;
 import fr.quoteBrowser.Quote;
 
@@ -81,15 +76,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	}
 	
 	public static void putQuote(SQLiteDatabase db,Quote q){
-			Log.d(TAG,"putting quote "+q.getQuoteTitle()+" in databese");
 			ContentValues values = new ContentValues();
 			values.put(COL_TITLE, q.getQuoteTitle().toString());
 			values.put(COL_SOURCE, q.getQuoteSource().toString());
 			values.put(COL_SCORE, q.getQuoteScore().toString());
 			values.put(COL_TEXT, q.getQuoteText().toString());
 			values.put(COL_TEXT_MD5,q.getQuoteTextMD5());
+			try{
 			db.insert(TABLE_QUOTES, null, values);
-		
+			}catch (RuntimeException e){
+				Log.e(TAG,e.getMessage(),e);
+				throw e;
+			}
 	}
 
 }

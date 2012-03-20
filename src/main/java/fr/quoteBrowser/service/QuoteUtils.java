@@ -28,12 +28,10 @@ public class QuoteUtils {
 	final private static Integer[] colors = new Integer[] { Color.BLUE, Color.RED,
 			Color.rgb(218,112,214), Color.rgb(135,206,250),Color.rgb(34,139,34),Color.rgb(255,140,0),Color.rgb(160,82,45)};
 	
-//	public static final QuoteProvider[] PROVIDERS = new QuoteProvider[] {
-//		new BashDotOrgQuoteProvider(), new QdbDotUsQuoteProvider(),
-//		new XKCDBDotComQuoteProvider(), new FMyLifeDotComQuoteProvider(),
-//		new SeenOnSlashDotComQuoteProvider() };
 	public static final QuoteProvider[] PROVIDERS = new QuoteProvider[] {
-		new SeenOnSlashDotComQuoteProvider() };
+			new BashDotOrgQuoteProvider(), new QdbDotUsQuoteProvider(),
+			new XKCDBDotComQuoteProvider(), new FMyLifeDotComQuoteProvider(),
+			new SeenOnSlashDotComQuoteProvider() };
 	
 	public static CharSequence colorizeUsernames(CharSequence quoteText) {
 		SpannableStringBuilder ssb = new SpannableStringBuilder(quoteText);
@@ -100,6 +98,17 @@ public class QuoteUtils {
 		List<QuoteProviderPreferencesDescription> result = new ArrayList<QuoteProviderPreferencesDescription>();
 		for (QuoteProvider qp : PROVIDERS) {
 			result.add(qp.getPreferencesDescription());
+		}
+		return result;
+	}
+
+	public static QuoteProvider getProviderFromSource(CharSequence quoteSource) {
+		QuoteProvider result=null;
+		for (QuoteProvider p :PROVIDERS){
+			if (p.getSource().equals(quoteSource)){
+				result=p;
+				break;
+			}
 		}
 		return result;
 	}

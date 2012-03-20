@@ -3,8 +3,13 @@ package fr.quoteBrowser;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
 
+import fr.quoteBrowser.service.QuoteUtils;
+import fr.quoteBrowser.service.provider.QuoteProvider;
+
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.text.Html;
+import android.text.Spanned;
 
 public class Quote implements Parcelable {
 
@@ -39,6 +44,15 @@ public class Quote implements Parcelable {
 	public Quote(CharSequence quoteText) {
 		super();
 		this.quoteText = quoteText;
+	}
+	
+	public CharSequence getFormattedQuoteText(){
+		QuoteProvider p = QuoteUtils.getProviderFromSource(this.getQuoteSource());
+		CharSequence quoteText= Html.fromHtml(getQuoteText().toString());
+		if (p.supportsUsernameColorization()){
+			quoteText=QuoteUtils.colorizeUsernames(quoteText);
+		}
+		return quoteText;
 	}
 
 	public Quote() {

@@ -13,6 +13,7 @@ import fr.quoteBrowser.Quote;
 
 public class XKCDBDotComQuoteProvider extends AbstractQuoteProvider {
 
+	public static final String SOURCE = "xkcdb.com";
 	private static final int START_PAGE = 1;
 
 	@Override
@@ -31,11 +32,11 @@ public class XKCDBDotComQuoteProvider extends AbstractQuoteProvider {
 					.select("a.idlink").text());
 			CharSequence quoteScore = Html.fromHtml(quotesElt
 					.select("span.quotehead").first().ownText());
-			CharSequence quoteText = Html.fromHtml(quotesElt
-					.select("span.quote").first().html());
+			CharSequence quoteText = quotesElt
+					.select("span.quote").first().html();
 			Quote quote = new Quote(quoteText);
 			quote.setQuoteTitle(quoteTitle);
-			quote.setQuoteSource("xkcdb.com");
+			quote.setQuoteSource(SOURCE);
 			quote.setQuoteScore(quoteScore);
 			quote.setQuoteTextMD5(Quote.computeMD5Sum(quote.getQuoteText()));
 			quotes.add(quote);
@@ -46,13 +47,18 @@ public class XKCDBDotComQuoteProvider extends AbstractQuoteProvider {
 	@Override
 	public QuoteProviderPreferencesDescription getPreferencesDescription() {
 		return new QuoteProviderPreferencesDescription(
-				"xkcdbdotcom_preference", "xkcdb.com",
+				"xkcdbdotcom_preference", SOURCE,
 				"Enable xkcdb.com provider",true);
 	}
 
 	@Override
 	public boolean supportsUsernameColorization() {
 		return true;
+	}
+
+	@Override
+	public String getSource() {
+		return SOURCE;
 	}
 
 }

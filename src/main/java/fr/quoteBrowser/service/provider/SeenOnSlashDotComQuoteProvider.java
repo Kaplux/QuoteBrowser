@@ -8,13 +8,12 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import android.graphics.Typeface;
 import android.text.Html;
-import android.text.SpannableStringBuilder;
-import android.text.style.StyleSpan;
 import fr.quoteBrowser.Quote;
 
 public class SeenOnSlashDotComQuoteProvider extends AbstractQuoteProvider {
+
+	public static final String SOURCE = "seenonslash.com";
 
 	@Override
 	public List<Quote> getQuotesFromPage(int pageNumber) throws IOException {
@@ -24,7 +23,7 @@ public class SeenOnSlashDotComQuoteProvider extends AbstractQuoteProvider {
 	@Override
 	public QuoteProviderPreferencesDescription getPreferencesDescription() {
 		return new QuoteProviderPreferencesDescription("seenonslashdotcom_preference",
-				"seenonslash.com", "Enable seeonslash.com provider",false);
+				SOURCE, "Enable seeonslash.com provider",true);
 	}
 
 	@Override
@@ -41,19 +40,24 @@ public class SeenOnSlashDotComQuoteProvider extends AbstractQuoteProvider {
 			String titleLink=quotesElt.select("h1.title>a").first().attr("href");
 			CharSequence quoteTitle = Html.fromHtml(titleLink.substring(titleLink.lastIndexOf("/")+1));
 			CharSequence quoteScore="";
-			SpannableStringBuilder quoteText = new SpannableStringBuilder();
-			quoteText.append(Html.fromHtml("<div>"+quotesElt.select("h1.title>a").html()+"</div>"));
-			quoteText.setSpan(new StyleSpan(Typeface.BOLD),
-					0, quoteText.length(), 0);
-			quoteText.append(Html.fromHtml(quotesElt.select("div.content").html()));
-			Quote quote = new Quote(quoteText);
+			StringBuilder quoteText = new StringBuilder();
+			quoteText.append("<div>"+quotesElt.select("h1.title>a").html()+"</div>");
+//			quoteText.setSpan(new StyleSpan(Typeface.BOLD),
+//					0, quoteText.length(), 0);
+			quoteText.append(quotesElt.select("div.content").html());
+			Quote quote = new Quote(quoteText.toString());
 			quote.setQuoteTitle(quoteTitle);
-			quote.setQuoteSource("seenonslash.com");
+			quote.setQuoteSource(SOURCE);
 			quote.setQuoteScore(quoteScore);
 			quote.setQuoteTextMD5(Quote.computeMD5Sum(quote.getQuoteText()));
 			quotes.add(quote);
 		}
 		return quotes;
+	}
+
+	@Override
+	public String getSource() {
+		return SOURCE;
 	}
 
 }
