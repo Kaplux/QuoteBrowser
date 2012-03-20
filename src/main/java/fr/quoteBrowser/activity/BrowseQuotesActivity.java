@@ -34,6 +34,7 @@ import com.Leadbolt.AdController;
 import fr.quoteBrowser.Quote;
 import fr.quoteBrowser.R;
 import fr.quoteBrowser.service.PeriodicalQuoteUpdater;
+import fr.quoteBrowser.service.Preferences;
 import fr.quoteBrowser.service.QuotePager;
 import fr.quoteBrowser.service.QuoteUtils;
 import fr.quoteBrowser.service.provider.QuoteProvider;
@@ -273,7 +274,7 @@ public class BrowseQuotesActivity extends Activity implements
 
 	private void showDisplayOptionsDialog() {
 		final List<CharSequence> options = new ArrayList<CharSequence>();
-		String selectedOption = QuoteUtils
+		String selectedOption = Preferences
 				.getDisplayPreference(getApplicationContext());
 		int selectedOptionIndex = 0;
 		options.add("all");
@@ -290,7 +291,7 @@ public class BrowseQuotesActivity extends Activity implements
 				selectedOptionIndex, new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int item) {
 						CharSequence selectedOption = options.get(item);
-						QuoteUtils.saveDisplayPreference(
+						Preferences.saveDisplayPreference(
 								getApplicationContext(),
 								selectedOption.toString());
 						loadQuoteList(LoadListAction.RELOAD_PAGE);

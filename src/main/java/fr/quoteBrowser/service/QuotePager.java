@@ -86,7 +86,7 @@ public class QuotePager {
 	private void loadQuotes() {
 		DatabaseHelper db = DatabaseHelper.connect(context);
 		try {
-			String displayPreference = QuoteUtils.getDisplayPreference(context);
+			String displayPreference = Preferences.getDisplayPreference(context);
 			if (displayPreference.equals("all")) {
 				quotes = db.getQuotes();
 			} else {

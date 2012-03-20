@@ -14,7 +14,7 @@
     
      <item android:id="@+id/displayMenuOption"
         android:title="Display"
-        android:icon="@drawable/ic_menu_refresh" />
+        android:icon="@drawable/ic_menu_view" />
    
     <item android:id="@+id/preferencesMenuOption"
         android:title="Preferences"
