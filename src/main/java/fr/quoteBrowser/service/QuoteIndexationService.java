@@ -22,7 +22,7 @@ import fr.quoteBrowser.Quote;
 import fr.quoteBrowser.service.provider.QuoteProvider;
 
 public class QuoteIndexationService extends IntentService {
-	private static final int NUMBER_OF_PAGES_TO_FETCH = 5;
+	private static final int NUMBER_OF_PAGES_TO_FETCH = 1;
 
 	public QuoteIndexationService() {
 		super("QuoteProviderService");
@@ -59,44 +59,53 @@ public class QuoteIndexationService extends IntentService {
 		Log.i(TAG, "Starting quote indexing service");
 		final DatabaseHelper databaseHelper = new DatabaseHelper(
 				getApplicationContext(), "QUOTES.db", null, 1);
-		int numberOfQuotesAdded = 0;
-		final SQLiteDatabase db = databaseHelper.getWritableDatabase();
+
+		SQLiteDatabase db = databaseHelper.getReadableDatabase();
+		final List<Quote> loadedQuotes = new ArrayList<Quote>();
 		try {
-			final List<Quote> loadedQuotes = DatabaseHelper.getQuotes(db);
+			loadedQuotes.addAll(DatabaseHelper.getQuotes(db));
+		} finally {
+			db.close();
+		}
+		List<Future<List<Quote>>> fetchResults = new ArrayList<Future<List<Quote>>>();
+		for (final QuoteProvider p : QuoteUtils.PROVIDERS) {
+			fetchResults.add(executor.submit(new Callable<List<Quote>>() {
 
-			List<Future<Integer>> fetchResults = new ArrayList<Future<Integer>>();
-			for (final QuoteProvider p : QuoteUtils.PROVIDERS) {
-				fetchResults.add(executor.submit(new Callable<Integer>() {
-
-					@Override
-					public Integer call() throws Exception {
-						return fetchQuotesFromProvider(db, loadedQuotes, p);
-					}
-				}));
-			}
-			for (Future<Integer> fetchResult : fetchResults) {
-				try {
-					numberOfQuotesAdded += fetchResult.get();
-				} catch (InterruptedException e) {
-					Log.e(TAG, e.getMessage(), e);
-				} catch (ExecutionException e) {
-					Log.e(TAG, e.getMessage(), e);
+				@Override
+				public List<Quote> call() throws Exception {
+					return fetchQuotesFromProvider(loadedQuotes, p);
 				}
+			}));
+		}
+		List<Quote> results = new ArrayList<Quote>();
+		for (Future<List<Quote>> fetchResult : fetchResults) {
+			try {
+				results.addAll(fetchResult.get());
+			} catch (InterruptedException e) {
+				Log.e(TAG, e.getMessage(), e);
+			} catch (ExecutionException e) {
+				Log.e(TAG, e.getMessage(), e);
 			}
-			Log.i(TAG, "Quote indexing service ended. Added "
-					+ numberOfQuotesAdded + " quotes");
+		}
 
+		db = databaseHelper.getWritableDatabase();
+		try {
+			DatabaseHelper.putQuotes(db, results);
+			Log.i(TAG, "Quote indexing service ended. Added " + results.size()
+					+ " quotes");
 		} finally {
 			db.close();
 		}
 
 	}
 
-	protected int fetchQuotesFromProvider(SQLiteDatabase db,
-			List<Quote> loadedQuotes, final QuoteProvider p) {
+	protected List<Quote> fetchQuotesFromProvider(List<Quote> loadedQuotes,
+			final QuoteProvider p) {
 		int numberOfQuotesAdded = 0;
+		List<Quote> result = new ArrayList<Quote>();
 		boolean databaseAlreadyContainsQuote = false;
-		for (int i = 0; i < NUMBER_OF_PAGES_TO_FETCH && !databaseAlreadyContainsQuote; i++) {
+		for (int i = 0; i < NUMBER_OF_PAGES_TO_FETCH
+				&& !databaseAlreadyContainsQuote; i++) {
 			try {
 				Log.d(TAG, "fetching quote page " + i + "from provider "
 						+ p.getPreferencesDescription().getTitle());
@@ -108,7 +117,7 @@ public class QuoteIndexationService extends IntentService {
 						Log.d(TAG, "Adding new quote from page " + i
 								+ " of provider "
 								+ p.getPreferencesDescription().getTitle());
-						DatabaseHelper.putQuote(db, q);
+						result.add(q);
 						numberOfQuotesAdded++;
 					} else {
 						databaseAlreadyContainsQuote = true;
@@ -126,7 +135,7 @@ public class QuoteIndexationService extends IntentService {
 			}
 		}
 
-		return numberOfQuotesAdded;
+		return result;
 	}
 
 	private boolean quoteAlreadyInList(final Quote q, List<Quote> loadedQuotes) {

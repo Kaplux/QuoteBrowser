@@ -33,9 +33,10 @@ import com.Leadbolt.AdController;
 
 import fr.quoteBrowser.Quote;
 import fr.quoteBrowser.R;
-import fr.quoteBrowser.service.QuotePager;
-import fr.quoteBrowser.service.QuoteIndexationService;
 import fr.quoteBrowser.service.PeriodicalQuoteUpdater;
+import fr.quoteBrowser.service.QuotePager;
+import fr.quoteBrowser.service.QuoteUtils;
+import fr.quoteBrowser.service.provider.QuoteProvider;
 
 public class BrowseQuotesActivity extends Activity implements
 		OnSharedPreferenceChangeListener {
@@ -80,16 +81,19 @@ public class BrowseQuotesActivity extends Activity implements
 		}
 
 		initAdBannerView();
-		Intent intent = new Intent(getApplicationContext(), PeriodicalQuoteUpdater.class);
-		 PendingIntent sender = PendingIntent.getBroadcast(this,1, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-		 AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
-		 am.setRepeating(AlarmManager.ELAPSED_REALTIME, 0,AlarmManager.INTERVAL_HOUR, sender);
+		Intent intent = new Intent(getApplicationContext(),
+				PeriodicalQuoteUpdater.class);
+		PendingIntent sender = PendingIntent.getBroadcast(this, 1, intent,
+				PendingIntent.FLAG_UPDATE_CURRENT);
+		AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
+		am.setRepeating(AlarmManager.ELAPSED_REALTIME, 0,
+				AlarmManager.INTERVAL_HOUR, sender);
 
 		ListView quoteListView = (ListView) findViewById(R.id.quoteListView);
 		quoteListView.setAdapter(new QuoteAdapter(this,
 				R.layout.quote_list_item_layout, quotes));
 		if (quotes.isEmpty()) {
-			loadQuoteList(LoadListAction.NEXT_PAGE);
+			loadQuoteList(LoadListAction.RELOAD_PAGE);
 		}
 
 	}
@@ -182,19 +186,19 @@ public class BrowseQuotesActivity extends Activity implements
 					setTitle(currentActivity);
 				}
 
-
 			}.execute();
 		}
 	}
 
 	private void setTitle(final Activity currentActivity) {
-		int currentPage=QuotePager.getInstance(getApplicationContext()).getCurrentPage();
-		String currentPageIndicator=currentPage>=0?" (page "
-				+currentPage+")":"";
+		int currentPage = QuotePager.getInstance(getApplicationContext())
+				.getCurrentPage();
+		String currentPageIndicator = currentPage >= 0 ? " (page "
+				+ currentPage + ")" : "";
 		currentActivity.setTitle(getString(R.string.app_name)
 				+ currentPageIndicator);
 	}
-	
+
 	private void showInternetConnectionNotAvailableAlert() {
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setMessage(
@@ -267,9 +271,40 @@ public class BrowseQuotesActivity extends Activity implements
 					QuotePreferencesActivity.class);
 			startActivity(intent);
 			return true;
+		case R.id.displayMenuOption:
+			showDisplayOptionsDialog();
+			return true;
 		default:
 			return super.onOptionsItemSelected(item);
 		}
+	}
+
+	private void showDisplayOptionsDialog() {
+		final List<CharSequence> options = new ArrayList<CharSequence>();
+		String selectedOption=QuoteUtils.getDisplayPreference(getApplicationContext());
+		int selectedOptionIndex=0;
+		options.add("all");
+		for (QuoteProvider qp : QuoteUtils.PROVIDERS) {
+			options.add(qp.getSource());
+			if (qp.getSource().toString().equals(selectedOption)){
+				selectedOptionIndex=options.size()-1;
+			}
+		}
+		
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setTitle("Quotes to display: ");
+		builder.setSingleChoiceItems(options.toArray(new CharSequence[0]), selectedOptionIndex,
+				new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int item) {
+						CharSequence selectedOption = options.get(item);
+						QuoteUtils.saveDisplayPreference(getApplicationContext(), selectedOption.toString());
+						loadQuoteList(LoadListAction.RELOAD_PAGE);
+						dialog.dismiss();
+					}
+				});
+		AlertDialog alert = builder.create();
+		alert.show();
+
 	}
 
 	@Override

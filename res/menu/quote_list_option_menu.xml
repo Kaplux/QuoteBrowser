@@ -12,6 +12,10 @@
         android:title="Refresh"
         android:icon="@drawable/ic_menu_refresh" />
     
+     <item android:id="@+id/displayMenuOption"
+        android:title="Display"
+        android:icon="@drawable/ic_menu_refresh" />
+   
     <item android:id="@+id/preferencesMenuOption"
         android:title="Preferences"
         android:icon="@drawable/ic_menu_preferences" />

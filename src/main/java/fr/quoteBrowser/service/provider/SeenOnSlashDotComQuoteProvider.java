@@ -41,7 +41,7 @@ public class SeenOnSlashDotComQuoteProvider extends AbstractQuoteProvider {
 			CharSequence quoteTitle = Html.fromHtml(titleLink.substring(titleLink.lastIndexOf("/")+1));
 			CharSequence quoteScore="";
 			StringBuilder quoteText = new StringBuilder();
-			quoteText.append("<div>"+quotesElt.select("h1.title>a").html()+"</div>");
+			quoteText.append("<div><b>"+quotesElt.select("h1.title>a").html()+"</b></div>");
 //			quoteText.setSpan(new StyleSpan(Typeface.BOLD),
 //					0, quoteText.length(), 0);
 			quoteText.append(quotesElt.select("div.content").html());

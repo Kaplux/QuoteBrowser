@@ -11,14 +11,15 @@ import org.jsoup.select.Elements;
 import android.text.Html;
 import fr.quoteBrowser.Quote;
 
-public class QdbDotUsQuoteProvider extends AbstractQuoteProvider{
+public class QdbDotUsQuoteProvider extends AbstractQuoteProvider {
 	public static final String SOURCE = "qdb.us";
 	private static final int START_PAGE = 1;
 
 	@Override
 	public List<Quote> getQuotesFromPage(int pageNumber) throws IOException {
-		
-		return getQuotesFromURL("http://qdb.us/latest/" +(pageNumber+START_PAGE));
+
+		return getQuotesFromURL("http://qdb.us/latest/"
+				+ (pageNumber + START_PAGE));
 	}
 
 	private List<Quote> getQuotesFromURL(String url) throws IOException {
@@ -26,12 +27,11 @@ public class QdbDotUsQuoteProvider extends AbstractQuoteProvider{
 		Document doc = getDocumentFromUrl(url);
 		Elements quotesElts = doc.select("td.q");
 		for (Element quotesElt : quotesElts) {
-			CharSequence quoteTitle = Html.fromHtml(quotesElt
-					.select("a.ql").first().ownText());
-			CharSequence quoteScore =  Html.fromHtml(quotesElt
-					.select("span").first().ownText());
-			CharSequence quoteText = Html.fromHtml(quotesElt
-					.select("span.qt").first().html());
+			CharSequence quoteTitle = Html.fromHtml(quotesElt.select("a.ql")
+					.first().ownText());
+			CharSequence quoteScore = Html.fromHtml(quotesElt.select("span")
+					.first().ownText());
+			CharSequence quoteText = quotesElt.select("span.qt").first().html();
 			Quote quote = new Quote(quoteText);
 			quote.setQuoteTitle(quoteTitle);
 			quote.setQuoteSource(SOURCE);
@@ -45,7 +45,7 @@ public class QdbDotUsQuoteProvider extends AbstractQuoteProvider{
 	@Override
 	public QuoteProviderPreferencesDescription getPreferencesDescription() {
 		return new QuoteProviderPreferencesDescription("qdbdotus_preference",
-				"qsb.us", "Enable qdb.us provider",true);
+				"qsb.us", "Enable qdb.us provider", true);
 	}
 
 	@Override
@@ -57,6 +57,5 @@ public class QdbDotUsQuoteProvider extends AbstractQuoteProvider{
 	public String getSource() {
 		return SOURCE;
 	}
-
 
 }
