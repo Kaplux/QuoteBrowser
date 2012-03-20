@@ -43,7 +43,7 @@ public class QuoteUtils {
 		LinkedList<Integer> availableColors = new LinkedList<Integer>();
 		availableColors.addAll(Arrays.asList(colors));
 		Collections.shuffle(availableColors);
-		for (Map.Entry<String, List<Pair<Integer, Integer>>> usernameIndexesByUsername : getUsernamesIndexesFromQuote2(
+		for (Map.Entry<String, List<Pair<Integer, Integer>>> usernameIndexesByUsername : getUsernamesIndexesFromQuote(
 				quoteText.toString()).entrySet()) {
 			Integer usernameColor = availableColors.poll();
 			if (usernameColor != null) {
@@ -59,7 +59,7 @@ public class QuoteUtils {
 		return ssb;
 	}
 
-	private static Map<String, List<Pair<Integer, Integer>>> getUsernamesIndexesFromQuote2(
+	private static Map<String, List<Pair<Integer, Integer>>> getUsernamesIndexesFromQuote(
 			String quoteText) {
 		Map<String, List<Pair<Integer, Integer>>> usernamesIndexesByUsernames = new LinkedHashMap<String, List<Pair<Integer, Integer>>>();
 		String[] lines = quoteText.split("\\n");

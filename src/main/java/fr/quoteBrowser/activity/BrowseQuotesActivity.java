@@ -281,23 +281,26 @@ public class BrowseQuotesActivity extends Activity implements
 
 	private void showDisplayOptionsDialog() {
 		final List<CharSequence> options = new ArrayList<CharSequence>();
-		String selectedOption=QuoteUtils.getDisplayPreference(getApplicationContext());
-		int selectedOptionIndex=0;
+		String selectedOption = QuoteUtils
+				.getDisplayPreference(getApplicationContext());
+		int selectedOptionIndex = 0;
 		options.add("all");
 		for (QuoteProvider qp : QuoteUtils.PROVIDERS) {
 			options.add(qp.getSource());
-			if (qp.getSource().toString().equals(selectedOption)){
-				selectedOptionIndex=options.size()-1;
+			if (qp.getSource().toString().equals(selectedOption)) {
+				selectedOptionIndex = options.size() - 1;
 			}
 		}
-		
+
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setTitle("Quotes to display: ");
-		builder.setSingleChoiceItems(options.toArray(new CharSequence[0]), selectedOptionIndex,
-				new DialogInterface.OnClickListener() {
+		builder.setSingleChoiceItems(options.toArray(new CharSequence[0]),
+				selectedOptionIndex, new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int item) {
 						CharSequence selectedOption = options.get(item);
-						QuoteUtils.saveDisplayPreference(getApplicationContext(), selectedOption.toString());
+						QuoteUtils.saveDisplayPreference(
+								getApplicationContext(),
+								selectedOption.toString());
 						loadQuoteList(LoadListAction.RELOAD_PAGE);
 						dialog.dismiss();
 					}
@@ -335,6 +338,12 @@ public class BrowseQuotesActivity extends Activity implements
 			menu.findItem(R.id.previousQuotePageMenuOption).setEnabled(true);
 		} else {
 			menu.findItem(R.id.previousQuotePageMenuOption).setEnabled(false);
+		}
+		if (QuotePager.getInstance(getApplicationContext()).getCurrentPage() < QuotePager
+				.getInstance(getApplicationContext()).computeMaxPage()) {
+			menu.findItem(R.id.nextQuotePageMenuOption).setEnabled(true);
+		} else {
+			menu.findItem(R.id.nextQuotePageMenuOption).setEnabled(false);
 		}
 		return super.onPrepareOptionsMenu(menu);
 	}

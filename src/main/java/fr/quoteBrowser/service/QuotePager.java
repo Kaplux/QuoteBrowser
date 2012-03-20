@@ -64,7 +64,8 @@ public class QuotePager {
 
 	protected List<Quote> getQuotePage(int targetPage) {
 		Log.d(TAG, "trying to display page " + targetPage);
-
+		int maxPage=computeMaxPage();		
+		Log.d(TAG,quotes.size()+ " quotes => "+maxPage+ " pages");
 		int startIndex = (quotes.size() - 1)
 				- (targetPage * NUMBER_OF_QUOTES_PER_PAGE);
 		if (startIndex < 0) {
@@ -78,6 +79,10 @@ public class QuotePager {
 			return quotes;
 		}
 		return quotes.subList(startIndex, endIndex);
+	}
+
+	public int computeMaxPage() {
+		return (int) Math.ceil(quotes.size()/NUMBER_OF_QUOTES_PER_PAGE);
 	}
 
 	private void loadQuotes() {
@@ -100,6 +105,9 @@ public class QuotePager {
 	public Collection<? extends Quote> reloadQuotePage() throws IOException {
 		Log.d(TAG, "trying to reload " + currentPage);
 		loadQuotes();
+		if (currentPage>computeMaxPage()){
+			currentPage=computeMaxPage();
+		}
 		return quotes;
 
 	}
