@@ -87,13 +87,13 @@ public class BrowseQuotesActivity extends Activity implements
 		PendingIntent sender = PendingIntent.getBroadcast(this, 1, intent,
 				PendingIntent.FLAG_UPDATE_CURRENT);
 		AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
-	
 
 		if (QuotePager.getInstance(this).isDatabaseEmpty()) {
 			reindexDatabase();
-			am.setRepeating(AlarmManager.ELAPSED_REALTIME, AlarmManager.INTERVAL_HOUR,
-					AlarmManager.INTERVAL_HOUR, sender);
-		}else{
+			am.setRepeating(AlarmManager.ELAPSED_REALTIME,
+					AlarmManager.INTERVAL_HOUR,System.currentTimeMillis()+ AlarmManager.INTERVAL_HOUR,
+					sender);
+		} else {
 			am.setRepeating(AlarmManager.ELAPSED_REALTIME, 0,
 					AlarmManager.INTERVAL_HOUR, sender);
 		}
@@ -108,7 +108,7 @@ public class BrowseQuotesActivity extends Activity implements
 	}
 
 	private void reindexDatabase() {
-		final Activity currentActivity = new Activity();
+		final Activity currentActivity = this;
 		final ProgressDialog progressDialog = ProgressDialog.show(this,
 				"Initialising Quote Database", "please wait", true);
 		new AsyncTask<Void, Void, Void>() {
@@ -122,10 +122,36 @@ public class BrowseQuotesActivity extends Activity implements
 			@Override
 			protected void onPostExecute(Void result) {
 				progressDialog.dismiss();
+				if (QuotePager.getInstance(currentActivity).isDatabaseEmpty()) {
+					showDatabaseReindexFailureAlert();
+				}
+
 			}
-
-
 		}.execute();
+	}
+
+	private void showDatabaseReindexFailureAlert() {
+		final Activity currentActivity = this;
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setMessage("Failed to load quote page")
+				.setCancelable(false)
+				.setPositiveButton("Retry",
+						new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog, int id) {
+								dialog.dismiss();
+								reindexDatabase();
+							}
+						});
+
+		builder.setNegativeButton("Quit",
+				new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int id) {
+						dialog.dismiss();
+						currentActivity.finish();
+					}
+				});
+
+		builder.create().show();
 	}
 
 	protected void initAdBannerView() {
@@ -216,9 +242,10 @@ public class BrowseQuotesActivity extends Activity implements
 	private void setTitle(final Activity currentActivity) {
 		int currentPage = QuotePager.getInstance(getApplicationContext())
 				.getCurrentPage();
-		int maxPage =QuotePager.getInstance(getApplicationContext()).computeMaxPage();
+		int maxPage = QuotePager.getInstance(getApplicationContext())
+				.computeMaxPage();
 		String currentPageIndicator = currentPage >= 0 ? " (page "
-				+ currentPage + "/"+maxPage+")" : "";
+				+ currentPage + "/" + maxPage + ")" : "";
 		currentActivity.setTitle(getString(R.string.app_name)
 				+ currentPageIndicator);
 	}
@@ -235,7 +262,6 @@ public class BrowseQuotesActivity extends Activity implements
 				});
 		builder.create().show();
 	}
-
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {

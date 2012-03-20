@@ -34,7 +34,7 @@ public class QuoteIndexer {
 	}
 
 	public void index(final FetchType fetchType) {
-
+		Log.i(TAG,"indexing quotes fetch mode = "+fetchType);
 		DatabaseHelper db = DatabaseHelper.connect(context);
 		final List<Quote> loadedQuotes = new ArrayList<Quote>();
 		try {
@@ -152,26 +152,13 @@ public class QuoteIndexer {
 		for (int i = 0; i < NUMBER_OF_PAGES_TO_FETCH
 				&& !databaseAlreadyContainsQuote; i++) {
 			try {
-				Log.d(TAG, "fetching quote page " + i + "from provider "
-						+ p.getPreferencesDescription().getTitle());
 				List<Quote> potentialQuotesToAdd = fetchQuotesFromPage(i, p);
-				Log.d(TAG, potentialQuotesToAdd.size()
-						+ " quotes fetched from provider");
 
 				for (Quote q : potentialQuotesToAdd) {
 					if (!quoteAlreadyInList(q, loadedQuotes)) {
-						Log.d(TAG, "Adding new quote from page " + i
-								+ " of provider "
-								+ p.getPreferencesDescription().getTitle());
 						result.add(q);
 					} else {
 						databaseAlreadyContainsQuote = true;
-						Log.d(TAG,
-								"Quote database already contains quote from page "
-										+ i
-										+ " of provider "
-										+ p.getPreferencesDescription()
-												.getTitle());
 					}
 				}
 
