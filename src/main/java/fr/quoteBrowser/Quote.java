@@ -3,13 +3,11 @@ package fr.quoteBrowser;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
 
-import fr.quoteBrowser.service.QuoteUtils;
-import fr.quoteBrowser.service.provider.QuoteProvider;
-
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.Html;
-import android.text.Spanned;
+import fr.quoteBrowser.service.QuoteUtils;
+import fr.quoteBrowser.service.provider.QuoteProvider;
 
 public class Quote implements Parcelable {
 

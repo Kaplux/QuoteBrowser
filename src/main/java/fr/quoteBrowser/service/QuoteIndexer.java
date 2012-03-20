@@ -13,7 +13,6 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 
 import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 import fr.quoteBrowser.Quote;
 import fr.quoteBrowser.service.provider.QuoteProvider;
@@ -35,17 +34,14 @@ public class QuoteIndexer {
 	}
 
 	public void index(final FetchType fetchType) {
-		final DatabaseHelper databaseHelper = new DatabaseHelper(context,
-				"QUOTES.db", null, 1);
 
-		SQLiteDatabase db = databaseHelper.getReadableDatabase();
+		DatabaseHelper db = DatabaseHelper.connect(context);
 		final List<Quote> loadedQuotes = new ArrayList<Quote>();
 		try {
-			loadedQuotes.addAll(DatabaseHelper.getQuotes(db));
+			loadedQuotes.addAll(db.getQuotes());
 		} finally {
-			db.close();
+			db.release();
 		}
-
 		List<Future<List<Quote>>> fetchResults = new ArrayList<Future<List<Quote>>>();
 		for (final QuoteProvider p : QuoteUtils.PROVIDERS) {
 			fetchResults.add(executor.submit(new Callable<List<Quote>>() {
@@ -76,12 +72,12 @@ public class QuoteIndexer {
 			}
 		}
 
-		db = databaseHelper.getWritableDatabase();
+		db = DatabaseHelper.connect(context);
 		try {
-			DatabaseHelper.putQuotes(db, results);
+			db.putQuotes(results);
 			Log.d(TAG, "Added " + results.size() + " quotes");
 		} finally {
-			db.close();
+			db.release();
 		}
 
 	}

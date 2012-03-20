@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.List;
 
 import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 import fr.quoteBrowser.Quote;
 import fr.quoteBrowser.service.QuoteIndexer.FetchType;
@@ -13,8 +12,6 @@ import fr.quoteBrowser.service.QuoteIndexer.FetchType;
 public class QuotePager {
 
 	private static QuotePager instance = null;
-
-	private DatabaseHelper databaseHelper;
 
 	private List<Quote> quotes;
 
@@ -31,7 +28,6 @@ public class QuotePager {
 	private QuotePager(Context context) {
 		super();
 		this.context = context;
-		databaseHelper = new DatabaseHelper(context, "QUOTES.db", null, 1);
 
 	}
 
@@ -65,8 +61,8 @@ public class QuotePager {
 
 	protected List<Quote> getQuotePage(int targetPage) {
 		Log.d(TAG, "trying to display page " + targetPage);
-		int maxPage=computeMaxPage();		
-		Log.d(TAG,quotes.size()+ " quotes => "+maxPage+ " pages");
+		int maxPage = computeMaxPage();
+		Log.d(TAG, quotes.size() + " quotes => " + maxPage + " pages");
 		int startIndex = (quotes.size() - 1)
 				- (targetPage * NUMBER_OF_QUOTES_PER_PAGE);
 		if (startIndex < 0) {
@@ -83,40 +79,44 @@ public class QuotePager {
 	}
 
 	public int computeMaxPage() {
-		return quotes!=null?(int) Math.ceil(quotes.size()/NUMBER_OF_QUOTES_PER_PAGE):0;
+		return quotes != null ? (int) Math.ceil(quotes.size()
+				/ NUMBER_OF_QUOTES_PER_PAGE) : 0;
 	}
 
 	private void loadQuotes() {
-		SQLiteDatabase db = databaseHelper.getReadableDatabase();
+		DatabaseHelper db = DatabaseHelper.connect(context);
 		try {
 			String displayPreference = QuoteUtils.getDisplayPreference(context);
 			if (displayPreference.equals("all")) {
-				quotes = DatabaseHelper.getQuotes(databaseHelper
-						.getReadableDatabase());
+				quotes = db.getQuotes();
 			} else {
-				quotes = DatabaseHelper
-						.getQuotes(databaseHelper.getReadableDatabase(),
-								displayPreference);
+				quotes = db.getQuotes(displayPreference);
 			}
 		} finally {
-			db.close();
+			db.release();
 		}
 	}
 
-	public boolean isDatabaseEmpty(){
-		SQLiteDatabase db = databaseHelper.getReadableDatabase();
-		return DatabaseHelper.isDatabaseEmpty(db);
+	public boolean isDatabaseEmpty() {
+		DatabaseHelper db = DatabaseHelper.connect(context);
+		boolean empty = true;
+		try {
+			empty = db.isDatabaseEmpty();
+		} finally {
+			db.release();
+		}
+		return empty;
 	}
-	
-	public void reindexDatabase(){
+
+	public void reindexDatabase() {
 		new QuoteIndexer(context).index(FetchType.COMPLETE);
 	}
-	
+
 	public Collection<? extends Quote> reloadQuotePage() throws IOException {
 		Log.d(TAG, "trying to reload " + currentPage);
 		loadQuotes();
-		if (currentPage>computeMaxPage()){
-			currentPage=computeMaxPage();
+		if (currentPage > computeMaxPage()) {
+			currentPage = computeMaxPage();
 		}
 		return quotes;
 
