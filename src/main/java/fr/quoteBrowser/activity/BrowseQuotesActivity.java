@@ -86,8 +86,16 @@ public class BrowseQuotesActivity extends Activity implements
 		PendingIntent sender = PendingIntent.getBroadcast(this, 1, intent,
 				PendingIntent.FLAG_UPDATE_CURRENT);
 		AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
-		am.setRepeating(AlarmManager.ELAPSED_REALTIME, 0,
-				AlarmManager.INTERVAL_HOUR, sender);
+	
+
+		if (QuotePager.getInstance(this).isDatabaseEmpty()) {
+			reindexDatabase();
+			am.setRepeating(AlarmManager.ELAPSED_REALTIME, AlarmManager.INTERVAL_HOUR,
+					AlarmManager.INTERVAL_HOUR, sender);
+		}else{
+			am.setRepeating(AlarmManager.ELAPSED_REALTIME, 0,
+					AlarmManager.INTERVAL_HOUR, sender);
+		}
 
 		ListView quoteListView = (ListView) findViewById(R.id.quoteListView);
 		quoteListView.setAdapter(new QuoteAdapter(this,
@@ -96,6 +104,27 @@ public class BrowseQuotesActivity extends Activity implements
 			loadQuoteList(LoadListAction.RELOAD_PAGE);
 		}
 
+	}
+
+	private void reindexDatabase() {
+		final Activity currentActivity = new Activity();
+		final ProgressDialog progressDialog = ProgressDialog.show(this,
+				"Initialising Quote Database", "please wait", true);
+		new AsyncTask<Void, Void, Void>() {
+			@Override
+			protected Void doInBackground(Void... params) {
+				progressDialog.show();
+				QuotePager.getInstance(currentActivity).reindexDatabase();
+				return null;
+			}
+
+			@Override
+			protected void onPostExecute(Void result) {
+				progressDialog.dismiss();
+			}
+
+
+		}.execute();
 	}
 
 	protected void initAdBannerView() {
@@ -169,20 +198,13 @@ public class BrowseQuotesActivity extends Activity implements
 					return quotes;
 				}
 
-				protected void onPreExecute() {
-					super.onPreExecute();
-				}
-
 				protected void onPostExecute(List<Quote> quotes) {
 					progressDialog.dismiss();
-					if (!quotes.isEmpty()) {
-						ListView quoteListView = (ListView) findViewById(R.id.quoteListView);
-						((QuoteAdapter) quoteListView.getAdapter())
-								.notifyDataSetChanged();
-						quoteListView.setSelectionAfterHeaderView();
-					} else {
-						showQuoteListFailureAlert(action);
-					}
+					ListView quoteListView = (ListView) findViewById(R.id.quoteListView);
+					((QuoteAdapter) quoteListView.getAdapter())
+							.notifyDataSetChanged();
+					quoteListView.setSelectionAfterHeaderView();
+
 					setTitle(currentActivity);
 				}
 
@@ -193,8 +215,9 @@ public class BrowseQuotesActivity extends Activity implements
 	private void setTitle(final Activity currentActivity) {
 		int currentPage = QuotePager.getInstance(getApplicationContext())
 				.getCurrentPage();
+		int maxPage =QuotePager.getInstance(getApplicationContext()).computeMaxPage();
 		String currentPageIndicator = currentPage >= 0 ? " (page "
-				+ currentPage + ")" : "";
+				+ currentPage + "/"+maxPage+")" : "";
 		currentActivity.setTitle(getString(R.string.app_name)
 				+ currentPageIndicator);
 	}
@@ -212,37 +235,6 @@ public class BrowseQuotesActivity extends Activity implements
 		builder.create().show();
 	}
 
-	private void showQuoteListFailureAlert(final LoadListAction action) {
-		final Activity currentActivity = this;
-		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setMessage("Failed to load quote page")
-				.setCancelable(false)
-				.setPositiveButton("Retry",
-						new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog, int id) {
-								dialog.dismiss();
-								loadQuoteList(action);
-							}
-						});
-		if (QuotePager.getInstance(getApplicationContext()).getCurrentPage() >= 0) {
-			builder.setNegativeButton("Cancel",
-					new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int id) {
-							dialog.dismiss();
-						}
-					});
-		} else {
-			builder.setNegativeButton("Quit",
-					new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int id) {
-							dialog.dismiss();
-							currentActivity.finish();
-						}
-					});
-		}
-		builder.create().show();
-
-	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {

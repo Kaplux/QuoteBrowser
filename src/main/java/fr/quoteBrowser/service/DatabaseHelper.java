@@ -96,4 +96,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		}
 	}
 
+	public static boolean isDatabaseEmpty(SQLiteDatabase db) {
+		long count=db.compileStatement("SELECT COUNT(*) FROM "+TABLE_QUOTES).simpleQueryForLong();
+		return  count==0;
+	}
+
 }

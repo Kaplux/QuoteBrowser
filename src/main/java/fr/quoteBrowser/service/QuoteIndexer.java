@@ -20,19 +20,23 @@ import fr.quoteBrowser.service.provider.QuoteProvider;
 
 public class QuoteIndexer {
 
-	private static final int NUMBER_OF_PAGES_TO_FETCH = 1;
+	private static final int NUMBER_OF_PAGES_TO_FETCH = 5;
 	private static String TAG = "quoteBrowser";
-	
 
 	private ExecutorService executor = Executors.newCachedThreadPool();
 	private Context context;
 
-	public QuoteIndexer(Context context){
-		this.context=context;
+	public enum FetchType {
+		COMPLETE, INCREMENTAL
+	};
+
+	public QuoteIndexer(Context context) {
+		this.context = context;
 	}
-	
-	public void index() {
-		final DatabaseHelper databaseHelper = new DatabaseHelper(context, "QUOTES.db", null, 1);
+
+	public void index(final FetchType fetchType) {
+		final DatabaseHelper databaseHelper = new DatabaseHelper(context,
+				"QUOTES.db", null, 1);
 
 		SQLiteDatabase db = databaseHelper.getReadableDatabase();
 		final List<Quote> loadedQuotes = new ArrayList<Quote>();
@@ -41,15 +45,26 @@ public class QuoteIndexer {
 		} finally {
 			db.close();
 		}
+
 		List<Future<List<Quote>>> fetchResults = new ArrayList<Future<List<Quote>>>();
 		for (final QuoteProvider p : QuoteUtils.PROVIDERS) {
 			fetchResults.add(executor.submit(new Callable<List<Quote>>() {
 				@Override
 				public List<Quote> call() throws Exception {
-					return fetchQuotesFromProvider(loadedQuotes, p);
+					switch (fetchType) {
+					case COMPLETE:
+						return simultaneouslyFetchQuotesFromProvider(
+								loadedQuotes, p);
+					case INCREMENTAL:
+						return incrementallyFetchQuotesFromProvider(
+								loadedQuotes, p);
+					default:
+						return null;
+					}
 				}
 			}));
 		}
+
 		List<Quote> results = new ArrayList<Quote>();
 		for (Future<List<Quote>> fetchResult : fetchResults) {
 			try {
@@ -64,8 +79,7 @@ public class QuoteIndexer {
 		db = databaseHelper.getWritableDatabase();
 		try {
 			DatabaseHelper.putQuotes(db, results);
-			Log.d(TAG,"Added " + results.size()
-			+ " quotes");
+			Log.d(TAG, "Added " + results.size() + " quotes");
 		} finally {
 			db.close();
 		}
@@ -88,10 +102,57 @@ public class QuoteIndexer {
 
 	}
 
-	protected List<Quote> fetchQuotesFromProvider(List<Quote> loadedQuotes,
-			final QuoteProvider p) {
+	/**
+	 * fetch quotes from provider {@link QuoteIndexer#NUMBER_OF_PAGES_TO_FETCH}
+	 * at a time
+	 * 
+	 * @param loadedQuotes
+	 * @param p
+	 * @return
+	 */
+	private List<Quote> simultaneouslyFetchQuotesFromProvider(
+			List<Quote> loadedQuotes, final QuoteProvider p) {
+		List<Quote> result = new ArrayList<Quote>();
+		List<Future<List<Quote>>> futures = new ArrayList<Future<List<Quote>>>();
+		for (int i = 0; i < NUMBER_OF_PAGES_TO_FETCH; i++) {
+			final int pageNumber = i;
+			futures.add(executor.submit(new Callable<List<Quote>>() {
+				@Override
+				public List<Quote> call() throws Exception {
+					return fetchQuotesFromPage(pageNumber, p);
+				}
+			}));
+		}
+		for (Future<List<Quote>> pageresult : futures) {
+			try {
+				for (Quote q : pageresult.get()) {
+					if (!quoteAlreadyInList(q, loadedQuotes)) {
+						result.add(q);
+					}
+				}
+			} catch (InterruptedException e) {
+				Log.e(TAG, e.getMessage(), e);
+			} catch (ExecutionException e) {
+				Log.e(TAG, e.getMessage(), e);
+			}
+		}
+
+		return result;
+	}
+
+	/**
+	 * Fetch quotes page after page and stop if a quote already exists in
+	 * database
+	 * 
+	 * @param loadedQuotes
+	 * @param p
+	 * @return
+	 */
+	private List<Quote> incrementallyFetchQuotesFromProvider(
+			List<Quote> loadedQuotes, final QuoteProvider p) {
 		List<Quote> result = new ArrayList<Quote>();
 		boolean databaseAlreadyContainsQuote = false;
+
 		for (int i = 0; i < NUMBER_OF_PAGES_TO_FETCH
 				&& !databaseAlreadyContainsQuote; i++) {
 			try {
@@ -100,6 +161,7 @@ public class QuoteIndexer {
 				List<Quote> potentialQuotesToAdd = fetchQuotesFromPage(i, p);
 				Log.d(TAG, potentialQuotesToAdd.size()
 						+ " quotes fetched from provider");
+
 				for (Quote q : potentialQuotesToAdd) {
 					if (!quoteAlreadyInList(q, loadedQuotes)) {
 						Log.d(TAG, "Adding new quote from page " + i

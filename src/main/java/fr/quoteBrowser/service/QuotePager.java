@@ -8,6 +8,7 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 import fr.quoteBrowser.Quote;
+import fr.quoteBrowser.service.QuoteIndexer.FetchType;
 
 public class QuotePager {
 
@@ -82,7 +83,7 @@ public class QuotePager {
 	}
 
 	public int computeMaxPage() {
-		return (int) Math.ceil(quotes.size()/NUMBER_OF_QUOTES_PER_PAGE);
+		return quotes!=null?(int) Math.ceil(quotes.size()/NUMBER_OF_QUOTES_PER_PAGE):0;
 	}
 
 	private void loadQuotes() {
@@ -102,6 +103,15 @@ public class QuotePager {
 		}
 	}
 
+	public boolean isDatabaseEmpty(){
+		SQLiteDatabase db = databaseHelper.getReadableDatabase();
+		return DatabaseHelper.isDatabaseEmpty(db);
+	}
+	
+	public void reindexDatabase(){
+		new QuoteIndexer(context).index(FetchType.COMPLETE);
+	}
+	
 	public Collection<? extends Quote> reloadQuotePage() throws IOException {
 		Log.d(TAG, "trying to reload " + currentPage);
 		loadQuotes();
