@@ -82,21 +82,12 @@ public class BrowseQuotesActivity extends Activity implements
 		}
 
 		initAdBannerView();
-		Intent intent = new Intent(getApplicationContext(),
-				PeriodicalQuoteUpdater.class);
-		PendingIntent sender = PendingIntent.getBroadcast(this, 1, intent,
-				PendingIntent.FLAG_UPDATE_CURRENT);
-		AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
 
 		if (QuotePager.getInstance(this).isDatabaseEmpty()) {
 			reindexDatabase();
-			am.setRepeating(AlarmManager.ELAPSED_REALTIME,
-					AlarmManager.INTERVAL_HOUR,System.currentTimeMillis()+ AlarmManager.INTERVAL_HOUR,
-					sender);
-		} else {
-			am.setRepeating(AlarmManager.ELAPSED_REALTIME, 0,
-					AlarmManager.INTERVAL_HOUR, sender);
 		}
+
+		scheduleDatabaseUpdate();
 
 		ListView quoteListView = (ListView) findViewById(R.id.quoteListView);
 		quoteListView.setAdapter(new QuoteAdapter(this,
@@ -105,6 +96,24 @@ public class BrowseQuotesActivity extends Activity implements
 			loadQuoteList(LoadListAction.RELOAD_PAGE);
 		}
 
+	}
+
+	public void scheduleDatabaseUpdate() {
+		Intent intent = new Intent(getApplicationContext(),
+				PeriodicalQuoteUpdater.class);
+		PendingIntent sender = PendingIntent.getBroadcast(this, 1, intent,
+				PendingIntent.FLAG_NO_CREATE);
+		AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
+		if (sender == null) {
+			Log.d(TAG, "Setting update service");
+			sender = PendingIntent.getBroadcast(this, 1, intent,
+					PendingIntent.FLAG_UPDATE_CURRENT);
+			long updateInterval = Preferences.getInstance(this)
+					.getUpdateIntervalPreference();
+			am.setRepeating(AlarmManager.ELAPSED_REALTIME,
+					System.currentTimeMillis() + updateInterval,
+					updateInterval, sender);
+		}
 	}
 
 	private void reindexDatabase() {
@@ -301,7 +310,7 @@ public class BrowseQuotesActivity extends Activity implements
 	private void showDisplayOptionsDialog() {
 		final List<CharSequence> options = new ArrayList<CharSequence>();
 		String selectedOption = Preferences
-				.getDisplayPreference(getApplicationContext());
+				.getInstance(getApplicationContext()).getDisplayPreference();
 		int selectedOptionIndex = 0;
 		options.add("all");
 		for (QuoteProvider qp : QuoteUtils.PROVIDERS) {
@@ -317,9 +326,9 @@ public class BrowseQuotesActivity extends Activity implements
 				selectedOptionIndex, new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int item) {
 						CharSequence selectedOption = options.get(item);
-						Preferences.saveDisplayPreference(
-								getApplicationContext(),
-								selectedOption.toString());
+						Preferences.getInstance(getApplicationContext())
+								.saveDisplayPreference(
+										selectedOption.toString());
 						loadQuoteList(LoadListAction.RELOAD_PAGE);
 						dialog.dismiss();
 					}

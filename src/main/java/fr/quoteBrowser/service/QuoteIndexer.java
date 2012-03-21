@@ -33,7 +33,7 @@ public class QuoteIndexer {
 		this.context = context;
 	}
 
-	public void index(final FetchType fetchType) {
+	public int index(final FetchType fetchType) {
 		Log.i(TAG,"indexing quotes fetch mode = "+fetchType);
 		DatabaseHelper db = DatabaseHelper.connect(context);
 		final List<Quote> loadedQuotes = new ArrayList<Quote>();
@@ -71,15 +71,17 @@ public class QuoteIndexer {
 				Log.e(TAG, e.getMessage(), e);
 			}
 		}
-
+		int nbQuotesAdded=0;
 		db = DatabaseHelper.connect(context);
 		try {
 			db.putQuotes(results);
-			Log.d(TAG, "Added " + results.size() + " quotes");
+			nbQuotesAdded=results.size();
+			Log.d(TAG, "Added " + nbQuotesAdded + " quotes");
 		} finally {
 			db.release();
 		}
-
+		Log.i(TAG,"done quotes fetch mode = "+fetchType);
+		return nbQuotesAdded;
 	}
 
 	private List<Quote> fetchQuotesFromPage(final int pageNumber,
