@@ -3,6 +3,7 @@ package fr.quoteBrowser.service;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -35,7 +36,7 @@ public class QuoteIndexer {
 	}
 
 	public int index(final FetchType fetchType) {
-		Log.i(TAG,"indexing quotes fetch mode = "+fetchType);
+		Log.i(TAG, "indexing quotes fetch mode = " + fetchType);
 		DatabaseHelper db = DatabaseHelper.connect(context);
 		final List<Quote> loadedQuotes = new ArrayList<Quote>();
 		try {
@@ -65,30 +66,35 @@ public class QuoteIndexer {
 		List<Quote> results = new ArrayList<Quote>();
 		for (Future<List<Quote>> fetchResult : fetchResults) {
 			try {
-				results.addAll(fetchResult.get());
+				List<Quote> providerQuotes=fetchResult.get();
+				// les quotes les plus récentes doivent être ajoutées en dernier
+				// (et elles sont récupérées en tête de liste)
+				Collections.reverse(providerQuotes);
+				results.addAll(providerQuotes);
 			} catch (InterruptedException e) {
 				Log.e(TAG, e.getMessage(), e);
 			} catch (ExecutionException e) {
 				Log.e(TAG, e.getMessage(), e);
 			}
 		}
-		int nbQuotesAdded=0;
+		int nbQuotesAdded = 0;
 		db = DatabaseHelper.connect(context);
 		try {
 			db.putQuotes(results);
-			nbQuotesAdded=results.size();
+			nbQuotesAdded = results.size();
 			Log.d(TAG, "Added " + nbQuotesAdded + " quotes");
 		} finally {
 			db.release();
 		}
-		Log.i(TAG,"done quotes fetch mode = "+fetchType);
+		Log.i(TAG, "done quotes fetch mode = " + fetchType);
 		return nbQuotesAdded;
 	}
 
 	private List<Quote> fetchQuotesFromPage(final int pageNumber,
 			final QuoteProvider provider) throws IOException {
-		Log.d(TAG, "fetching page " + pageNumber + " for provider "
-				+ provider.getSource());
+		Log.d(TAG,
+				"fetching page " + pageNumber + " for provider "
+						+ provider.getSource());
 
 		List<Quote> quotes = new ArrayList<Quote>();
 
@@ -123,13 +129,14 @@ public class QuoteIndexer {
 			}));
 		}
 		@SuppressWarnings("unchecked")
-		Collection<String> md5OfExistingQuotes=CollectionUtils.collect(loadedQuotes, new Transformer() {
-			
-			@Override
-			public Object transform(Object quote) {
-				return ((Quote)quote).getQuoteTextMD5();
-			}
-		});
+		Collection<String> md5OfExistingQuotes = CollectionUtils.collect(
+				loadedQuotes, new Transformer() {
+
+					@Override
+					public Object transform(Object quote) {
+						return ((Quote) quote).getQuoteTextMD5();
+					}
+				});
 		for (Future<List<Quote>> pageresult : futures) {
 			try {
 				for (Quote q : pageresult.get()) {
@@ -160,13 +167,14 @@ public class QuoteIndexer {
 		List<Quote> result = new ArrayList<Quote>();
 		boolean databaseAlreadyContainsQuote = false;
 		@SuppressWarnings("unchecked")
-		Collection<String> md5OfExistingQuotes=CollectionUtils.collect(loadedQuotes, new Transformer() {
-			
-			@Override
-			public Object transform(Object quote) {
-				return ((Quote)quote).getQuoteTextMD5();
-			}
-		});
+		Collection<String> md5OfExistingQuotes = CollectionUtils.collect(
+				loadedQuotes, new Transformer() {
+
+					@Override
+					public Object transform(Object quote) {
+						return ((Quote) quote).getQuoteTextMD5();
+					}
+				});
 		for (int i = 0; i < NUMBER_OF_PAGES_TO_FETCH
 				&& !databaseAlreadyContainsQuote; i++) {
 			try {
@@ -187,7 +195,8 @@ public class QuoteIndexer {
 		return result;
 	}
 
-	private boolean quoteAlreadyInList(final Quote q, Collection<String> md5OfLoadedQuotes) {
+	private boolean quoteAlreadyInList(final Quote q,
+			Collection<String> md5OfLoadedQuotes) {
 		return (md5OfLoadedQuotes.contains(q.getQuoteTextMD5()));
 	}
 

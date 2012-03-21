@@ -33,7 +33,7 @@ public class Preferences {
 	}
 
 	public String getDisplayPreference() {
-		return prefs.getString(DISPLAY_CATEGORY_PREFERENCE, "all");
+		return prefs.getString(DISPLAY_CATEGORY_PREFERENCE, QuoteUtils.PROVIDERS[0].getSource());
 	}
 
 	public long getUpdateIntervalPreference() {

@@ -50,7 +50,7 @@ public class DatabaseHelper {
 				InternalDBHelper.COL_SCORE, InternalDBHelper.COL_TEXT,
 				InternalDBHelper.COL_TEXT_MD5 }, InternalDBHelper.COL_SOURCE
 				+ " like '" + source + "'", null, null, null,
-				InternalDBHelper.COL_ID);
+				InternalDBHelper.COL_ID+ " DESC");
 		if (c.getCount() != 0) {
 			c.moveToFirst();
 			while (!c.isAfterLast()) {

@@ -314,7 +314,6 @@ public class BrowseQuotesActivity extends Activity implements
 		String selectedOption = Preferences
 				.getInstance(getApplicationContext()).getDisplayPreference();
 		int selectedOptionIndex = 0;
-		options.add("all");
 		for (QuoteProvider qp : QuoteUtils.PROVIDERS) {
 			options.add(qp.getSource());
 			if (qp.getSource().toString().equals(selectedOption)) {

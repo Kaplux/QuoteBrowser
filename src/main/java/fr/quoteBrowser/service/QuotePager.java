@@ -63,11 +63,11 @@ public class QuotePager {
 		int nbQuotesPerPage = Preferences.getInstance(context)
 				.getNumberOfQuotesPerPage();
 		Log.d(TAG, quotes.size() + " quotes => " + maxPage + " pages");
-		int startIndex = (quotes.size() - 1) - (targetPage * nbQuotesPerPage);
-		if (startIndex < 0) {
-			startIndex = 0;
+		int startIndex = (targetPage-1) * nbQuotesPerPage;
+		if (startIndex > quotes.size() - 1) {
+			startIndex = quotes.size() - 1;
 		}
-		int endIndex = startIndex + nbQuotesPerPage * targetPage;
+		int endIndex = startIndex + (nbQuotesPerPage * targetPage);
 		if (endIndex > quotes.size() - 1) {
 			endIndex = quotes.size() - 1;
 		}
@@ -89,11 +89,7 @@ public class QuotePager {
 		try {
 			String displayPreference = Preferences.getInstance(context)
 					.getDisplayPreference();
-			if (displayPreference.equals("all")) {
-				quotes = db.getQuotes();
-			} else {
-				quotes = db.getQuotes(displayPreference);
-			}
+			quotes = db.getQuotes(displayPreference);
 		} finally {
 			db.release();
 		}

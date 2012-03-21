@@ -34,6 +34,7 @@ public class QuoteUtils {
 			new XKCDBDotComQuoteProvider(), new FMyLifeDotComQuoteProvider(),
 			new SeenOnSlashDotComQuoteProvider() };
 
+	
 	public static CharSequence colorizeUsernames(CharSequence quoteText) {
 		SpannableStringBuilder ssb = new SpannableStringBuilder(quoteText);
 		LinkedList<Integer> availableColors = new LinkedList<Integer>();
