@@ -110,7 +110,7 @@ public class BrowseQuotesActivity extends Activity implements
 					PendingIntent.FLAG_UPDATE_CURRENT);
 			long updateInterval = Preferences.getInstance(this)
 					.getUpdateIntervalPreference();
-			am.setRepeating(AlarmManager.ELAPSED_REALTIME,
+			am.setRepeating(AlarmManager.RTC,
 					System.currentTimeMillis() + updateInterval,
 					updateInterval, sender);
 		}
@@ -133,7 +133,7 @@ public class BrowseQuotesActivity extends Activity implements
 				progressDialog.dismiss();
 				if (QuotePager.getInstance(currentActivity).isDatabaseEmpty()) {
 					showDatabaseReindexFailureAlert();
-				}else{
+				} else {
 					loadQuoteList(LoadListAction.RELOAD_PAGE);
 				}
 
@@ -382,6 +382,18 @@ public class BrowseQuotesActivity extends Activity implements
 	protected void onResume() {
 		if (preferencesChanged) {
 			loadQuoteList(LoadListAction.RELOAD_PAGE);
+			Intent intent = new Intent(getApplicationContext(),
+					PeriodicalQuoteUpdater.class);
+			AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
+			PendingIntent sender = PendingIntent.getBroadcast(this, 1, intent,
+					PendingIntent.FLAG_UPDATE_CURRENT);
+			long updateInterval = Preferences.getInstance(this)
+					.getUpdateIntervalPreference();
+			Log.d(TAG, "Updating update service. New interval: "+updateInterval );
+			am.setRepeating(AlarmManager.RTC,
+					System.currentTimeMillis() + updateInterval,
+					updateInterval, sender);
+
 			preferencesChanged = false;
 		}
 		super.onResume();
