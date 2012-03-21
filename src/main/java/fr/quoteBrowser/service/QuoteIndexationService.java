@@ -24,7 +24,10 @@ public class QuoteIndexationService extends IntentService {
 		Log.i(TAG, "Starting quote indexing service");
 		int nbQuotesAdded = new QuoteIndexer(getApplicationContext())
 				.index(FetchType.INCREMENTAL);
-		sendNotification(nbQuotesAdded);
+		if (Preferences.getInstance(getApplicationContext())
+				.databaseNotificationEnabled()) {
+			sendNotification(nbQuotesAdded);
+		}
 		Log.i(TAG, "Quote indexing service ended.");
 	}
 

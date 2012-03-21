@@ -19,8 +19,6 @@ public class QuotePager {
 
 	private int currentPage = FIRST_PAGE_INDEX;
 
-	public static final int NUMBER_OF_QUOTES_PER_PAGE = 25;
-
 	public static final int FIRST_PAGE_INDEX = 1;
 
 	private Context context;
@@ -62,13 +60,14 @@ public class QuotePager {
 	protected List<Quote> getQuotePage(int targetPage) {
 		Log.d(TAG, "trying to display page " + targetPage);
 		int maxPage = computeMaxPage();
+		int nbQuotesPerPage = Preferences.getInstance(context)
+				.getNumberOfQuotesPerPage();
 		Log.d(TAG, quotes.size() + " quotes => " + maxPage + " pages");
-		int startIndex = (quotes.size() - 1)
-				- (targetPage * NUMBER_OF_QUOTES_PER_PAGE);
+		int startIndex = (quotes.size() - 1) - (targetPage * nbQuotesPerPage);
 		if (startIndex < 0) {
 			startIndex = 0;
 		}
-		int endIndex = startIndex + NUMBER_OF_QUOTES_PER_PAGE * targetPage;
+		int endIndex = startIndex + nbQuotesPerPage * targetPage;
 		if (endIndex > quotes.size() - 1) {
 			endIndex = quotes.size() - 1;
 		}
@@ -79,8 +78,10 @@ public class QuotePager {
 	}
 
 	public int computeMaxPage() {
+		int nbQuotesPerPage = Preferences.getInstance(context)
+				.getNumberOfQuotesPerPage();
 		return quotes != null && !quotes.isEmpty() ? (int) Math.ceil(1d
-				* quotes.size() / NUMBER_OF_QUOTES_PER_PAGE) : FIRST_PAGE_INDEX;
+				* quotes.size() / nbQuotesPerPage) : FIRST_PAGE_INDEX;
 	}
 
 	private void loadQuotes() {

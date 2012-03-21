@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<!-- Copyright (C) 2008 The Android Open Source Project
+<!--
+     Copyright (C) 2008 The Android Open Source Project
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -16,23 +16,40 @@
 -->
 
 <!-- This is a primitive example showing the different types of preferences available. -->
-<PreferenceScreen
-        xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
 
-    <PreferenceCategory
-            android:title="Color">
-
+    <PreferenceCategory android:title="Interface" >
         <CheckBoxPreference
-                android:key="colorize_usernames_preference"
-                android:title="Colorize usernames"
-                android:summary="Toggle usernames colorization" 
-                android:defaultValue="true"/>
+            android:defaultValue="true"
+            android:key="colorize_usernames_preference"
+            android:summary="Toggle usernames colorization"
+            android:title="Colorize usernames" />
+
+        <ListPreference
+            android:dialogTitle="Quotes per page"
+            android:defaultValue="25"
+            android:entries="@array/quotes_per_page_preference_entries"
+            android:entryValues="@array/quotes_per_page_preference_values"
+            android:key="quotes_per_page_preference"
+            android:summary="Number of quotes per page"
+            android:title="Quotes per page" />
     </PreferenceCategory>
-     <PreferenceCategory
-            android:title="Quotes Providers"
-            android:key="quotes_providers_preference_category"
-            >
+    
+     <PreferenceCategory android:title="Database update" android:key="database_update_preference_category" >
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="notify_on_database_update_preference"
+            android:summary="Display a notification everytime the quote database is updated."
+            android:title="Update notification" />
+
+        <ListPreference
+            android:defaultValue="86400000"
+            android:dialogTitle="Update interval"
+            android:entries="@array/database_update_interval_preference_entries"
+            android:entryValues="@array/database_update_interval_preference_values"
+            android:key="database_update_interval_preference"
+            android:summary="Interval between each database update"
+            android:title="Update interval" />
     </PreferenceCategory>
 
- 
 </PreferenceScreen>

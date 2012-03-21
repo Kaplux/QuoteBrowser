@@ -45,11 +45,7 @@ public class Quote implements Parcelable {
 	}
 	
 	public CharSequence getFormattedQuoteText(){
-		QuoteProvider p = QuoteUtils.getProviderFromSource(this.getQuoteSource());
 		CharSequence quoteText= Html.fromHtml(getQuoteText().toString());
-		if (p.supportsUsernameColorization()){
-			quoteText=QuoteUtils.colorizeUsernames(quoteText);
-		}
 		return quoteText;
 	}
 

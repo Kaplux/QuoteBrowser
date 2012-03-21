@@ -1,5 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <string name="hello">Hello quoteBrowser!</string>
     <string name="app_name">Quote Browser</string>
+
+    <string-array name="quotes_per_page_preference_entries">
+        <item>25</item>
+        <item>50</item>
+        <item>100</item>
+        <item>200</item>
+    </string-array>
+    <string-array name="quotes_per_page_preference_values">
+        <item>25</item>
+        <item>50</item>
+        <item>100</item>
+        <item>200</item>
+    </string-array>
+    <string-array name="database_update_interval_preference_entries">
+        <item>Once a day</item>
+        <item>Twice a day</item>
+        <item>Every hour</item>
+    </string-array>
+     <string-array name="database_update_interval_preference_values">
+        <item>86400000</item>
+        <item>43200000</item>
+        <item>3600000</item>
+    </string-array>
+
 </resources>
