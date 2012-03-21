@@ -133,6 +133,8 @@ public class BrowseQuotesActivity extends Activity implements
 				progressDialog.dismiss();
 				if (QuotePager.getInstance(currentActivity).isDatabaseEmpty()) {
 					showDatabaseReindexFailureAlert();
+				}else{
+					loadQuoteList(LoadListAction.RELOAD_PAGE);
 				}
 
 			}

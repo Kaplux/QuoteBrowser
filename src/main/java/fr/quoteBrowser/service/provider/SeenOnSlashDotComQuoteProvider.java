@@ -17,33 +17,29 @@ public class SeenOnSlashDotComQuoteProvider extends AbstractQuoteProvider {
 
 	@Override
 	public List<Quote> getQuotesFromPage(int pageNumber) throws IOException {
-		return getQuotesFromURL("http://seenonslash.com/node?page="+pageNumber);
-	}
-
-	@Override
-	public QuoteProviderPreferencesDescription getPreferencesDescription() {
-		return new QuoteProviderPreferencesDescription("seenonslashdotcom_preference",
-				SOURCE, "Enable seeonslash.com provider",true);
+		return getQuotesFromURL("http://seenonslash.com/node?page="
+				+ pageNumber);
 	}
 
 	@Override
 	public boolean supportsUsernameColorization() {
 		return false;
 	}
-	
+
 	private List<Quote> getQuotesFromURL(String url) throws IOException {
 		ArrayList<Quote> quotes = new ArrayList<Quote>();
 		Document doc = getDocumentFromUrl(url);
-	
+
 		Elements quotesElts = doc.select("div.node");
 		for (Element quotesElt : quotesElts) {
-			String titleLink=quotesElt.select("h1.title>a").first().attr("href");
-			CharSequence quoteTitle = Html.fromHtml(titleLink.substring(titleLink.lastIndexOf("/")+1));
-			CharSequence quoteScore="";
+			String titleLink = quotesElt.select("h1.title>a").first()
+					.attr("href");
+			CharSequence quoteTitle = Html.fromHtml(titleLink
+					.substring(titleLink.lastIndexOf("/") + 1));
+			CharSequence quoteScore = "";
 			StringBuilder quoteText = new StringBuilder();
-			quoteText.append("<div><b>"+quotesElt.select("h1.title>a").html()+"</b></div>");
-//			quoteText.setSpan(new StyleSpan(Typeface.BOLD),
-//					0, quoteText.length(), 0);
+			quoteText.append("<div><b>" + quotesElt.select("h1.title>a").html()
+					+ "</b></div>");
 			quoteText.append(quotesElt.select("div.content").html());
 			Quote quote = new Quote(quoteText.toString());
 			quote.setQuoteTitle(quoteTitle);

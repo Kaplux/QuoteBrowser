@@ -2,6 +2,7 @@ package fr.quoteBrowser.service;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -10,7 +11,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
+import org.apache.commons.collections.Transformer;
 
 import android.content.Context;
 import android.util.Log;
@@ -87,7 +88,7 @@ public class QuoteIndexer {
 	private List<Quote> fetchQuotesFromPage(final int pageNumber,
 			final QuoteProvider provider) throws IOException {
 		Log.d(TAG, "fetching page " + pageNumber + " for provider "
-				+ provider.getPreferencesDescription().getTitle());
+				+ provider.getSource());
 
 		List<Quote> quotes = new ArrayList<Quote>();
 
@@ -95,7 +96,7 @@ public class QuoteIndexer {
 		quotes.addAll(newQuotes);
 
 		Log.d(TAG, "done fetching page " + pageNumber + " for provider "
-				+ provider.getPreferencesDescription().getTitle());
+				+ provider.getSource());
 		return quotes;
 
 	}
@@ -121,10 +122,18 @@ public class QuoteIndexer {
 				}
 			}));
 		}
+		@SuppressWarnings("unchecked")
+		Collection<String> md5OfExistingQuotes=CollectionUtils.collect(loadedQuotes, new Transformer() {
+			
+			@Override
+			public Object transform(Object quote) {
+				return ((Quote)quote).getQuoteTextMD5();
+			}
+		});
 		for (Future<List<Quote>> pageresult : futures) {
 			try {
 				for (Quote q : pageresult.get()) {
-					if (!quoteAlreadyInList(q, loadedQuotes)) {
+					if (!quoteAlreadyInList(q, md5OfExistingQuotes)) {
 						result.add(q);
 					}
 				}
@@ -150,14 +159,20 @@ public class QuoteIndexer {
 			List<Quote> loadedQuotes, final QuoteProvider p) {
 		List<Quote> result = new ArrayList<Quote>();
 		boolean databaseAlreadyContainsQuote = false;
-
+		@SuppressWarnings("unchecked")
+		Collection<String> md5OfExistingQuotes=CollectionUtils.collect(loadedQuotes, new Transformer() {
+			
+			@Override
+			public Object transform(Object quote) {
+				return ((Quote)quote).getQuoteTextMD5();
+			}
+		});
 		for (int i = 0; i < NUMBER_OF_PAGES_TO_FETCH
 				&& !databaseAlreadyContainsQuote; i++) {
 			try {
 				List<Quote> potentialQuotesToAdd = fetchQuotesFromPage(i, p);
-
 				for (Quote q : potentialQuotesToAdd) {
-					if (!quoteAlreadyInList(q, loadedQuotes)) {
+					if (!quoteAlreadyInList(q, md5OfExistingQuotes)) {
 						result.add(q);
 					} else {
 						databaseAlreadyContainsQuote = true;
@@ -172,14 +187,8 @@ public class QuoteIndexer {
 		return result;
 	}
 
-	private boolean quoteAlreadyInList(final Quote q, List<Quote> loadedQuotes) {
-		return CollectionUtils.exists(loadedQuotes, new Predicate() {
-			@Override
-			public boolean evaluate(Object loadedQuote) {
-				return q.getQuoteTextMD5().equals(
-						((Quote) loadedQuote).getQuoteTextMD5());
-			}
-		});
+	private boolean quoteAlreadyInList(final Quote q, Collection<String> md5OfLoadedQuotes) {
+		return (md5OfLoadedQuotes.contains(q.getQuoteTextMD5()));
 	}
 
 }

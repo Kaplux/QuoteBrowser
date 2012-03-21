@@ -43,12 +43,6 @@ public class QdbDotUsQuoteProvider extends AbstractQuoteProvider {
 	}
 
 	@Override
-	public QuoteProviderPreferencesDescription getPreferencesDescription() {
-		return new QuoteProviderPreferencesDescription("qdbdotus_preference",
-				"qsb.us", "Enable qdb.us provider", true);
-	}
-
-	@Override
 	public boolean supportsUsernameColorization() {
 		return true;
 	}

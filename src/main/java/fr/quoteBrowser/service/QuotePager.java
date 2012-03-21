@@ -79,14 +79,15 @@ public class QuotePager {
 	}
 
 	public int computeMaxPage() {
-		return quotes != null ? (int) Math.ceil(1d*quotes.size()
-				/ NUMBER_OF_QUOTES_PER_PAGE) : 0;
+		return quotes != null && !quotes.isEmpty() ? (int) Math.ceil(1d
+				* quotes.size() / NUMBER_OF_QUOTES_PER_PAGE) : FIRST_PAGE_INDEX;
 	}
 
 	private void loadQuotes() {
 		DatabaseHelper db = DatabaseHelper.connect(context);
 		try {
-			String displayPreference = Preferences.getInstance(context).getDisplayPreference();
+			String displayPreference = Preferences.getInstance(context)
+					.getDisplayPreference();
 			if (displayPreference.equals("all")) {
 				quotes = db.getQuotes();
 			} else {

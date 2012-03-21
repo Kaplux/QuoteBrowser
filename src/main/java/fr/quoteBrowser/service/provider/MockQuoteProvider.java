@@ -11,24 +11,19 @@ import fr.quoteBrowser.Quote;
 
 public class MockQuoteProvider implements QuoteProvider {
 
-
 	public static final String SOURCE = "mock";
-	
+
 	@Override
 	public List<Quote> getQuotesFromPage(int pageNumber) throws IOException {
-		SpannableStringBuilder ssb = new SpannableStringBuilder("premiere quote");
+		SpannableStringBuilder ssb = new SpannableStringBuilder(
+				"premiere quote");
 		ssb.setSpan(new ForegroundColorSpan(Color.RED), 0, 5, 0);
-		
-		return Arrays.asList(new Quote[]{new Quote(ssb),new Quote("deuxieme quote")});
-	
+
+		return Arrays.asList(new Quote[] { new Quote(ssb),
+				new Quote("deuxieme quote") });
+
 	}
-	
-	@Override
-	public QuoteProviderPreferencesDescription getPreferencesDescription() {
-		return new QuoteProviderPreferencesDescription("mock_preference",
-				"mock.com", "Enable mock provider",true);
-	}
-	
+
 	@Override
 	public boolean supportsUsernameColorization() {
 		return true;

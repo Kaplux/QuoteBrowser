@@ -52,11 +52,6 @@ public class BashDotOrgQuoteProvider extends AbstractQuoteProvider{
 		return quotes;
 	}
 
-	@Override
-	public QuoteProviderPreferencesDescription getPreferencesDescription() {
-		return new QuoteProviderPreferencesDescription("bashdotorg_preference",
-				SOURCE, "Enable bash.org provider",true);
-	}
 
 	@Override
 	public boolean supportsUsernameColorization() {

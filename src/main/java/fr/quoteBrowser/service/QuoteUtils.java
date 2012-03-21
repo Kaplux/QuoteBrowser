@@ -10,10 +10,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.preference.PreferenceManager;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
 import android.util.Pair;
@@ -22,7 +19,6 @@ import fr.quoteBrowser.service.provider.BashDotOrgQuoteProvider;
 import fr.quoteBrowser.service.provider.FMyLifeDotComQuoteProvider;
 import fr.quoteBrowser.service.provider.QdbDotUsQuoteProvider;
 import fr.quoteBrowser.service.provider.QuoteProvider;
-import fr.quoteBrowser.service.provider.QuoteProviderPreferencesDescription;
 import fr.quoteBrowser.service.provider.SeenOnSlashDotComQuoteProvider;
 import fr.quoteBrowser.service.provider.XKCDBDotComQuoteProvider;
 
@@ -99,14 +95,6 @@ public class QuoteUtils {
 
 	}
 
-	public static List<QuoteProviderPreferencesDescription> getQuoteProvidersPreferences() {
-		List<QuoteProviderPreferencesDescription> result = new ArrayList<QuoteProviderPreferencesDescription>();
-		for (QuoteProvider qp : PROVIDERS) {
-			result.add(qp.getPreferencesDescription());
-		}
-		return result;
-	}
-
 	public static QuoteProvider getProviderFromSource(CharSequence quoteSource) {
 		QuoteProvider result = null;
 		for (QuoteProvider p : PROVIDERS) {
@@ -117,6 +105,5 @@ public class QuoteUtils {
 		}
 		return result;
 	}
-
 
 }

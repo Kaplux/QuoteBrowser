@@ -32,8 +32,8 @@ public class XKCDBDotComQuoteProvider extends AbstractQuoteProvider {
 					.select("a.idlink").text());
 			CharSequence quoteScore = Html.fromHtml(quotesElt
 					.select("span.quotehead").first().ownText());
-			CharSequence quoteText = quotesElt
-					.select("span.quote").first().html();
+			CharSequence quoteText = quotesElt.select("span.quote").first()
+					.html();
 			Quote quote = new Quote(quoteText);
 			quote.setQuoteTitle(quoteTitle);
 			quote.setQuoteSource(SOURCE);
@@ -42,13 +42,6 @@ public class XKCDBDotComQuoteProvider extends AbstractQuoteProvider {
 			quotes.add(quote);
 		}
 		return quotes;
-	}
-
-	@Override
-	public QuoteProviderPreferencesDescription getPreferencesDescription() {
-		return new QuoteProviderPreferencesDescription(
-				"xkcdbdotcom_preference", SOURCE,
-				"Enable xkcdb.com provider",true);
 	}
 
 	@Override
