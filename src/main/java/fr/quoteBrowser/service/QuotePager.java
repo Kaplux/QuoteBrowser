@@ -55,6 +55,17 @@ public class QuotePager {
 		}
 		return result;
 	}
+	
+	public List<Quote> gotoPage(int pageNumber) throws IOException {
+		loadQuotes();
+		int targetPage = pageNumber >FIRST_PAGE_INDEX ? pageNumber
+				: FIRST_PAGE_INDEX;
+		List<Quote> result = getQuotePage(targetPage);
+		if (!result.isEmpty()) {
+			currentPage = targetPage;
+		}
+		return result;
+	}
 
 	protected List<Quote> getQuotePage(int targetPage) {
 		Log.d(TAG, "trying to display page " + targetPage);

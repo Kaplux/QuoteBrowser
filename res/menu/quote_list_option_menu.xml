@@ -1,22 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/previousQuotePageMenuOption"
-        android:title="Newer"
-        android:icon="@drawable/ic_menu_back" />
-    
-    <item android:id="@+id/nextQuotePageMenuOption"
-        android:title="Older"
-        android:icon="@drawable/ic_menu_forward" />
-    
-    <item android:id="@+id/refreshMenuOption"
-        android:title="Refresh"
-        android:icon="@drawable/ic_menu_refresh" />
-    
-     <item android:id="@+id/displayMenuOption"
-        android:title="Display"
-        android:icon="@drawable/ic_menu_view" />
-   
-    <item android:id="@+id/preferencesMenuOption"
-        android:title="Preferences"
-        android:icon="@drawable/ic_menu_preferences" />
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/previousQuotePageMenuOption"
+        android:icon="@drawable/ic_menu_back"
+        android:title="Newer"/>
+    <item
+        android:id="@+id/refreshMenuOption"
+        android:icon="@drawable/ic_menu_refresh"
+        android:title="Refresh"/>
+    <item
+        android:id="@+id/nextQuotePageMenuOption"
+        android:icon="@drawable/ic_menu_forward"
+        android:title="Older"/>
+    <item
+        android:id="@+id/displayMenuOption"
+        android:icon="@drawable/ic_menu_view"
+        android:title="Display"/>
+    <item
+        android:id="@+id/gotoPageMenuOption"
+        android:icon="@drawable/ic_menu_goto"
+        android:title="Goto page"/>
+    <item
+        android:id="@+id/preferencesMenuOption"
+        android:icon="@drawable/ic_menu_preferences"
+        android:title="Preferences"/>
+
 </menu>

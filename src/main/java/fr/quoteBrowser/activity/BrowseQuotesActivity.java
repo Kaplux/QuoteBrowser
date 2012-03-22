@@ -9,6 +9,7 @@ import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -18,13 +19,17 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.SeekBar;
+import android.widget.Toast;
 
 import com.Leadbolt.AdController;
 
@@ -235,9 +240,60 @@ public class BrowseQuotesActivity extends Activity implements
 		case R.id.displayMenuOption:
 			showDisplayOptionsDialog();
 			return true;
+		case R.id.gotoPageMenuOption:
+			showGotoPageDialog();
+			return true;
 		default:
 			return super.onOptionsItemSelected(item);
 		}
+	}
+
+	private void showGotoPageDialog() {
+		final Activity currentActivity = this;
+		LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		View layout = inflater.inflate(R.layout.seekbar_dialog_layout,
+				(ViewGroup) findViewById(R.id.seekBarLayoutRoot));
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setView(layout);
+		final SeekBar sb = (SeekBar) layout.findViewById(R.id.seekBar);
+		sb.setMax(QuotePager.getInstance(currentActivity).computeMaxPage() - 1);
+		sb.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+			public void onProgressChanged(SeekBar seekBar, int progress,
+					boolean fromUser) {
+
+			}
+
+			@Override
+			public void onStartTrackingTouch(SeekBar arg0) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void onStopTrackingTouch(SeekBar arg0) {
+				// TODO Auto-generated method stub
+
+			}
+		});
+
+		builder.setTitle("Goto page");
+		builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.dismiss();
+				try {
+					QuotePager.getInstance(currentActivity).gotoPage(sb.getProgress()+1);
+					loadQuoteList(LoadListAction.RELOAD_PAGE);
+				} catch (IOException e) {
+					Log.e(TAG, e.getMessage(), e);
+				}
+			}
+		});
+
+		AlertDialog alertDialog = builder.create();
+		alertDialog.show();
+
 	}
 
 	private void showDisplayOptionsDialog() {
