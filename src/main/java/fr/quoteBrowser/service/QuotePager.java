@@ -67,13 +67,14 @@ public class QuotePager {
 		if (startIndex > quotes.size() - 1) {
 			startIndex = quotes.size() - 1;
 		}
-		int endIndex = startIndex + (nbQuotesPerPage * targetPage);
+		int endIndex = startIndex + nbQuotesPerPage;
 		if (endIndex > quotes.size() - 1) {
 			endIndex = quotes.size() - 1;
 		}
 		if (quotes.size() == 0) {
 			return quotes;
 		}
+		Log.d(TAG,"sublist from "+startIndex+ " to "+ endIndex+ " list size="+quotes.size());
 		return quotes.subList(startIndex, endIndex);
 	}
 

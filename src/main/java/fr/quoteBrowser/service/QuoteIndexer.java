@@ -1,6 +1,7 @@
 package fr.quoteBrowser.service;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -37,6 +38,7 @@ public class QuoteIndexer {
 
 	public int index(final FetchType fetchType) {
 		Log.i(TAG, "indexing quotes fetch mode = " + fetchType);
+		SimpleDateFormat sdf=new SimpleDateFormat("HH:mm:ss");
 		DatabaseHelper db = DatabaseHelper.connect(context);
 		final List<Quote> loadedQuotes = new ArrayList<Quote>();
 		try {
@@ -44,6 +46,7 @@ public class QuoteIndexer {
 		} finally {
 			db.release();
 		}
+		Log.d(TAG,"start fetching "+sdf.format(System.currentTimeMillis()));
 		List<Future<List<Quote>>> fetchResults = new ArrayList<Future<List<Quote>>>();
 		for (final QuoteProvider p : QuoteUtils.PROVIDERS) {
 			fetchResults.add(executor.submit(new Callable<List<Quote>>() {
@@ -62,7 +65,7 @@ public class QuoteIndexer {
 				}
 			}));
 		}
-
+		Log.d(TAG,"start quote ordering "+sdf.format(System.currentTimeMillis()));
 		List<Quote> results = new ArrayList<Quote>();
 		for (Future<List<Quote>> fetchResult : fetchResults) {
 			try {
@@ -78,6 +81,7 @@ public class QuoteIndexer {
 			}
 		}
 		int nbQuotesAdded = 0;
+		Log.d(TAG,"start writing to db "+sdf.format(System.currentTimeMillis()));
 		db = DatabaseHelper.connect(context);
 		try {
 			db.putQuotes(results);
