@@ -51,9 +51,11 @@ public class QuoteIndexationService extends IntentService {
 		CharSequence contentTitle = "Quote Database updated";
 		CharSequence contentText = nbQuotesAdded
 				+ " quotes added. Touch to open Quote Browser";
-		Intent notificationIntent = new Intent(this, BrowseQuotesActivity.class);
+		Intent notificationIntent = new Intent(Intent.ACTION_MAIN);
+		notificationIntent.setClass(getApplicationContext(), BrowseQuotesActivity.class);
 		PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
-				notificationIntent, 0);
+				notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT | Notification.FLAG_AUTO_CANCEL);
+		
 
 		notification.setLatestEventInfo(context, contentTitle, contentText,
 				contentIntent);
