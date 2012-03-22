@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -28,14 +29,14 @@ public class XKCDBDotComQuoteProvider extends AbstractQuoteProvider {
 
 		Elements quotesElts = doc.select("p.quoteblock");
 		for (Element quotesElt : quotesElts) {
-			CharSequence quoteTitle = Html.fromHtml(quotesElt
-					.select("a.idlink").text());
-			CharSequence quoteScore = Html.fromHtml(quotesElt
-					.select("span.quotehead").first().ownText());
+			int quoteId = Integer.valueOf(quotesElt.select("a.idlink").text()
+					.replaceAll("#", ""));
+			CharSequence quoteScore = StringUtils.substringBetween(quotesElt
+					.select("span.quotehead").first().html(), "+", "/");
 			CharSequence quoteText = quotesElt.select("span.quote").first()
 					.html();
 			Quote quote = new Quote(quoteText);
-			quote.setQuoteTitle(quoteTitle);
+			quote.setQuoteId(quoteId);
 			quote.setQuoteSource(SOURCE);
 			quote.setQuoteScore(quoteScore);
 			quote.setQuoteTextMD5(Quote.computeMD5Sum(quote.getQuoteText()));

@@ -34,7 +34,7 @@ public class SeenOnSlashDotComQuoteProvider extends AbstractQuoteProvider {
 		for (Element quotesElt : quotesElts) {
 			String titleLink = quotesElt.select("h1.title>a").first()
 					.attr("href");
-			CharSequence quoteTitle = Html.fromHtml(titleLink
+			int quoteId = Integer.valueOf(titleLink
 					.substring(titleLink.lastIndexOf("/") + 1));
 			CharSequence quoteScore = "";
 			StringBuilder quoteText = new StringBuilder();
@@ -42,7 +42,7 @@ public class SeenOnSlashDotComQuoteProvider extends AbstractQuoteProvider {
 					+ "</b></div>");
 			quoteText.append(quotesElt.select("div.content").html());
 			Quote quote = new Quote(quoteText.toString());
-			quote.setQuoteTitle(quoteTitle);
+			quote.setQuoteId(quoteId);
 			quote.setQuoteSource(SOURCE);
 			quote.setQuoteScore(quoteScore);
 			quote.setQuoteTextMD5(Quote.computeMD5Sum(quote.getQuoteText()));

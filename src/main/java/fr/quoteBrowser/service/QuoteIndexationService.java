@@ -18,12 +18,19 @@ public class QuoteIndexationService extends IntentService {
 	}
 
 	private static String TAG = "quoteBrowser";
+	
+	public static final String START_PAGE_KEY="START_PAGE";
+	
+	public static final String NUMBER_OF_PAGES_KEY="NUMBER_OF_PAGES";
 
 	@Override
 	protected void onHandleIntent(Intent intent) {
 		Log.i(TAG, "Starting quote indexing service");
+		int startPage=intent.getExtras().getInt(START_PAGE_KEY);
+		int numberOfPages=intent.getExtras().getInt(NUMBER_OF_PAGES_KEY);
+		
 		int nbQuotesAdded = new QuoteIndexer(getApplicationContext())
-				.index(FetchType.INCREMENTAL);
+				.index(FetchType.INCREMENTAL,startPage,numberOfPages);
 		if (Preferences.getInstance(getApplicationContext())
 				.databaseNotificationEnabled()) {
 			sendNotification(nbQuotesAdded);

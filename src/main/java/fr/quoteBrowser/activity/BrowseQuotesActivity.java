@@ -9,13 +9,10 @@ import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -35,6 +32,7 @@ import fr.quoteBrowser.Quote;
 import fr.quoteBrowser.R;
 import fr.quoteBrowser.service.PeriodicalQuoteUpdater;
 import fr.quoteBrowser.service.Preferences;
+import fr.quoteBrowser.service.QuoteIndexationService;
 import fr.quoteBrowser.service.QuotePager;
 import fr.quoteBrowser.service.QuoteUtils;
 import fr.quoteBrowser.service.provider.QuoteProvider;
@@ -87,8 +85,6 @@ public class BrowseQuotesActivity extends Activity implements
 			reindexDatabase();
 		}
 
-		scheduleDatabaseUpdate();
-
 		ListView quoteListView = (ListView) findViewById(R.id.quoteListView);
 		quoteListView.setAdapter(new QuoteAdapter(this,
 				R.layout.quote_list_item_layout, quotes));
@@ -96,24 +92,6 @@ public class BrowseQuotesActivity extends Activity implements
 			loadQuoteList(LoadListAction.RELOAD_PAGE);
 		}
 
-	}
-
-	public void scheduleDatabaseUpdate() {
-		Intent intent = new Intent(getApplicationContext(),
-				PeriodicalQuoteUpdater.class);
-		PendingIntent sender = PendingIntent.getBroadcast(this, 1, intent,
-				PendingIntent.FLAG_NO_CREATE);
-		AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
-		if (sender == null) {
-			Log.d(TAG, "Setting update service");
-			sender = PendingIntent.getBroadcast(this, 1, intent,
-					PendingIntent.FLAG_UPDATE_CURRENT);
-			long updateInterval = Preferences.getInstance(this)
-					.getUpdateIntervalPreference();
-			am.setRepeating(AlarmManager.RTC,
-					System.currentTimeMillis() + updateInterval,
-					updateInterval, sender);
-		}
 	}
 
 	private void reindexDatabase() {
@@ -124,45 +102,22 @@ public class BrowseQuotesActivity extends Activity implements
 			@Override
 			protected Void doInBackground(Void... params) {
 				progressDialog.show();
-				QuotePager.getInstance(currentActivity).reindexDatabase();
+				try {
+					QuotePager.getInstance(currentActivity).reindexDatabase();
+					scheduleDatabaseUpdate();
+				} catch (IOException e) {
+					Log.e(TAG, e.getMessage(), e);
+				}
 				return null;
 			}
 
 			@Override
 			protected void onPostExecute(Void result) {
 				progressDialog.dismiss();
-				if (QuotePager.getInstance(currentActivity).isDatabaseEmpty()) {
-					showDatabaseReindexFailureAlert();
-				} else {
-					loadQuoteList(LoadListAction.RELOAD_PAGE);
-				}
+				loadQuoteList(LoadListAction.RELOAD_PAGE);
 
 			}
 		}.execute();
-	}
-
-	private void showDatabaseReindexFailureAlert() {
-		final Activity currentActivity = this;
-		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setMessage("Failed to load quote page")
-				.setCancelable(false)
-				.setPositiveButton("Retry",
-						new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog, int id) {
-								dialog.dismiss();
-								reindexDatabase();
-							}
-						});
-
-		builder.setNegativeButton("Quit",
-				new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int id) {
-						dialog.dismiss();
-						currentActivity.finish();
-					}
-				});
-
-		builder.create().show();
 	}
 
 	protected void initAdBannerView() {
@@ -193,61 +148,50 @@ public class BrowseQuotesActivity extends Activity implements
 
 	}
 
-	private boolean isNetworkAvailable() {
-		ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-		NetworkInfo activeNetworkInfo = connectivityManager
-				.getActiveNetworkInfo();
-		return activeNetworkInfo != null;
-	}
-
 	protected void loadQuoteList(final LoadListAction action) {
-		if (!isNetworkAvailable()) {
-			showInternetConnectionNotAvailableAlert();
-		} else {
-			final Activity currentActivity = this;
-			final ProgressDialog progressDialog = ProgressDialog.show(this,
-					"Loading", "please wait", true);
-			new AsyncTask<Void, Void, List<Quote>>() {
-				@Override
-				protected List<Quote> doInBackground(Void... params) {
-					try {
-						quotes.clear();
-						switch (action) {
-						case RELOAD_PAGE:
-							quotes.addAll(QuotePager.getInstance(
-									getApplicationContext()).reloadQuotePage());
-							break;
-						case NEXT_PAGE:
-							quotes.addAll(QuotePager.getInstance(
-									getApplicationContext()).getNextQuotePage());
-							break;
-						case PREVIOUS_PAGE:
-							quotes.addAll(QuotePager.getInstance(
-									getApplicationContext())
-									.getPreviousQuotePage());
-							break;
-						default:
-							break;
-						}
-
-					} catch (IOException e) {
-						Log.e(TAG, e.getMessage(), e);
+		final Activity currentActivity = this;
+		final ProgressDialog progressDialog = ProgressDialog.show(this,
+				"Loading", "please wait", true);
+		new AsyncTask<Void, Void, List<Quote>>() {
+			@Override
+			protected List<Quote> doInBackground(Void... params) {
+				try {
+					quotes.clear();
+					switch (action) {
+					case RELOAD_PAGE:
+						quotes.addAll(QuotePager.getInstance(
+								getApplicationContext()).reloadQuotePage());
+						break;
+					case NEXT_PAGE:
+						quotes.addAll(QuotePager.getInstance(
+								getApplicationContext()).getNextQuotePage());
+						break;
+					case PREVIOUS_PAGE:
+						quotes.addAll(QuotePager.getInstance(
+								getApplicationContext()).getPreviousQuotePage());
+						break;
+					default:
+						break;
 					}
-					return quotes;
+
+				} catch (IOException e) {
+					Log.e(TAG, e.getMessage(), e);
 				}
+				return quotes;
+			}
 
-				protected void onPostExecute(List<Quote> quotes) {
-					progressDialog.dismiss();
-					ListView quoteListView = (ListView) findViewById(R.id.quoteListView);
-					((QuoteAdapter) quoteListView.getAdapter())
-							.notifyDataSetChanged();
-					quoteListView.setSelectionAfterHeaderView();
+			protected void onPostExecute(List<Quote> quotes) {
+				progressDialog.dismiss();
+				ListView quoteListView = (ListView) findViewById(R.id.quoteListView);
+				((QuoteAdapter) quoteListView.getAdapter())
+						.notifyDataSetChanged();
+				quoteListView.setSelectionAfterHeaderView();
 
-					setTitle(currentActivity);
-				}
+				setTitle(currentActivity);
+			}
 
-			}.execute();
-		}
+		}.execute();
+
 	}
 
 	private void setTitle(final Activity currentActivity) {
@@ -259,19 +203,6 @@ public class BrowseQuotesActivity extends Activity implements
 				+ currentPage + "/" + maxPage + ")" : "";
 		currentActivity.setTitle(getString(R.string.app_name)
 				+ currentPageIndicator);
-	}
-
-	private void showInternetConnectionNotAvailableAlert() {
-		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setMessage(
-				"Internet connection unavailable. Please check your network connection settings and refresh the page.")
-				.setCancelable(false)
-				.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int id) {
-						dialog.dismiss();
-					}
-				});
-		builder.create().show();
 	}
 
 	@Override
@@ -380,23 +311,45 @@ public class BrowseQuotesActivity extends Activity implements
 	@Override
 	protected void onResume() {
 		if (preferencesChanged) {
+			Log.d(TAG, "Preferences changed");
 			loadQuoteList(LoadListAction.RELOAD_PAGE);
-			Intent intent = new Intent(getApplicationContext(),
-					PeriodicalQuoteUpdater.class);
+			Intent intent = getQuoteIndexerIntent(0, 5);
 			AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
 			PendingIntent sender = PendingIntent.getBroadcast(this, 1, intent,
 					PendingIntent.FLAG_UPDATE_CURRENT);
 			long updateInterval = Preferences.getInstance(this)
 					.getUpdateIntervalPreference();
-			Log.d(TAG, "Updating update service. New interval: "+updateInterval );
-			am.setRepeating(AlarmManager.RTC,
-					System.currentTimeMillis() + updateInterval,
-					updateInterval, sender);
+			Log.d(TAG, "Updating update service. New interval: "
+					+ updateInterval);
+			am.setRepeating(AlarmManager.RTC, System.currentTimeMillis()
+					+ updateInterval, updateInterval, sender);
 
 			preferencesChanged = false;
 		}
 		super.onResume();
 		setTitle(this);
+	}
+
+	public void scheduleDatabaseUpdate() {
+		Log.d(TAG, "Setting update service");
+		Intent intent = getQuoteIndexerIntent(0, 5);
+		PendingIntent sender = PendingIntent.getBroadcast(this, 1, intent,
+				PendingIntent.FLAG_UPDATE_CURRENT);
+		AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
+		long updateInterval = Preferences.getInstance(this)
+				.getUpdateIntervalPreference();
+		am.setRepeating(AlarmManager.RTC, System.currentTimeMillis(),
+				updateInterval, sender);
+
+	}
+
+	private Intent getQuoteIndexerIntent(int startPage, int numberOfPages) {
+		Intent intent = new Intent(getApplicationContext(),
+				PeriodicalQuoteUpdater.class);
+		intent.putExtra(QuoteIndexationService.START_PAGE_KEY, startPage);
+		intent.putExtra(QuoteIndexationService.NUMBER_OF_PAGES_KEY,
+				numberOfPages);
+		return intent;
 	}
 
 }

@@ -27,13 +27,13 @@ public class QdbDotUsQuoteProvider extends AbstractQuoteProvider {
 		Document doc = getDocumentFromUrl(url);
 		Elements quotesElts = doc.select("td.q");
 		for (Element quotesElt : quotesElts) {
-			CharSequence quoteTitle = Html.fromHtml(quotesElt.select("a.ql")
-					.first().ownText());
+			int quoteId = Integer.valueOf((quotesElt.select("a.ql")
+					.first().ownText().replaceAll("#", "")));
 			CharSequence quoteScore = Html.fromHtml(quotesElt.select("span")
 					.first().ownText());
 			CharSequence quoteText = quotesElt.select("span.qt").first().html();
 			Quote quote = new Quote(quoteText);
-			quote.setQuoteTitle(quoteTitle);
+			quote.setQuoteId(quoteId);
 			quote.setQuoteSource(SOURCE);
 			quote.setQuoteScore(quoteScore);
 			quote.setQuoteTextMD5(Quote.computeMD5Sum(quote.getQuoteText()));

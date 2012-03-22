@@ -25,13 +25,13 @@ public class FMyLifeDotComQuoteProvider extends AbstractQuoteProvider {
 		Document doc = getDocumentFromUrl(url);
 		Elements quotesElts = doc.select("div.article");
 		for (Element quotesElt : quotesElts) {
-			CharSequence quoteTitle = quotesElt.id();
+			int quoteId = Integer.valueOf(quotesElt.id());
 			CharSequence quoteScore = Html.fromHtml(quotesElt.select(
 					"span.dyn-vote-j-data").text());
 			CharSequence quoteText = Html.fromHtml(quotesElt.select("p")
 					.first().text());
 			Quote quote = new Quote(quoteText);
-			quote.setQuoteTitle(quoteTitle);
+			quote.setQuoteId(quoteId);
 			quote.setQuoteSource(SOURCE);
 			quote.setQuoteScore(quoteScore);
 			quote.setQuoteTextMD5(Quote.computeMD5Sum(quote.getQuoteText()));

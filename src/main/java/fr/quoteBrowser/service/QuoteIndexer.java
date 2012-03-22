@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -22,8 +21,8 @@ import fr.quoteBrowser.service.provider.QuoteProvider;
 
 public class QuoteIndexer {
 
-	private static final int NUMBER_OF_PAGES_TO_FETCH = 5;
 	private static String TAG = "quoteBrowser";
+	private static SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
 
 	private ExecutorService executor = Executors.newCachedThreadPool();
 	private Context context;
@@ -36,9 +35,11 @@ public class QuoteIndexer {
 		this.context = context;
 	}
 
-	public int index(final FetchType fetchType) {
-		Log.i(TAG, "indexing quotes fetch mode = " + fetchType);
-		SimpleDateFormat sdf=new SimpleDateFormat("HH:mm:ss");
+	public int index(final FetchType fetchType, final int startPage,
+			final int numberOfPages) {
+		Log.i(TAG,
+				"indexing quotes fetch mode = " + fetchType + " at "
+						+ sdf.format(System.currentTimeMillis()));
 		DatabaseHelper db = DatabaseHelper.connect(context);
 		final List<Quote> loadedQuotes = new ArrayList<Quote>();
 		try {
@@ -46,51 +47,40 @@ public class QuoteIndexer {
 		} finally {
 			db.release();
 		}
-		Log.d(TAG,"start fetching "+sdf.format(System.currentTimeMillis()));
-		List<Future<List<Quote>>> fetchResults = new ArrayList<Future<List<Quote>>>();
+		Log.d(TAG, "start fetching " + sdf.format(System.currentTimeMillis()));
+		List<Future<Integer>> fetchResults = new ArrayList<Future<Integer>>();
 		for (final QuoteProvider p : QuoteUtils.PROVIDERS) {
-			fetchResults.add(executor.submit(new Callable<List<Quote>>() {
+			fetchResults.add(executor.submit(new Callable<Integer>() {
 				@Override
-				public List<Quote> call() throws Exception {
+				public Integer call() throws Exception {
 					switch (fetchType) {
 					case COMPLETE:
 						return simultaneouslyFetchQuotesFromProvider(
-								loadedQuotes, p);
+								loadedQuotes, p, startPage, numberOfPages);
 					case INCREMENTAL:
 						return incrementallyFetchQuotesFromProvider(
-								loadedQuotes, p);
+								loadedQuotes, p, startPage, numberOfPages);
 					default:
 						return null;
 					}
 				}
 			}));
 		}
-		Log.d(TAG,"start quote ordering "+sdf.format(System.currentTimeMillis()));
-		List<Quote> results = new ArrayList<Quote>();
-		for (Future<List<Quote>> fetchResult : fetchResults) {
+	
+		int nbQuotesAdded=0;
+		for (Future<Integer> fetchResult : fetchResults) {
 			try {
-				List<Quote> providerQuotes=fetchResult.get();
-				// les quotes les plus récentes doivent être ajoutées en dernier
-				// (et elles sont récupérées en tête de liste)
-				Collections.reverse(providerQuotes);
-				results.addAll(providerQuotes);
+				nbQuotesAdded+= fetchResult.get();
 			} catch (InterruptedException e) {
 				Log.e(TAG, e.getMessage(), e);
 			} catch (ExecutionException e) {
 				Log.e(TAG, e.getMessage(), e);
 			}
 		}
-		int nbQuotesAdded = 0;
-		Log.d(TAG,"start writing to db "+sdf.format(System.currentTimeMillis()));
-		db = DatabaseHelper.connect(context);
-		try {
-			db.putQuotes(results);
-			nbQuotesAdded = results.size();
-			Log.d(TAG, "Added " + nbQuotesAdded + " quotes");
-		} finally {
-			db.release();
-		}
-		Log.i(TAG, "done quotes fetch mode = " + fetchType);
+
+		Log.i(TAG,
+				"done quotes fetch mode = " + fetchType + " at "
+						+ sdf.format(System.currentTimeMillis()));
 		return nbQuotesAdded;
 	}
 
@@ -98,15 +88,19 @@ public class QuoteIndexer {
 			final QuoteProvider provider) throws IOException {
 		Log.d(TAG,
 				"fetching page " + pageNumber + " for provider "
-						+ provider.getSource());
+						+ provider.getSource() + " at "
+						+ sdf.format(System.currentTimeMillis()));
 
 		List<Quote> quotes = new ArrayList<Quote>();
 
 		List<Quote> newQuotes = provider.getQuotesFromPage(pageNumber);
 		quotes.addAll(newQuotes);
 
-		Log.d(TAG, "done fetching page " + pageNumber + " for provider "
-				+ provider.getSource());
+		Log.d(TAG,
+				"done fetching page " + pageNumber + " for provider "
+						+ provider.getSource() + " at "
+						+ sdf.format(System.currentTimeMillis()));
+
 		return quotes;
 
 	}
@@ -119,11 +113,11 @@ public class QuoteIndexer {
 	 * @param p
 	 * @return
 	 */
-	private List<Quote> simultaneouslyFetchQuotesFromProvider(
-			List<Quote> loadedQuotes, final QuoteProvider p) {
-		List<Quote> result = new ArrayList<Quote>();
+	private int simultaneouslyFetchQuotesFromProvider(List<Quote> loadedQuotes,
+			final QuoteProvider p, int startPage, int numberOfPages) {
+		int numberOfQuotesAdded = 0;
 		List<Future<List<Quote>>> futures = new ArrayList<Future<List<Quote>>>();
-		for (int i = 0; i < NUMBER_OF_PAGES_TO_FETCH; i++) {
+		for (int i = startPage; i < numberOfPages; i++) {
 			final int pageNumber = i;
 			futures.add(executor.submit(new Callable<List<Quote>>() {
 				@Override
@@ -143,10 +137,17 @@ public class QuoteIndexer {
 				});
 		for (Future<List<Quote>> pageresult : futures) {
 			try {
-				for (Quote q : pageresult.get()) {
-					if (!quoteAlreadyInList(q, md5OfExistingQuotes)) {
-						result.add(q);
+				List<Quote> quotes = pageresult.get();
+				DatabaseHelper dbHelper = DatabaseHelper.connect(context);
+				try {
+					for (Quote q : quotes) {
+						if (!quoteAlreadyInList(q, md5OfExistingQuotes)) {
+							dbHelper.putQuote(q);
+							numberOfQuotesAdded++;
+						}
 					}
+				} finally {
+					dbHelper.release();
 				}
 			} catch (InterruptedException e) {
 				Log.e(TAG, e.getMessage(), e);
@@ -154,8 +155,7 @@ public class QuoteIndexer {
 				Log.e(TAG, e.getMessage(), e);
 			}
 		}
-
-		return result;
+		return numberOfQuotesAdded;
 	}
 
 	/**
@@ -166,9 +166,9 @@ public class QuoteIndexer {
 	 * @param p
 	 * @return
 	 */
-	private List<Quote> incrementallyFetchQuotesFromProvider(
-			List<Quote> loadedQuotes, final QuoteProvider p) {
-		List<Quote> result = new ArrayList<Quote>();
+	private int incrementallyFetchQuotesFromProvider(List<Quote> loadedQuotes,
+			final QuoteProvider p, int startPage, int numberOfPages) {
+		int numberOfQuotesAdded = 0;
 		boolean databaseAlreadyContainsQuote = false;
 		@SuppressWarnings("unchecked")
 		Collection<String> md5OfExistingQuotes = CollectionUtils.collect(
@@ -179,16 +179,23 @@ public class QuoteIndexer {
 						return ((Quote) quote).getQuoteTextMD5();
 					}
 				});
-		for (int i = 0; i < NUMBER_OF_PAGES_TO_FETCH
+		for (int i = startPage; i < numberOfPages
 				&& !databaseAlreadyContainsQuote; i++) {
 			try {
 				List<Quote> potentialQuotesToAdd = fetchQuotesFromPage(i, p);
-				for (Quote q : potentialQuotesToAdd) {
-					if (!quoteAlreadyInList(q, md5OfExistingQuotes)) {
-						result.add(q);
-					} else {
-						databaseAlreadyContainsQuote = true;
+				DatabaseHelper db = DatabaseHelper.connect(context);
+				try {
+
+					for (Quote q : potentialQuotesToAdd) {
+						if (!quoteAlreadyInList(q, md5OfExistingQuotes)) {
+							db.putQuote(q);
+							numberOfQuotesAdded++;
+						} else {
+							databaseAlreadyContainsQuote = true;
+						}
 					}
+				} finally {
+					db.release();
 				}
 
 			} catch (IOException e) {
@@ -196,7 +203,7 @@ public class QuoteIndexer {
 			}
 		}
 
-		return result;
+		return numberOfQuotesAdded;
 	}
 
 	private boolean quoteAlreadyInList(final Quote q,

@@ -88,7 +88,7 @@ public class QuoteUtils {
 			Quote newQuote = new Quote(colorizeUsernames(quote.getQuoteText()));
 			newQuote.setQuoteScore(quote.getQuoteScore());
 			newQuote.setQuoteSource(quote.getQuoteSource());
-			newQuote.setQuoteTitle(quote.getQuoteTitle());
+			newQuote.setQuoteId(quote.getQuoteId());
 			newQuote.setQuoteTextMD5(Quote.computeMD5Sum(quote.getQuoteText()));
 			result.add(newQuote);
 		}

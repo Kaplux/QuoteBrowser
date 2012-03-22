@@ -7,7 +7,6 @@ import java.util.List;
 import android.content.Context;
 import android.util.Log;
 import fr.quoteBrowser.Quote;
-import fr.quoteBrowser.service.QuoteIndexer.FetchType;
 
 public class QuotePager {
 
@@ -63,7 +62,7 @@ public class QuotePager {
 		int nbQuotesPerPage = Preferences.getInstance(context)
 				.getNumberOfQuotesPerPage();
 		Log.d(TAG, quotes.size() + " quotes => " + maxPage + " pages");
-		int startIndex = (targetPage-1) * nbQuotesPerPage;
+		int startIndex = (targetPage - 1) * nbQuotesPerPage;
 		if (startIndex > quotes.size() - 1) {
 			startIndex = quotes.size() - 1;
 		}
@@ -74,7 +73,8 @@ public class QuotePager {
 		if (quotes.size() == 0) {
 			return quotes;
 		}
-		Log.d(TAG,"sublist from "+startIndex+ " to "+ endIndex+ " list size="+quotes.size());
+		Log.d(TAG, "sublist from " + startIndex + " to " + endIndex
+				+ " list size=" + quotes.size());
 		return quotes.subList(startIndex, endIndex);
 	}
 
@@ -107,8 +107,14 @@ public class QuotePager {
 		return empty;
 	}
 
-	public void reindexDatabase() {
-		new QuoteIndexer(context).index(FetchType.COMPLETE);
+	public void reindexDatabase() throws IOException {
+		DatabaseHelper db=DatabaseHelper.connect(context);
+		try {
+			db.copyDatabase();
+		}finally{
+			db.release();
+		}
+
 	}
 
 	public Collection<? extends Quote> reloadQuotePage() throws IOException {

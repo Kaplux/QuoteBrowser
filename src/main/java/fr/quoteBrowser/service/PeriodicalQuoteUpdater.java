@@ -13,6 +13,12 @@ public class PeriodicalQuoteUpdater extends BroadcastReceiver {
 	public void onReceive(Context context, Intent intent) {
 		try {
 			Intent newIntent = new Intent(context, QuoteIndexationService.class);
+			newIntent.putExtra(QuoteIndexationService.START_PAGE_KEY, intent
+					.getExtras().getInt(QuoteIndexationService.START_PAGE_KEY));
+			newIntent.putExtra(
+					QuoteIndexationService.NUMBER_OF_PAGES_KEY,
+					intent.getExtras().getInt(
+							QuoteIndexationService.NUMBER_OF_PAGES_KEY));
 			context.startService(newIntent);
 		} catch (Exception e) {
 			Toast.makeText(

@@ -9,7 +9,6 @@ import org.jsoup.nodes.Element;
 import org.jsoup.nodes.TextNode;
 import org.jsoup.select.Elements;
 
-import android.text.Html;
 import fr.quoteBrowser.Quote;
 
 public class BashDotOrgQuoteProvider extends AbstractQuoteProvider{
@@ -37,13 +36,13 @@ public class BashDotOrgQuoteProvider extends AbstractQuoteProvider{
 		Document doc = getDocumentFromUrl(url);
 		Elements quotesElts = doc.select("p.quote");
 		for (Element quotesElt : quotesElts) {
-			CharSequence quoteTitle = Html.fromHtml(new TextNode(quotesElt
-					.select("b").html(), "").getWholeText());
-			CharSequence quoteScore = quotesElt.childNode(3).toString();
+			int quoteId = Integer.valueOf(quotesElt
+					.select("b").html().replaceAll("#",""));
+			CharSequence quoteScore = quotesElt.childNode(3).toString().replace("(","").replace(")","");
 			CharSequence quoteText = new TextNode(quotesElt
 					.nextElementSibling().html(), "").getWholeText();
 			Quote quote = new Quote(quoteText);
-			quote.setQuoteTitle(quoteTitle);
+			quote.setQuoteId(quoteId);
 			quote.setQuoteSource(SOURCE);
 			quote.setQuoteScore(quoteScore);
 			quote.setQuoteTextMD5(Quote.computeMD5Sum(quote.getQuoteText()));

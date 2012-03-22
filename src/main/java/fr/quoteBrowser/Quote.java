@@ -6,13 +6,11 @@ import org.apache.commons.codec.digest.DigestUtils;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.Html;
-import fr.quoteBrowser.service.QuoteUtils;
-import fr.quoteBrowser.service.provider.QuoteProvider;
 
 public class Quote implements Parcelable {
 
 	private CharSequence quoteText;
-	private CharSequence quoteTitle;
+	private int quoteId;
 	private CharSequence quoteSource;
 	private CharSequence quoteScore;
 	private String quoteTextMD5;
@@ -61,14 +59,6 @@ public class Quote implements Parcelable {
 		this.quoteText = quoteText;
 	}
 
-	public CharSequence getQuoteTitle() {
-		return quoteTitle;
-	}
-
-	public void setQuoteTitle(CharSequence quoteTitle) {
-		this.quoteTitle = quoteTitle;
-	}
-
 	public CharSequence getQuoteSource() {
 		return quoteSource;
 	}
@@ -95,6 +85,14 @@ public class Quote implements Parcelable {
 	
 	public static String computeMD5Sum(CharSequence quoteText){
 		return new String(Hex.encodeHex(DigestUtils.md5(quoteText.toString())));
+	}
+
+	public int getQuoteId() {
+		return quoteId;
+	}
+
+	public void setQuoteId(int quoteId) {
+		this.quoteId = quoteId;
 	}
 
 	
