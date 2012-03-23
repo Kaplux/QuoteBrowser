@@ -9,7 +9,7 @@ import android.util.Log;
 
 public abstract class AbstractQuoteProvider implements QuoteProvider {
 
-	private static final int MAX_RETRY = 2;
+	private static final int MAX_RETRY = 3;
 	private static final String TAG = "quoteBrowser";
 	
 	protected Document getDocumentFromUrl(String url) throws IOException {
@@ -23,6 +23,7 @@ public abstract class AbstractQuoteProvider implements QuoteProvider {
 			} catch (IOException e) {
 				retryCount++;
 				if (retryCount > MAX_RETRY) {
+					Log.i(TAG,"error while retrieving "+url +" max retry reached ...");
 					throw e;
 				}else{
 					Log.i(TAG,"error while retrieving "+url +" retrying...");
