@@ -171,7 +171,7 @@ public class QuoteIndexer {
 		int numberOfQuotesAdded = 0;
 		boolean databaseAlreadyContainsQuote = false;
 		@SuppressWarnings("unchecked")
-		Collection<String> md5OfExistingQuotes = CollectionUtils.collect(
+		Collection<String> uniqueIdsOfExistingQuotes = CollectionUtils.collect(
 				loadedQuotes, new Transformer() {
 
 					@Override
@@ -187,7 +187,7 @@ public class QuoteIndexer {
 				try {
 
 					for (Quote q : potentialQuotesToAdd) {
-						if (!quoteAlreadyInList(q, md5OfExistingQuotes)) {
+						if (!quoteAlreadyInList(q, uniqueIdsOfExistingQuotes)) {
 							db.putQuote(q);
 							numberOfQuotesAdded++;
 						} else {
