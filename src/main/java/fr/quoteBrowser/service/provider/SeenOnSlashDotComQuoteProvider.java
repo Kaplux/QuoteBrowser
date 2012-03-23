@@ -45,7 +45,6 @@ public class SeenOnSlashDotComQuoteProvider extends AbstractQuoteProvider {
 			quote.setQuoteId(quoteId);
 			quote.setQuoteSource(SOURCE);
 			quote.setQuoteScore(quoteScore);
-			quote.setQuoteTextMD5(Quote.computeMD5Sum(quote.getQuoteText()));
 			quotes.add(quote);
 		}
 		return quotes;

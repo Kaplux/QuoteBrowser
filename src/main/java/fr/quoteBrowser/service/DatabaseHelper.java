@@ -53,8 +53,7 @@ public class DatabaseHelper {
 		List<Quote> quotes = new ArrayList<Quote>();
 		Cursor c = db.query(InternalDBHelper.TABLE_QUOTES, new String[] {
 				InternalDBHelper.COL_QUOTE_ID, InternalDBHelper.COL_SOURCE,
-				InternalDBHelper.COL_SCORE, InternalDBHelper.COL_TEXT,
-				InternalDBHelper.COL_TEXT_MD5 }, InternalDBHelper.COL_SOURCE
+				InternalDBHelper.COL_SCORE, InternalDBHelper.COL_TEXT}, InternalDBHelper.COL_SOURCE
 				+ " like '" + source + "'", null, null, null,
 				InternalDBHelper.COL_QUOTE_ID + " DESC");
 		if (c.getCount() != 0) {
@@ -65,7 +64,6 @@ public class DatabaseHelper {
 				q.setQuoteSource(c.getString(1));
 				q.setQuoteScore(c.getString(2));
 				q.setQuoteText(c.getString(3));
-				q.setQuoteTextMD5(c.getString(4));
 				quotes.add(q);
 				c.moveToNext();
 			}
@@ -86,7 +84,6 @@ public class DatabaseHelper {
 		values.put(InternalDBHelper.COL_SOURCE, q.getQuoteSource().toString());
 		values.put(InternalDBHelper.COL_SCORE, q.getQuoteScore().toString());
 		values.put(InternalDBHelper.COL_TEXT, q.getQuoteText().toString());
-		values.put(InternalDBHelper.COL_TEXT_MD5, q.getQuoteTextMD5());
 		try {
 			db.insert(InternalDBHelper.TABLE_QUOTES, null, values);
 		} catch (RuntimeException e) {
@@ -116,7 +113,6 @@ class InternalDBHelper extends SQLiteOpenHelper {
 	public static final String COL_SOURCE = "SOURCE";
 	public static final String COL_SCORE = "SCORE";
 	public static final String COL_TEXT = "TEXT";
-	public static final String COL_TEXT_MD5 = "TEXT_MD5";
 	private static String TAG = "quoteBrowser";
 	private Context context;
 	private String name;
@@ -124,7 +120,7 @@ class InternalDBHelper extends SQLiteOpenHelper {
 	private static final String CREATE_BDD = "CREATE TABLE " + TABLE_QUOTES
 			+ " (" + COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
 			+ COL_QUOTE_ID + " TEXT, " + COL_SOURCE + " TEXT, " + COL_SCORE
-			+ " TEXT, " + COL_TEXT_MD5 + " TEXT, " + COL_TEXT + ");";
+			+ " TEXT, " + COL_TEXT + ");";
 
 	public InternalDBHelper(Context context, String name,
 			CursorFactory factory, int version) {

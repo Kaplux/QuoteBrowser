@@ -29,7 +29,6 @@ import android.view.Window;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SeekBar;
-import android.widget.Toast;
 
 import com.Leadbolt.AdController;
 

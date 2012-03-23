@@ -34,7 +34,6 @@ public class QuoteUtils {
 			new XKCDBDotComQuoteProvider(), new FMyLifeDotComQuoteProvider(),
 			new SeenOnSlashDotComQuoteProvider() };
 
-	
 	public static CharSequence colorizeUsernames(CharSequence quoteText) {
 		SpannableStringBuilder ssb = new SpannableStringBuilder(quoteText);
 		LinkedList<Integer> availableColors = new LinkedList<Integer>();
@@ -48,7 +47,6 @@ public class QuoteUtils {
 						.getValue()) {
 					ssb.setSpan(new ForegroundColorSpan(usernameColor),
 							usernameIndexes.first, usernameIndexes.second, 0);
-
 				}
 			}
 		}
@@ -89,11 +87,9 @@ public class QuoteUtils {
 			newQuote.setQuoteScore(quote.getQuoteScore());
 			newQuote.setQuoteSource(quote.getQuoteSource());
 			newQuote.setQuoteId(quote.getQuoteId());
-			newQuote.setQuoteTextMD5(Quote.computeMD5Sum(quote.getQuoteText()));
 			result.add(newQuote);
 		}
 		return result;
-
 	}
 
 	public static QuoteProvider getProviderFromSource(CharSequence quoteSource) {

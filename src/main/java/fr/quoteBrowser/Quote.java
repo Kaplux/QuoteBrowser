@@ -13,7 +13,6 @@ public class Quote implements Parcelable {
 	private int quoteId;
 	private CharSequence quoteSource;
 	private CharSequence quoteScore;
-	private String quoteTextMD5;
 
 	public int describeContents() {
 		return 0;
@@ -74,14 +73,6 @@ public class Quote implements Parcelable {
 	public void setQuoteSource(CharSequence quoteSource) {
 		this.quoteSource = quoteSource;
 	}
-
-	public void setQuoteTextMD5(String quoteTextMD5) {
-		this.quoteTextMD5=quoteTextMD5;
-	}
-
-	public String getQuoteTextMD5() {
-		return quoteTextMD5;
-	}
 	
 	public static String computeMD5Sum(CharSequence quoteText){
 		return new String(Hex.encodeHex(DigestUtils.md5(quoteText.toString())));
@@ -93,6 +84,10 @@ public class Quote implements Parcelable {
 
 	public void setQuoteId(int quoteId) {
 		this.quoteId = quoteId;
+	}
+	
+	public String getUniqueId(){
+		return quoteSource+"-"+quoteId;
 	}
 
 	

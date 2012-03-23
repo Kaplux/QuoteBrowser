@@ -66,11 +66,11 @@ public class QuoteIndexer {
 				}
 			}));
 		}
-	
-		int nbQuotesAdded=0;
+
+		int nbQuotesAdded = 0;
 		for (Future<Integer> fetchResult : fetchResults) {
 			try {
-				nbQuotesAdded+= fetchResult.get();
+				nbQuotesAdded += fetchResult.get();
 			} catch (InterruptedException e) {
 				Log.e(TAG, e.getMessage(), e);
 			} catch (ExecutionException e) {
@@ -127,12 +127,12 @@ public class QuoteIndexer {
 			}));
 		}
 		@SuppressWarnings("unchecked")
-		Collection<String> md5OfExistingQuotes = CollectionUtils.collect(
+		Collection<String> uniqueIdsOfExistingQuotes = CollectionUtils.collect(
 				loadedQuotes, new Transformer() {
 
 					@Override
 					public Object transform(Object quote) {
-						return ((Quote) quote).getQuoteTextMD5();
+						return ((Quote) quote).getUniqueId();
 					}
 				});
 		for (Future<List<Quote>> pageresult : futures) {
@@ -141,7 +141,7 @@ public class QuoteIndexer {
 				DatabaseHelper dbHelper = DatabaseHelper.connect(context);
 				try {
 					for (Quote q : quotes) {
-						if (!quoteAlreadyInList(q, md5OfExistingQuotes)) {
+						if (!quoteAlreadyInList(q, uniqueIdsOfExistingQuotes)) {
 							dbHelper.putQuote(q);
 							numberOfQuotesAdded++;
 						}
@@ -176,7 +176,7 @@ public class QuoteIndexer {
 
 					@Override
 					public Object transform(Object quote) {
-						return ((Quote) quote).getQuoteTextMD5();
+						return ((Quote) quote).getUniqueId();
 					}
 				});
 		for (int i = startPage; i < numberOfPages
@@ -207,8 +207,8 @@ public class QuoteIndexer {
 	}
 
 	private boolean quoteAlreadyInList(final Quote q,
-			Collection<String> md5OfLoadedQuotes) {
-		return (md5OfLoadedQuotes.contains(q.getQuoteTextMD5()));
+			Collection<String> uniqueIds) {
+		return (uniqueIds.contains(q.getUniqueId()));
 	}
 
 }
