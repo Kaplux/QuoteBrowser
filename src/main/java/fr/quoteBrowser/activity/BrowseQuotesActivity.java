@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
@@ -26,6 +28,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SeekBar;
@@ -250,30 +253,14 @@ public class BrowseQuotesActivity extends Activity implements
 	private void showGotoPageDialog() {
 		final Activity currentActivity = this;
 		LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		View layout = inflater.inflate(R.layout.seekbar_dialog_layout,
-				(ViewGroup) findViewById(R.id.seekBarLayoutRoot));
+		View layout = inflater.inflate(R.layout.goto_page_dialog_layout,
+				(ViewGroup) findViewById(R.id.gotoPageLayoutRoot));
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setView(layout);
-		final SeekBar sb = (SeekBar) layout.findViewById(R.id.seekBar);
-		sb.setMax(QuotePager.getInstance(currentActivity).computeMaxPage() - 1);
-		sb.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-			public void onProgressChanged(SeekBar seekBar, int progress,
-					boolean fromUser) {
-
-			}
-
-			@Override
-			public void onStartTrackingTouch(SeekBar arg0) {
-				// TODO Auto-generated method stub
-
-			}
-
-			@Override
-			public void onStopTrackingTouch(SeekBar arg0) {
-				// TODO Auto-generated method stub
-
-			}
-		});
+		final EditText pageNumber = (EditText) layout
+				.findViewById(R.id.pageNumber);
+		pageNumber.setText(String.valueOf(QuotePager.getInstance(
+				currentActivity).getCurrentPage()));
 
 		builder.setTitle("Goto page");
 		builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
@@ -282,7 +269,9 @@ public class BrowseQuotesActivity extends Activity implements
 			public void onClick(DialogInterface dialog, int which) {
 				dialog.dismiss();
 				try {
-					QuotePager.getInstance(currentActivity).gotoPage(sb.getProgress()+1);
+					QuotePager.getInstance(currentActivity).gotoPage(
+							Integer.valueOf(StringUtils.defaultString(
+									pageNumber.getText().toString(), "0")));
 					loadQuoteList(LoadListAction.RELOAD_PAGE);
 				} catch (IOException e) {
 					Log.e(TAG, e.getMessage(), e);
