@@ -6,10 +6,6 @@
         android:icon="@drawable/ic_menu_back"
         android:title="Newer"/>
     <item
-        android:id="@+id/refreshMenuOption"
-        android:icon="@drawable/ic_menu_refresh"
-        android:title="Refresh"/>
-    <item
         android:id="@+id/nextQuotePageMenuOption"
         android:icon="@drawable/ic_menu_forward"
         android:title="Older"/>

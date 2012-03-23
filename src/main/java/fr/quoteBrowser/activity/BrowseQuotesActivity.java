@@ -223,16 +223,14 @@ public class BrowseQuotesActivity extends Activity implements
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.nextQuotePageMenuOption:
+			adController.destroyAd();
 			adController.loadAd();
 			loadQuoteList(LoadListAction.NEXT_PAGE);
 			return true;
 		case R.id.previousQuotePageMenuOption:
+			adController.destroyAd();
 			adController.loadAd();
 			loadQuoteList(LoadListAction.PREVIOUS_PAGE);
-			return true;
-		case R.id.refreshMenuOption:
-			adController.loadAd();
-			loadQuoteList(LoadListAction.RELOAD_PAGE);
 			return true;
 		case R.id.preferencesMenuOption:
 			Intent intent = new Intent(getApplicationContext(),
