@@ -1,8 +1,5 @@
 package fr.quoteBrowser;
 
-import org.apache.commons.codec.binary.Hex;
-import org.apache.commons.codec.digest.DigestUtils;
-
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.Html;
@@ -72,10 +69,6 @@ public class Quote implements Parcelable {
 
 	public void setQuoteSource(CharSequence quoteSource) {
 		this.quoteSource = quoteSource;
-	}
-	
-	public static String computeMD5Sum(CharSequence quoteText){
-		return new String(Hex.encodeHex(DigestUtils.md5(quoteText.toString())));
 	}
 
 	public int getQuoteId() {
