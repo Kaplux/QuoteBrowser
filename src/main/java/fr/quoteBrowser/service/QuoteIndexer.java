@@ -179,22 +179,23 @@ public class QuoteIndexer {
 						return ((Quote) quote).getUniqueId();
 					}
 				});
-		List<Quote> potentialQuotesToAdd = new ArrayList<Quote>();
 		try {
+			List<Quote> quotesToAdd = new ArrayList<Quote>();
 			for (int i = startPage; i < numberOfPages
 					&& !databaseAlreadyContainsQuote; i++) {
-				potentialQuotesToAdd.addAll(fetchQuotesFromPage(i, p));
-			}
-			DatabaseHelper db = DatabaseHelper.connect(context);
-			try {
+				List<Quote> potentialQuotesToAdd = fetchQuotesFromPage(i, p);
 				for (Quote q : potentialQuotesToAdd) {
 					if (!quoteAlreadyInList(q, uniqueIdsOfExistingQuotes)) {
-						db.putQuote(q);
-						numberOfQuotesAdded++;
-					} else {
+						quotesToAdd.add(q);
+					}else{
 						databaseAlreadyContainsQuote = true;
 					}
 				}
+			}
+			DatabaseHelper db = DatabaseHelper.connect(context);
+			try {
+				db.putQuotes(quotesToAdd);
+				numberOfQuotesAdded = quotesToAdd.size();
 			} finally {
 				db.release();
 			}

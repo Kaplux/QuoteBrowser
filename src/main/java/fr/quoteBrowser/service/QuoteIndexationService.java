@@ -18,19 +18,19 @@ public class QuoteIndexationService extends IntentService {
 	}
 
 	private static String TAG = "quoteBrowser";
-	
-	public static final String START_PAGE_KEY="START_PAGE";
-	
-	public static final String NUMBER_OF_PAGES_KEY="NUMBER_OF_PAGES";
+
+	public static final String START_PAGE_KEY = "START_PAGE";
+
+	public static final String NUMBER_OF_PAGES_KEY = "NUMBER_OF_PAGES";
 
 	@Override
 	protected void onHandleIntent(Intent intent) {
 		Log.i(TAG, "Starting quote indexing service");
-		int startPage=intent.getExtras().getInt(START_PAGE_KEY);
-		int numberOfPages=intent.getExtras().getInt(NUMBER_OF_PAGES_KEY);
-		
-		int nbQuotesAdded = new QuoteIndexer(getApplicationContext())
-				.index(FetchType.INCREMENTAL,startPage,numberOfPages);
+		int startPage = intent.getExtras().getInt(START_PAGE_KEY);
+		int numberOfPages = intent.getExtras().getInt(NUMBER_OF_PAGES_KEY);
+
+		int nbQuotesAdded = new QuoteIndexer(getApplicationContext()).index(
+				FetchType.INCREMENTAL, startPage, numberOfPages);
 		if (Preferences.getInstance(getApplicationContext())
 				.databaseNotificationEnabled()) {
 			sendNotification(nbQuotesAdded);
@@ -45,23 +45,24 @@ public class QuoteIndexationService extends IntentService {
 		CharSequence tickerText = "Quote database updated. " + nbQuotesAdded
 				+ " quotes added.";
 		long when = System.currentTimeMillis();
-
-		Notification notification = new Notification(icon, tickerText, when);
-		Context context = getApplicationContext();
 		CharSequence contentTitle = "Quote Database updated";
 		CharSequence contentText = nbQuotesAdded
 				+ " quotes added. Touch to open Quote Browser";
+
+		Notification notification = new Notification(icon, tickerText, when);
+		notification.flags = Notification.FLAG_AUTO_CANCEL;
+
 		Intent notificationIntent = new Intent(Intent.ACTION_MAIN);
-		notificationIntent.setClass(getApplicationContext(), BrowseQuotesActivity.class);
+		notificationIntent.setClass(getApplicationContext(),
+				BrowseQuotesActivity.class);
+		notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
+				| Intent.FLAG_ACTIVITY_SINGLE_TOP);
 		PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
-				notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT | Notification.FLAG_AUTO_CANCEL);
-		
+				notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+		notification.setLatestEventInfo(getApplicationContext(), contentTitle,
+				contentText, contentIntent);
 
-		notification.setLatestEventInfo(context, contentTitle, contentText,
-				contentIntent);
-		int notificationId = 1;
-
-		mNotificationManager.notify(notificationId, notification);
+		mNotificationManager.notify(1, notification);
 	}
 
 }

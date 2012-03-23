@@ -43,7 +43,7 @@
             android:title="Update notification" />
 
         <ListPreference
-            android:defaultValue="86400000"
+            android:defaultValue="43200000"
             android:dialogTitle="Update interval"
             android:entries="@array/database_update_interval_preference_entries"
             android:entryValues="@array/database_update_interval_preference_values"
