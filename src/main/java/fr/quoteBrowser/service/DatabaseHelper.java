@@ -1,13 +1,16 @@
 package fr.quoteBrowser.service;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -53,9 +56,9 @@ public class DatabaseHelper {
 		List<Quote> quotes = new ArrayList<Quote>();
 		Cursor c = db.query(InternalDBHelper.TABLE_QUOTES, new String[] {
 				InternalDBHelper.COL_QUOTE_ID, InternalDBHelper.COL_SOURCE,
-				InternalDBHelper.COL_SCORE, InternalDBHelper.COL_TEXT}, InternalDBHelper.COL_SOURCE
-				+ " like '" + source + "'", null, null, null,
-				InternalDBHelper.COL_QUOTE_ID + " DESC");
+				InternalDBHelper.COL_SCORE, InternalDBHelper.COL_TEXT },
+				InternalDBHelper.COL_SOURCE + " like '" + source + "'", null,
+				null, null, InternalDBHelper.COL_QUOTE_ID + " DESC");
 		if (c.getCount() != 0) {
 			c.moveToFirst();
 			while (!c.isAfterLast()) {
@@ -132,18 +135,24 @@ class InternalDBHelper extends SQLiteOpenHelper {
 	public void copyDatabase() throws IOException {
 		Log.i(TAG, "copying database");
 		File dbFile = context.getDatabasePath(name);
-		InputStream is;
-		is = context.getAssets().open(name);
-
-		OutputStream os = new FileOutputStream(dbFile);
-
-		byte[] buffer = new byte[1024];
-		while (is.read(buffer) > 0) {
-			os.write(buffer);
+		int BUFFER=2048;
+		ZipInputStream zis = new ZipInputStream(context.getAssets().open(
+				name + ".zip"));
+		BufferedOutputStream dest = null;
+		ZipEntry entry;
+		while ((entry = zis.getNextEntry()) != null) {
+			System.out.println("Extracting: " + entry);
+			int count;
+			byte data[] = new byte[BUFFER];
+			FileOutputStream fos = new FileOutputStream(dbFile);
+			dest = new BufferedOutputStream(fos, BUFFER);
+			while ((count = zis.read(data, 0, BUFFER)) != -1) {
+				dest.write(data, 0, count);
+			}
+			dest.flush();
+			dest.close();
 		}
-		os.flush();
-		os.close();
-		is.close();
+		zis.close();
 
 	}
 

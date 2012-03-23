@@ -3,15 +3,27 @@
     android:id="@+id/gotoPageLayoutRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:gravity="center_horizontal"
+    android:orientation="horizontal" >
 
-    <EditText
+    <Button
+        android:id="@+id/pageNumberDown"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:text="-" />
+
+    <TextView
         android:id="@+id/pageNumber"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:inputType="number" >
+        android:layout_width="60dp"
+        android:layout_height="50dp"
+        android:background="@android:color/white"
+        android:gravity="center_vertical|center_horizontal"
+        android:text="TextView" />
 
-        <requestFocus />
-    </EditText>
+    <Button
+        android:id="@+id/pageNumberUp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:text="+" />
 
 </LinearLayout>

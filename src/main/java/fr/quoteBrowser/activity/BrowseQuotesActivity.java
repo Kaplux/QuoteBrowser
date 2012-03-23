@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.mutable.MutableInt;
 
 import android.app.Activity;
 import android.app.AlarmManager;
@@ -28,10 +29,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.SeekBar;
+import android.widget.TextView;
 
 import com.Leadbolt.AdController;
 
@@ -255,11 +257,40 @@ public class BrowseQuotesActivity extends Activity implements
 				(ViewGroup) findViewById(R.id.gotoPageLayoutRoot));
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setView(layout);
-		final EditText pageNumber = (EditText) layout
+		final TextView pageNumber = (TextView) layout
 				.findViewById(R.id.pageNumber);
-		pageNumber.setText(String.valueOf(QuotePager.getInstance(
-				currentActivity).getCurrentPage()));
+		final Button pageNumberDownButton = (Button) layout
+				.findViewById(R.id.pageNumberDown);
+		final Button pageNumberUpButton = (Button) layout
+				.findViewById(R.id.pageNumberUp);
+		final int maxPageNumber=QuotePager.getInstance(this).computeMaxPage();
+		final MutableInt selectedPageNumber=new MutableInt(QuotePager.getInstance(
+				this).getCurrentPage());
+		pageNumber.setText(String.valueOf(selectedPageNumber));
 
+		pageNumberDownButton.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				if (selectedPageNumber.intValue()>1){
+					selectedPageNumber.decrement();
+					pageNumber.setText(String.valueOf(selectedPageNumber.intValue()));
+				}
+				
+			}
+		});
+		
+	pageNumberUpButton.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				if (selectedPageNumber.intValue()<maxPageNumber){
+					selectedPageNumber.increment();
+					pageNumber.setText(String.valueOf(selectedPageNumber.intValue()));
+				}
+				
+			}
+		});
 		builder.setTitle("Goto page");
 		builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
 
@@ -269,7 +300,7 @@ public class BrowseQuotesActivity extends Activity implements
 				try {
 					QuotePager.getInstance(currentActivity).gotoPage(
 							Integer.valueOf(StringUtils.defaultString(
-									pageNumber.getText().toString(), "0")));
+									pageNumber.getText().toString(), "1")));
 					loadQuoteList(LoadListAction.RELOAD_PAGE);
 				} catch (IOException e) {
 					Log.e(TAG, e.getMessage(), e);
@@ -355,7 +386,7 @@ public class BrowseQuotesActivity extends Activity implements
 		if (preferencesChanged) {
 			Log.d(TAG, "Preferences changed");
 			loadQuoteList(LoadListAction.RELOAD_PAGE);
-			Intent intent = getQuoteIndexerIntent(0, 5);
+			Intent intent = getQuoteIndexerIntent(0, 10);
 			AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
 			PendingIntent sender = PendingIntent.getBroadcast(this, 1, intent,
 					PendingIntent.FLAG_UPDATE_CURRENT);
@@ -374,7 +405,7 @@ public class BrowseQuotesActivity extends Activity implements
 
 	public void scheduleDatabaseUpdate() {
 		Log.d(TAG, "Setting update service");
-		Intent intent = getQuoteIndexerIntent(0, 5);
+		Intent intent = getQuoteIndexerIntent(0, 10);
 		PendingIntent sender = PendingIntent.getBroadcast(this, 1, intent,
 				PendingIntent.FLAG_UPDATE_CURRENT);
 		AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
