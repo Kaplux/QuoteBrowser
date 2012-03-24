@@ -39,7 +39,7 @@ public class Preferences {
 	public long getUpdateIntervalPreference() {
 		return Long.valueOf(prefs.getString(
 				DATABASE_UPDATE_INTERVAL_PREFERENCE,
-				String.valueOf(AlarmManager.INTERVAL_DAY)));
+				String.valueOf(AlarmManager.INTERVAL_HALF_DAY)));
 	}
 
 	public boolean databaseNotificationEnabled() {
