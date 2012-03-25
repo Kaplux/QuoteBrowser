@@ -20,7 +20,6 @@ import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -30,12 +29,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.Leadbolt.AdController;
+import com.google.ads.AdRequest;
+import com.google.ads.AdSize;
+import com.google.ads.AdView;
 
 import fr.quoteBrowser.Quote;
 import fr.quoteBrowser.R;
@@ -52,7 +52,7 @@ public class BrowseQuotesActivity extends Activity implements
 	private static final String QUOTES = "quotes";
 	private static String TAG = "quoteBrowser";
 
-	private AdController adController;
+	private AdView adView;
 
 	private enum LoadListAction {
 		RELOAD_PAGE, NEXT_PAGE, PREVIOUS_PAGE
@@ -130,30 +130,18 @@ public class BrowseQuotesActivity extends Activity implements
 	}
 
 	protected void initAdBannerView() {
-		final Activity currentActivity = this;
 		final ViewGroup quoteLayout = (ViewGroup) findViewById(R.id.quoteListLayout);
-		DisplayMetrics dm = new DisplayMetrics();
-		currentActivity.getWindowManager().getDefaultDisplay().getMetrics(dm);
-		final int screenWidth = dm.widthPixels;
+		// Create the adView
+		adView = new AdView(this, AdSize.BANNER, "a14f6e53e04f4bf");
 		LinearLayout adLayout = new LinearLayout(this);
-		if (screenWidth >= 468) {
-			adLayout.setMinimumHeight(60);
-		} else {
-			adLayout.setMinimumHeight(50);
-		}
-		quoteLayout.addView(adLayout);
-		quoteLayout.post(new Runnable() {
-			public void run() {
-				String myAdId = "";
-				if (screenWidth >= 468) {
-					myAdId = "332579652";
-				} else {
-					myAdId = "595643384";
-				}
-				adController = new AdController(currentActivity, myAdId);
-				adController.loadAd();
-			}
-		});
+		
+		adLayout.addView(adLayout);
+		// Add the adView to it
+		quoteLayout.addView(adView);
+		AdRequest ar=new AdRequest();
+		ar.addTestDevice(AdRequest.TEST_EMULATOR);
+		// Initiate a generic request to load it with an ad
+		adView.loadAd(ar);
 
 	}
 
@@ -225,13 +213,15 @@ public class BrowseQuotesActivity extends Activity implements
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.nextQuotePageMenuOption:
-			adController.destroyAd();
-			adController.loadAd();
+			AdRequest ar=new AdRequest();
+			ar.addTestDevice(AdRequest.TEST_EMULATOR);
+			adView.loadAd(ar);
 			loadQuoteList(LoadListAction.NEXT_PAGE);
 			return true;
 		case R.id.previousQuotePageMenuOption:
-			adController.destroyAd();
-			adController.loadAd();
+			ar=new AdRequest();
+			ar.addTestDevice(AdRequest.TEST_EMULATOR);
+			adView.loadAd(ar);
 			loadQuoteList(LoadListAction.PREVIOUS_PAGE);
 			return true;
 		case R.id.preferencesMenuOption:
@@ -263,32 +253,34 @@ public class BrowseQuotesActivity extends Activity implements
 				.findViewById(R.id.pageNumberDown);
 		final Button pageNumberUpButton = (Button) layout
 				.findViewById(R.id.pageNumberUp);
-		final int maxPageNumber=QuotePager.getInstance(this).computeMaxPage();
-		final MutableInt selectedPageNumber=new MutableInt(QuotePager.getInstance(
-				this).getCurrentPage());
+		final int maxPageNumber = QuotePager.getInstance(this).computeMaxPage();
+		final MutableInt selectedPageNumber = new MutableInt(QuotePager
+				.getInstance(this).getCurrentPage());
 		pageNumber.setText(String.valueOf(selectedPageNumber));
 
 		pageNumberDownButton.setOnClickListener(new View.OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
-				if (selectedPageNumber.intValue()>1){
+				if (selectedPageNumber.intValue() > 1) {
 					selectedPageNumber.decrement();
-					pageNumber.setText(String.valueOf(selectedPageNumber.intValue()));
+					pageNumber.setText(String.valueOf(selectedPageNumber
+							.intValue()));
 				}
-				
+
 			}
 		});
-		
-	pageNumberUpButton.setOnClickListener(new View.OnClickListener() {
-			
+
+		pageNumberUpButton.setOnClickListener(new View.OnClickListener() {
+
 			@Override
 			public void onClick(View v) {
-				if (selectedPageNumber.intValue()<maxPageNumber){
+				if (selectedPageNumber.intValue() < maxPageNumber) {
 					selectedPageNumber.increment();
-					pageNumber.setText(String.valueOf(selectedPageNumber.intValue()));
+					pageNumber.setText(String.valueOf(selectedPageNumber
+							.intValue()));
 				}
-				
+
 			}
 		});
 		builder.setTitle("Goto page");
@@ -348,8 +340,8 @@ public class BrowseQuotesActivity extends Activity implements
 		super.onPause();
 		PreferenceManager.getDefaultSharedPreferences(this)
 				.unregisterOnSharedPreferenceChangeListener(this);
-		if (adController != null) {
-			adController.destroyAd();
+		if (adView != null) {
+			adView.destroy();
 		}
 	}
 
