@@ -275,7 +275,6 @@ public class BrowseQuotesActivity extends Activity implements
 		
 		final Runnable updatePageNumberUp = new Runnable() {
 			public void run() {
-				Log.d(TAG,"page  up");
 				if (selectedPageNumber.intValue() < maxPageNumber) {
 					selectedPageNumber.increment();
 					pageNumber.setText(String.valueOf(selectedPageNumber
