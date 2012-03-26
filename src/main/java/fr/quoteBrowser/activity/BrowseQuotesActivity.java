@@ -19,12 +19,15 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -134,11 +137,11 @@ public class BrowseQuotesActivity extends Activity implements
 		// Create the adView
 		adView = new AdView(this, AdSize.BANNER, "a14f6e53e04f4bf");
 		LinearLayout adLayout = new LinearLayout(this);
-		
+
 		adLayout.addView(adLayout);
 		// Add the adView to it
 		quoteLayout.addView(adView);
-		AdRequest ar=new AdRequest();
+		AdRequest ar = new AdRequest();
 		ar.addTestDevice(AdRequest.TEST_EMULATOR);
 		// Initiate a generic request to load it with an ad
 		adView.loadAd(ar);
@@ -213,13 +216,13 @@ public class BrowseQuotesActivity extends Activity implements
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.nextQuotePageMenuOption:
-			AdRequest ar=new AdRequest();
+			AdRequest ar = new AdRequest();
 			ar.addTestDevice(AdRequest.TEST_EMULATOR);
 			adView.loadAd(ar);
 			loadQuoteList(LoadListAction.NEXT_PAGE);
 			return true;
 		case R.id.previousQuotePageMenuOption:
-			ar=new AdRequest();
+			ar = new AdRequest();
 			ar.addTestDevice(AdRequest.TEST_EMULATOR);
 			adView.loadAd(ar);
 			loadQuoteList(LoadListAction.PREVIOUS_PAGE);
@@ -258,31 +261,64 @@ public class BrowseQuotesActivity extends Activity implements
 				.getInstance(this).getCurrentPage());
 		pageNumber.setText(String.valueOf(selectedPageNumber));
 
-		pageNumberDownButton.setOnClickListener(new View.OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
+		final Handler mHandler = new Handler();
+		final Runnable updatePageNumberDown = new Runnable() {
+			public void run() {
 				if (selectedPageNumber.intValue() > 1) {
 					selectedPageNumber.decrement();
 					pageNumber.setText(String.valueOf(selectedPageNumber
 							.intValue()));
 				}
-
+				mHandler.postAtTime(this, SystemClock.uptimeMillis() + 200);
 			}
-		});
-
-		pageNumberUpButton.setOnClickListener(new View.OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
+		};
+		
+		final Runnable updatePageNumberUp = new Runnable() {
+			public void run() {
+				Log.d(TAG,"page  up");
 				if (selectedPageNumber.intValue() < maxPageNumber) {
 					selectedPageNumber.increment();
 					pageNumber.setText(String.valueOf(selectedPageNumber
 							.intValue()));
 				}
+				mHandler.postAtTime(this, SystemClock.uptimeMillis() + 200);
+			}
+		};
+		
+		
 
+		pageNumberDownButton.setOnTouchListener(new View.OnTouchListener() {
+
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+				int action = event.getAction();
+				if (action == MotionEvent.ACTION_DOWN) {
+					mHandler.removeCallbacks(updatePageNumberDown);
+					mHandler.postAtTime(updatePageNumberDown,
+							SystemClock.uptimeMillis());
+				} else if (action == MotionEvent.ACTION_UP) {
+					mHandler.removeCallbacks(updatePageNumberDown);
+				}
+				return false;
 			}
 		});
+
+		pageNumberUpButton.setOnTouchListener(new View.OnTouchListener() {
+
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+				int action = event.getAction();
+				if (action == MotionEvent.ACTION_DOWN) {
+					mHandler.removeCallbacks(updatePageNumberUp);
+					mHandler.postAtTime(updatePageNumberUp,
+							SystemClock.uptimeMillis());
+				} else if (action == MotionEvent.ACTION_UP) {
+					mHandler.removeCallbacks(updatePageNumberUp);
+				}
+				return false;
+			}
+		});
+			
 		builder.setTitle("Goto page");
 		builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
 

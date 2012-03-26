@@ -8,22 +8,22 @@
 
     <Button
         android:id="@+id/pageNumberDown"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
+        android:layout_width="80dp"
+        android:layout_height="65dp"
         android:text="-" />
 
     <TextView
         android:id="@+id/pageNumber"
-        android:layout_width="60dp"
-        android:layout_height="50dp"
+        android:layout_width="80dp"
+        android:layout_height="60dp"
         android:background="@android:color/white"
         android:gravity="center_vertical|center_horizontal"
         android:text="TextView" />
 
     <Button
         android:id="@+id/pageNumberUp"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
+        android:layout_width="80dp"
+        android:layout_height="65dp"
         android:text="+" />
 
 </LinearLayout>
