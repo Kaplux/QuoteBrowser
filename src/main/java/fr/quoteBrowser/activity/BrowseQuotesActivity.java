@@ -142,7 +142,6 @@ public class BrowseQuotesActivity extends Activity implements
 		// Add the adView to it
 		quoteLayout.addView(adView);
 		AdRequest ar = new AdRequest();
-		ar.addTestDevice(AdRequest.TEST_EMULATOR);
 		// Initiate a generic request to load it with an ad
 		adView.loadAd(ar);
 
@@ -216,15 +215,9 @@ public class BrowseQuotesActivity extends Activity implements
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.nextQuotePageMenuOption:
-			AdRequest ar = new AdRequest();
-			ar.addTestDevice(AdRequest.TEST_EMULATOR);
-			adView.loadAd(ar);
 			loadQuoteList(LoadListAction.NEXT_PAGE);
 			return true;
 		case R.id.previousQuotePageMenuOption:
-			ar = new AdRequest();
-			ar.addTestDevice(AdRequest.TEST_EMULATOR);
-			adView.loadAd(ar);
 			loadQuoteList(LoadListAction.PREVIOUS_PAGE);
 			return true;
 		case R.id.preferencesMenuOption:
