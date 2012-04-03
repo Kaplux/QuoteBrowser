@@ -21,10 +21,6 @@ public class PeriodicalQuoteUpdater extends BroadcastReceiver {
 							QuoteIndexationService.NUMBER_OF_PAGES_KEY));
 			context.startService(newIntent);
 		} catch (Exception e) {
-			Toast.makeText(
-					context,
-					"There was an error somewhere, but we still received an alarm",
-					Toast.LENGTH_SHORT).show();
 			Log.e(TAG, e.getMessage(), e);
 
 		}
