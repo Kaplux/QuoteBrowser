@@ -8,9 +8,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.mutable.MutableInt;
 
 import android.app.Activity;
-import android.app.AlarmManager;
 import android.app.AlertDialog;
-import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -42,9 +40,7 @@ import com.google.ads.AdView;
 
 import fr.quoteBrowser.Quote;
 import fr.quoteBrowser.R;
-import fr.quoteBrowser.service.PeriodicalQuoteUpdater;
 import fr.quoteBrowser.service.Preferences;
-import fr.quoteBrowser.service.QuoteIndexationService;
 import fr.quoteBrowser.service.QuotePager;
 import fr.quoteBrowser.service.QuoteUtils;
 import fr.quoteBrowser.service.provider.QuoteProvider;
