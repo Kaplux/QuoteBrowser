@@ -10,9 +10,14 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
+import android.util.Log;
 import android.util.Pair;
 import fr.quoteBrowser.Quote;
 import fr.quoteBrowser.service.provider.BashDotOrgQuoteProvider;
@@ -23,6 +28,8 @@ import fr.quoteBrowser.service.provider.SeenOnSlashDotComQuoteProvider;
 import fr.quoteBrowser.service.provider.XKCDBDotComQuoteProvider;
 
 public class QuoteUtils {
+	
+	private static String TAG = "quoteBrowser";
 
 	final private static Integer[] colors = new Integer[] { Color.BLUE,
 			Color.RED, Color.rgb(218, 112, 214), Color.rgb(135, 206, 250),
@@ -102,5 +109,37 @@ public class QuoteUtils {
 		}
 		return result;
 	}
+	
+	public static void scheduleDatabaseUpdate(Context context,boolean replaceIfExists,boolean startNow) {
+		Intent intent = getQuoteIndexerIntent(context,0, 10);
+		if (replaceIfExists || PendingIntent.getBroadcast(context, 1, intent,
+				PendingIntent.FLAG_NO_CREATE) == null) {
+			PendingIntent sender = PendingIntent.getBroadcast(context, 1, intent,
+					PendingIntent.FLAG_UPDATE_CURRENT);
+			AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+			long updateInterval = Preferences.getInstance(context)
+					.getUpdateIntervalPreference();
+			long startTime=System.currentTimeMillis();
+			if (!startNow){
+				startTime+=updateInterval;
+			}
+			Log.d(TAG, "creating update service interval : "+updateInterval);
+			am.setRepeating(AlarmManager.RTC, startTime,
+					updateInterval, sender);
+		}else{
+			Log.d(TAG, "update service already set");
+		}
+
+	}
+	
+	private static Intent getQuoteIndexerIntent(Context context,int startPage, int numberOfPages) {
+		Intent intent = new Intent(context,
+				PeriodicalQuoteUpdater.class);
+		intent.putExtra(QuoteIndexationService.START_PAGE_KEY, startPage);
+		intent.putExtra(QuoteIndexationService.NUMBER_OF_PAGES_KEY,
+				numberOfPages);
+		return intent;
+	}
+
 
 }

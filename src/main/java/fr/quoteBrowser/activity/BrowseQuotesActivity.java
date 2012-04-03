@@ -95,6 +95,8 @@ public class BrowseQuotesActivity extends Activity implements
 
 		if (QuotePager.getInstance(this).isDatabaseEmpty()) {
 			reindexDatabase();
+		}else{
+			QuoteUtils.scheduleDatabaseUpdate(this,false,true);
 		}
 
 		ListView quoteListView = (ListView) findViewById(R.id.quoteListView);
@@ -116,7 +118,7 @@ public class BrowseQuotesActivity extends Activity implements
 				progressDialog.show();
 				try {
 					QuotePager.getInstance(currentActivity).reindexDatabase();
-					scheduleDatabaseUpdate();
+					QuoteUtils.scheduleDatabaseUpdate(currentActivity,false,true);
 				} catch (IOException e) {
 					Log.e(TAG, e.getMessage(), e);
 				}
@@ -265,7 +267,7 @@ public class BrowseQuotesActivity extends Activity implements
 				mHandler.postAtTime(this, SystemClock.uptimeMillis() + 200);
 			}
 		};
-		
+
 		final Runnable updatePageNumberUp = new Runnable() {
 			public void run() {
 				if (selectedPageNumber.intValue() < maxPageNumber) {
@@ -276,8 +278,6 @@ public class BrowseQuotesActivity extends Activity implements
 				mHandler.postAtTime(this, SystemClock.uptimeMillis() + 200);
 			}
 		};
-		
-		
 
 		pageNumberDownButton.setOnTouchListener(new View.OnTouchListener() {
 
@@ -310,7 +310,7 @@ public class BrowseQuotesActivity extends Activity implements
 				return false;
 			}
 		});
-			
+
 		builder.setTitle("Goto page");
 		builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
 
@@ -406,43 +406,11 @@ public class BrowseQuotesActivity extends Activity implements
 		if (preferencesChanged) {
 			Log.d(TAG, "Preferences changed");
 			loadQuoteList(LoadListAction.RELOAD_PAGE);
-			Intent intent = getQuoteIndexerIntent(0, 10);
-			AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
-			PendingIntent sender = PendingIntent.getBroadcast(this, 1, intent,
-					PendingIntent.FLAG_UPDATE_CURRENT);
-			long updateInterval = Preferences.getInstance(this)
-					.getUpdateIntervalPreference();
-			Log.d(TAG, "Updating update service. New interval: "
-					+ updateInterval);
-			am.setRepeating(AlarmManager.RTC, System.currentTimeMillis()
-					+ updateInterval, updateInterval, sender);
-
+			QuoteUtils.scheduleDatabaseUpdate(this, true, false);
 			preferencesChanged = false;
 		}
 		super.onResume();
 		setTitle(this);
-	}
-
-	public void scheduleDatabaseUpdate() {
-		Log.d(TAG, "Setting update service");
-		Intent intent = getQuoteIndexerIntent(0, 10);
-		PendingIntent sender = PendingIntent.getBroadcast(this, 1, intent,
-				PendingIntent.FLAG_UPDATE_CURRENT);
-		AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
-		long updateInterval = Preferences.getInstance(this)
-				.getUpdateIntervalPreference();
-		am.setRepeating(AlarmManager.RTC, System.currentTimeMillis(),
-				updateInterval, sender);
-
-	}
-
-	private Intent getQuoteIndexerIntent(int startPage, int numberOfPages) {
-		Intent intent = new Intent(getApplicationContext(),
-				PeriodicalQuoteUpdater.class);
-		intent.putExtra(QuoteIndexationService.START_PAGE_KEY, startPage);
-		intent.putExtra(QuoteIndexationService.NUMBER_OF_PAGES_KEY,
-				numberOfPages);
-		return intent;
 	}
 
 }
